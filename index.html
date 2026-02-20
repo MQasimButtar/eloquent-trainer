@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="parchment">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Eloquent"/>
+<meta name="theme-color" content="#4a7c59"/>
+<title>Eloquent — AI Speaking Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   THREE STUDENT THEMES
+   1. Parchment  – warm cream, scholarly, daylight study
+   2. Midnight   – deep navy, focused night sessions
+   3. Forest     – rich green, calm concentration
+═══════════════════════════════════════════════════════════ */
+:root,[data-theme="parchment"]{
+  --bg:#f0ede6;--surface:#faf8f4;--surface2:#e8e3d8;--surface3:#ddd8cc;
+  --border:#d0c9b8;--text:#28231a;--text-muted:#8c8476;--text-light:#b0a898;
+  --accent:#4a7c59;--accent-soft:#d4e8da;--accent-glow:rgba(74,124,89,.18);
+  --accent2:#b8600f;--accent2-soft:#f5e2cc;
+  --danger:#b5364a;--danger-soft:#fce8ec;
+  --warn:#a07c10;--warn-soft:#faf2d0;
+  --info:#2c6ca8;--info-soft:#daeaf8;
+  --grad:linear-gradient(135deg,#d4e8da 0%,#faf8f4 100%);
+  --shadow-xs:0 1px 3px rgba(40,35,24,.07);--shadow-sm:0 2px 10px rgba(40,35,24,.09);
+  --shadow-md:0 4px 24px rgba(40,35,24,.11);--shadow-lg:0 12px 48px rgba(40,35,24,.14);
+  --r:12px;--r-sm:8px;--r-xs:6px;--t:280ms cubic-bezier(.4,0,.2,1);
+  --fd:'Lora',serif;--fb:'Plus Jakarta Sans',sans-serif;
+  --sidebar-w:230px;--topbar-h:60px;
+  --theme-swatch:#d4e8da;
+}
+[data-theme="midnight"]{
+  --bg:#0f1117;--surface:#171b26;--surface2:#1e2235;--surface3:#252b40;
+  --border:#2a3050;--text:#e2e8f8;--text-muted:#6b7698;--text-light:#3a4260;
+  --accent:#7b9fff;--accent-soft:#1a2550;--accent-glow:rgba(123,159,255,.20);
+  --accent2:#ffb347;--accent2-soft:#2d2010;
+  --danger:#ff6b7a;--danger-soft:#2d1018;
+  --warn:#ffd166;--warn-soft:#2a2000;
+  --info:#60c5fa;--info-soft:#0a2030;
+  --grad:linear-gradient(135deg,#1a2550 0%,#171b26 100%);
+  --shadow-xs:0 1px 4px rgba(0,0,0,.4);--shadow-sm:0 2px 12px rgba(0,0,0,.45);
+  --shadow-md:0 4px 28px rgba(0,0,0,.5);--shadow-lg:0 14px 56px rgba(0,0,0,.6);
+  --theme-swatch:#1a2550;
+}
+[data-theme="forest"]{
+  --bg:#0d1f15;--surface:#112218;--surface2:#162c1e;--surface3:#1c3826;
+  --border:#1e4228;--text:#d4eedc;--text-muted:#5a8a68;--text-light:#2c5438;
+  --accent:#5fd87a;--accent-soft:#0e3020;--accent-glow:rgba(95,216,122,.18);
+  --accent2:#f4a641;--accent2-soft:#2d1e08;
+  --danger:#ff7070;--danger-soft:#2d0c0c;
+  --warn:#ffe066;--warn-soft:#2a2000;
+  --info:#5fc4d8;--info-soft:#0a2028;
+  --grad:linear-gradient(135deg,#0e3020 0%,#112218 100%);
+  --shadow-xs:0 1px 4px rgba(0,0,0,.45);--shadow-sm:0 2px 12px rgba(0,0,0,.5);
+  --shadow-md:0 4px 28px rgba(0,0,0,.55);--shadow-lg:0 14px 60px rgba(0,0,0,.65);
+  --theme-swatch:#0e3020;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESET + BASE
+═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:var(--fb);background:var(--bg);color:var(--text);
+  font-size:15px;line-height:1.6;
+  transition:background var(--t),color var(--t);
+}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+button,input,select,textarea{font-family:var(--fb);outline:none}
+button{cursor:pointer}
+
+/* ═══════════════════════════════════════════════════════════
+   LAYOUT — fixed topbar, scrollable sidebar + main
+═══════════════════════════════════════════════════════════ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;
+  height:var(--topbar-h);z-index:200;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px 0 16px;
+  box-shadow:var(--shadow-xs);
+  transition:background var(--t);
+}
+.app-body{
+  display:flex;
+  height:100vh;
+  padding-top:var(--topbar-h);
+}
+.sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;
+  transition:transform var(--t),width var(--t),background var(--t);
+  z-index:100;
+}
+.main{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:28px 32px 48px;
+  scroll-behavior:smooth;
+  background:var(--bg);
+  transition:background var(--t);
+}
+
+/* ── Logo ── */
+.logo{
+  font-family:var(--fd);font-size:19px;letter-spacing:-.2px;
+  display:flex;align-items:center;gap:8px;color:var(--text);
+}
+.beacon{
+  width:9px;height:9px;border-radius:50%;background:var(--accent);
+  animation:beacon 2.6s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes beacon{
+  0%,100%{box-shadow:0 0 0 0 var(--accent-glow)}
+  50%{box-shadow:0 0 0 7px transparent;opacity:.7}
+}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.streak-pill{
+  display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;
+  background:var(--accent2-soft);color:var(--accent2);
+  padding:4px 10px;border-radius:20px;
+  border:1px solid color-mix(in srgb,var(--accent2) 28%,transparent);
+}
+.ib{
+  background:transparent;border:1px solid var(--border);border-radius:var(--r-sm);
+  color:var(--text-muted);width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:all var(--t);
+}
+.ib:hover{background:var(--surface2);color:var(--text);border-color:var(--text-muted)}
+/* hamburger for mobile */
+#menuBtn{display:none}
+
+/* ── Sidebar internals ── */
+.sidebar-group{padding:12px 16px 3px;font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-light)}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;margin:2px 8px;
+  border-radius:var(--r-sm);cursor:pointer;
+  font-size:13.5px;color:var(--text-muted);
+  transition:all var(--t);position:relative;
+  user-select:none;
+}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav-item.active::before{
+  content:'';position:absolute;left:-8px;top:50%;transform:translateY(-50%);
+  width:3px;height:18px;background:var(--accent);border-radius:2px;
+}
+.nav-ico{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{
+  margin-left:auto;font-size:10px;font-weight:700;
+  background:var(--danger);color:#fff;
+  padding:1px 6px;border-radius:8px;
+}
+.sidebar-spacer{flex:1;min-height:12px}
+.sidebar-footer{border-top:1px solid var(--border);padding:14px 12px}
+.xp-card{background:var(--surface2);border-radius:var(--r-sm);padding:10px 12px;font-size:12px}
+.xp-label{font-weight:700;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.9px}
+.xp-level{font-family:var(--fd);font-size:15px;color:var(--accent);margin:3px 0 2px}
+.xp-sub{font-size:11px;color:var(--text-muted)}
+.xp-bar-wrap{background:var(--border);border-radius:4px;height:5px;margin-top:7px;overflow:hidden}
+.xp-bar-fill{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  transition:width .7s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Mobile overlay for sidebar ── */
+.sidebar-backdrop{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;
+  opacity:0;transition:opacity var(--t);
+}
+.sidebar-backdrop.active{opacity:1}
+
+/* ═══════════════════════════════════════════════════════════
+   PAGES
+═══════════════════════════════════════════════════════════ */
+.page{display:none;flex-direction:column;gap:22px;animation:pagein .32s ease both}
+.page.active{display:flex}
+@keyframes pagein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.page-hdr{}
+.page-title{font-family:var(--fd);font-size:27px;letter-spacing:-.3px;line-height:1.25}
+.page-sub{color:var(--text-muted);font-size:13.5px;margin-top:4px}
+
+/* ═══════════════════════════════════════════════════════════
+   ATOMS — Buttons, Cards, Badges, Fields
+═══════════════════════════════════════════════════════════ */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--r-sm);border:none;font-size:13.5px;font-weight:500;transition:all var(--t);white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px var(--accent-glow)}
+.btn-primary:hover:not(:disabled){opacity:.9;transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow)}
+.btn-primary:active{transform:none}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover:not(:disabled){background:var(--surface3)}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1px solid var(--border)}
+.btn-ghost:hover:not(:disabled){background:var(--surface2);color:var(--text)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover:not(:disabled){opacity:.9}
+.btn-sm{padding:7px 13px;font-size:12.5px}
+.btn-xs{padding:4px 9px;font-size:12px;border-radius:var(--r-xs)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-xs);transition:background var(--t),border-color var(--t)}
+.card-title{font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card-title a{font-weight:500;font-size:12px;color:var(--accent);text-transform:none;letter-spacing:0;cursor:pointer}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-ok{background:var(--accent-soft);color:var(--accent)}
+.badge-err{background:var(--danger-soft);color:var(--danger)}
+.badge-warn{background:var(--warn-soft);color:var(--warn)}
+.badge-info{background:var(--info-soft);color:var(--info)}
+.badge-neutral{background:var(--surface2);color:var(--text-muted)}
+
+.chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 11px;font-size:12px;font-weight:500;color:var(--text-muted)}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:9px 13px;font-size:13.5px;color:var(--text);
+  transition:border-color var(--t),box-shadow var(--t);
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+
+.skill-row{margin-bottom:14px}
+.skill-hdr{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;margin-bottom:5px}
+.skill-score{font-weight:700;color:var(--accent);font-size:12px}
+.skill-track{background:var(--surface2);border-radius:4px;height:6px;overflow:hidden}
+.skill-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow-xs);transition:transform var(--t),box-shadow var(--t),background var(--t)}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.stat-lbl{font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted)}
+.stat-val{font-family:var(--fd);font-size:28px;color:var(--text);margin:5px 0 2px}
+.stat-delta{font-size:11.5px}.up{color:var(--accent)}.dn{color:var(--danger)}
+
+/* two-col grid */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+/* divider */
+hr.divider{border:none;border-top:1px solid var(--border);margin:4px 0}
+
+/* ═══════════════════════════════════════════════════════════
+   SETUP OVERLAY
+═══════════════════════════════════════════════════════════ */
+.setup-overlay{
+  position:fixed;inset:0;background:var(--bg);z-index:9999;
+  display:flex;align-items:center;justify-content:center;padding:16px;
+  animation:fadein .35s ease;overflow-y:auto;
+}
+.setup-overlay.hidden{display:none!important}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.setup-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:40px;max-width:500px;width:100%;
+  box-shadow:var(--shadow-lg);
+}
+.setup-title{font-family:var(--fd);font-size:26px;margin-bottom:6px}
+.setup-sub{color:var(--text-muted);font-size:13.5px;margin-bottom:24px;line-height:1.6}
+.api-step{display:flex;align-items:flex-start;gap:12px;padding:11px 13px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:8px}
+.api-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.api-text .t{font-size:13px;font-weight:600;margin-bottom:1px}
+.api-text .s{font-size:12px;color:var(--text-muted)}
+.skip-link{background:none;border:none;color:var(--text-muted);font-size:13px;padding:10px 0 0;cursor:pointer;display:block;text-align:center;width:100%}
+.skip-link:hover{color:var(--text);text-decoration:underline}
+
+/* ═══════════════════════════════════════════════════════════
+   SESSION PAGE
+═══════════════════════════════════════════════════════════ */
+.topic-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:26px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);
+}
+.topic-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.topic-card::after{content:'"';position:absolute;right:18px;bottom:-18px;font-family:Georgia,serif;font-size:110px;color:var(--accent);opacity:.05;pointer-events:none;line-height:1}
+.topic-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.cat-tag{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent)}
+.diff-tag{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:10px}
+.diff-b1{background:var(--info-soft);color:var(--info)}
+.diff-b2{background:var(--warn-soft);color:var(--warn)}
+.diff-c1{background:var(--danger-soft);color:var(--danger)}
+.topic-prompt{font-family:var(--fd);font-size:18px;line-height:1.55;color:var(--text);margin-bottom:10px}
+.topic-hints{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.t-hint{display:flex;align-items:center;gap:5px;background:var(--surface2);border-radius:20px;padding:4px 10px;font-size:12px;color:var(--text-muted)}
+.topic-actions{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+.sess-status{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:11px 15px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-sm);font-size:13px;
+}
+.s-item{display:flex;align-items:center;gap:5px;color:var(--text-muted)}
+.s-sep{color:var(--border)}
+.strict-tag{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--accent2);background:var(--accent2-soft);padding:3px 9px;border-radius:10px;border:1px solid color-mix(in srgb,var(--accent2) 25%,transparent)}
+
+.sent-prog{
+  width:100%;background:var(--surface2);border-radius:6px;height:8px;overflow:hidden;
+}
+.sent-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s ease}
+.sent-fill.over{background:linear-gradient(90deg,var(--accent2),var(--danger))}
+
+.record-zone{
+  background:var(--surface);border:2px dashed var(--border);
+  border-radius:var(--r);padding:36px 20px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;
+  transition:all var(--t);position:relative;overflow:hidden;
+}
+.record-zone::before{
+  content:'';position:absolute;inset:0;
+  background:var(--grad);opacity:0;transition:opacity var(--t);
+}
+.record-zone.recording{border-color:var(--danger);border-style:solid}
+.record-zone.recording::before{opacity:.12}
+.record-zone.processing{border-color:var(--info);border-style:solid}
+.record-zone.processing::before{opacity:.08;background:var(--info-soft)}
+
+.rec-btn{
+  width:70px;height:70px;border-radius:50%;border:none;
+  background:var(--accent);color:#fff;font-size:24px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px var(--accent-glow);
+  transition:transform var(--t),box-shadow var(--t);
+  position:relative;z-index:1;
+}
+.rec-btn:hover:not(:disabled){transform:scale(1.07)}
+.rec-btn.on{background:var(--danger);box-shadow:0 4px 18px color-mix(in srgb,var(--danger) 35%,transparent)}
+.rec-btn.on::before,.rec-btn.on::after{
+  content:'';position:absolute;inset:-10px;border-radius:50%;
+  border:2px solid var(--danger);animation:ripple 1.5s ease-out infinite;
+}
+.rec-btn.on::before{animation-delay:.75s}
+@keyframes ripple{0%{transform:scale(.85);opacity:.8}100%{transform:scale(1.55);opacity:0}}
+
+.rec-timer{font-family:var(--fd);font-size:36px;color:var(--text);display:none;line-height:1;position:relative;z-index:1}
+.recording .rec-timer{display:block}
+.wavform{display:none;align-items:center;gap:3px;height:34px;position:relative;z-index:1}
+.recording .wavform{display:flex}
+.wbar{width:3px;background:var(--danger);border-radius:2px;animation:wv 1s ease-in-out infinite}
+.wbar:nth-child(2){animation-delay:.1s}.wbar:nth-child(3){animation-delay:.2s}
+.wbar:nth-child(4){animation-delay:.35s}.wbar:nth-child(5){animation-delay:.15s}
+.wbar:nth-child(6){animation-delay:.3s}.wbar:nth-child(7){animation-delay:.05s}
+.wbar:nth-child(8){animation-delay:.25s}.wbar:nth-child(9){animation-delay:.4s}
+@keyframes wv{0%,100%{height:5px}50%{height:28px}}
+.proc-spinner{display:none;width:48px;height:48px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--info);animation:spin .8s linear infinite;position:relative;z-index:1}
+.processing .proc-spinner{display:block}
+.processing .rec-btn{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rec-label{font-size:13.5px;color:var(--text-muted);position:relative;z-index:1}
+.rec-hint{font-size:11.5px;color:var(--text-light);position:relative;z-index:1}
+
+.tx-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.tx-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);
+}
+.tx-body{padding:16px;min-height:100px;font-size:14.5px;line-height:1.9;color:var(--text)}
+.tx-ph{color:var(--text-light);font-style:italic;font-size:13.5px}
+mark.err{background:var(--danger-soft);border-bottom:2px solid var(--danger);border-radius:2px;cursor:help;padding:0 1px}
+mark.vocab{background:var(--warn-soft);border-bottom:2px dotted var(--warn);border-radius:2px;cursor:help;padding:0 1px}
+mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);border-radius:2px;cursor:help;padding:0 1px}
+
+.analyze-bar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.ana-hint{font-size:13px;color:var(--text-muted);margin-left:auto}
+
+/* Results */
+.results-section{animation:pagein .4s ease both}
+.score-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 10px;text-align:center;box-shadow:var(--shadow-xs);transition:transform var(--t),box-shadow var(--t)}
+.score-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.sc-lbl{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.ring-wrap{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 7px;position:relative}
+.ring-svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--surface2);stroke-width:5}
+.ring-fg{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
+.ring-num{font-family:var(--fd);font-size:17px;color:var(--text);position:relative;z-index:1}
+.sc-fb{font-size:11px;color:var(--text-muted);line-height:1.3}
+
+.overall-banner{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  background:var(--grad);border:1px solid color-mix(in srgb,var(--accent) 25%,var(--border));
+  border-radius:var(--r);padding:20px 24px;
+}
+.ov-big{font-family:var(--fd);font-size:50px;color:var(--accent);line-height:1}
+.ov-div{width:1px;height:48px;background:var(--border);flex-shrink:0}
+.ov-meta strong{font-size:14.5px;display:block;margin-bottom:3px}
+.ov-meta p{font-size:13px;color:var(--text-muted)}
+.ov-motive{margin-left:auto;font-family:var(--fd);font-style:italic;font-size:13.5px;color:var(--accent);text-align:right;max-width:220px;line-height:1.45}
+
+.fb-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.fb-item{border-bottom:1px solid var(--border)}
+.fb-item:last-child{border-bottom:none}
+.fb-trigger{
+  display:flex;align-items:center;gap:10px;padding:13px 16px;
+  cursor:pointer;font-size:13.5px;font-weight:500;transition:background var(--t);user-select:none;
+}
+.fb-trigger:hover{background:var(--surface2)}
+.fb-chev{margin-left:auto;color:var(--text-light);transition:transform var(--t);font-size:11px}
+.fb-item.open .fb-chev{transform:rotate(180deg)}
+.fb-body{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s ease,padding .3s ease;
+  padding:0 16px;font-size:13.5px;line-height:1.8;color:var(--text-muted);
+}
+.fb-item.open .fb-body{max-height:800px;padding:2px 16px 16px}
+.corr{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border-radius:var(--r-xs);padding:4px 10px;margin:3px 4px 0 0;font-size:13px}
+.cw{color:var(--danger);text-decoration:line-through}
+.ca{color:var(--text-light)}
+.cr{color:var(--accent);font-weight:600}
+.cs{color:var(--info);font-style:italic}
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════════════════ */
+.recent-sess{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;
+  background:var(--surface2);border-radius:var(--r-sm);margin-bottom:8px;
+  transition:background var(--t);cursor:pointer;
+}
+.recent-sess:hover{background:var(--surface3)}
+.s-ico{width:34px;height:34px;border-radius:8px;flex-shrink:0;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px}
+.s-inf{flex:1;min-width:0}
+.s-topic{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s-meta{font-size:11.5px;color:var(--text-muted);margin-top:1px}
+.s-scr{font-family:var(--fd);font-size:20px;color:var(--accent);flex-shrink:0}
+
+/* Quick action cards */
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.action-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 16px;cursor:pointer;text-align:center;
+  transition:all var(--t);position:relative;overflow:hidden;
+}
+.action-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.action-card.c1::after{background:var(--accent)}
+.action-card.c2::after{background:var(--accent2)}
+.action-card.c3::after{background:var(--info)}
+.action-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.ac-icon{font-size:26px;margin-bottom:8px}
+.ac-title{font-weight:600;font-size:14px;margin-bottom:4px}
+.ac-desc{font-size:12px;color:var(--text-muted);line-height:1.4}
+
+/* ═══════════════════════════════════════════════════════════
+   QUIZ (Step 9)
+═══════════════════════════════════════════════════════════ */
+.quiz-wrap{max-width:640px;margin:0 auto}
+.quiz-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:13px;color:var(--text-muted)}
+.quiz-prog-bar{background:var(--surface2);border-radius:4px;height:5px;overflow:hidden}
+.quiz-prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .5s ease}
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow-md);transition:background var(--t)}
+.quiz-type-tag{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.quiz-q{font-family:var(--fd);font-size:19px;margin-bottom:20px;line-height:1.45;color:var(--text)}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{
+  background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r-sm);
+  padding:12px 15px;font-size:13.5px;transition:all var(--t);cursor:pointer;text-align:left;
+}
+.quiz-opt:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.quiz-opt.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+.quiz-opt.correct{border-color:var(--accent);background:var(--accent-soft)}
+.quiz-opt.wrong{border-color:var(--danger);background:var(--danger-soft)}
+.quiz-opt.locked{pointer-events:none}
+.quiz-actions{margin-top:18px;display:flex;gap:9px;justify-content:flex-end}
+.quiz-result-banner{
+  display:flex;align-items:center;gap:16px;
+  background:var(--grad);border:1px solid color-mix(in srgb,var(--accent) 20%,var(--border));
+  border-radius:var(--r);padding:20px 24px;margin-top:4px;
+}
+.quiz-score-big{font-family:var(--fd);font-size:44px;color:var(--accent)}
+.quiz-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.quiz-filter-btn{
+  padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);
+  background:transparent;font-size:12.5px;font-weight:500;color:var(--text-muted);transition:all var(--t);
+}
+.quiz-filter-btn:hover,.quiz-filter-btn.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+
+/* ═══════════════════════════════════════════════════════════
+   PROGRESS DASHBOARD (Step 10)
+═══════════════════════════════════════════════════════════ */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-xs)}
+.chart-tabs{display:flex;gap:6px;margin-bottom:16px}
+.chart-tab{padding:5px 13px;border-radius:20px;font-size:12.5px;font-weight:500;border:1.5px solid var(--border);background:transparent;color:var(--text-muted);transition:all var(--t)}
+.chart-tab.active{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.chart-area{height:170px;display:flex;align-items:flex-end;gap:6px;justify-content:space-around}
+.bar-grp{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;max-width:48px}
+.bar-col{width:100%;border-radius:4px 4px 0 0;min-height:4px;background:color-mix(in srgb,var(--accent) 30%,var(--surface2));border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);transition:height .7s cubic-bezier(.4,0,.2,1)}
+.bar-col:hover{background:var(--accent);opacity:.8}
+.bar-val{font-size:10px;font-weight:600;color:var(--accent)}
+.bar-lbl{font-size:10.5px;color:var(--text-muted)}
+.chart-x-line{height:1px;background:var(--border);margin-top:2px}
+
+/* Calendar heatmap */
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.hm-cell{
+  aspect-ratio:1;border-radius:3px;background:var(--surface2);
+  border:1px solid transparent;transition:all var(--t);cursor:pointer;
+}
+.hm-cell:hover{transform:scale(1.2);z-index:2}
+.hm-0{background:var(--surface2)}
+.hm-1{background:color-mix(in srgb,var(--accent) 25%,var(--surface2))}
+.hm-2{background:color-mix(in srgb,var(--accent) 50%,var(--surface2))}
+.hm-3{background:color-mix(in srgb,var(--accent) 75%,var(--surface2))}
+.hm-4{background:var(--accent)}
+
+/* ═══════════════════════════════════════════════════════════
+   WEAKNESSES (Step 11)
+═══════════════════════════════════════════════════════════ */
+.weak-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:8px;
+  border-left:3px solid transparent;transition:all var(--t);
+}
+.weak-item.high{border-left-color:var(--danger)}
+.weak-item.med{border-left-color:var(--warn)}
+.weak-item.low{border-left-color:var(--info)}
+.wi-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.wi-info{flex:1;min-width:0}
+.wi-title{font-weight:500;font-size:13.5px}
+.wi-sub{font-size:12px;color:var(--text-muted);margin-top:1px}
+.wi-count{font-family:var(--fd);font-size:17px;flex-shrink:0}
+.lesson-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;cursor:pointer;transition:all var(--t);margin-bottom:8px;width:100%;
+}
+.lesson-pill:hover{background:var(--accent-soft);border-color:var(--accent)}
+.lp-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.lp-info{flex:1}
+.lp-title{font-weight:600;font-size:13.5px;margin-bottom:2px}
+.lp-meta{font-size:12px;color:var(--text-muted)}
+.lp-arr{color:var(--text-light);font-size:16px;margin-left:auto}
+
+/* ═══════════════════════════════════════════════════════════
+   SETTINGS (Step 12) — 3 Theme Swatches
+═══════════════════════════════════════════════════════════ */
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.theme-swatch-card{
+  border:2px solid var(--border);border-radius:var(--r);padding:14px;
+  cursor:pointer;transition:all var(--t);text-align:center;position:relative;overflow:hidden;
+}
+.theme-swatch-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.theme-swatch-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.theme-swatch-card.selected::after{content:'✓';position:absolute;top:7px;right:9px;font-size:12px;font-weight:700;color:var(--accent)}
+.ts-preview{height:48px;border-radius:8px;margin-bottom:8px;border:1px solid rgba(0,0,0,.08)}
+.ts-name{font-weight:600;font-size:13px;margin-bottom:2px}
+.ts-desc{font-size:11.5px;color:var(--text-muted)}
+.api-status-row{margin-top:12px;font-size:13px;line-height:2.2;background:var(--surface2);border-radius:var(--r-sm);padding:12px 14px}
+
+/* ═══════════════════════════════════════════════════════════
+   IPHONE GUIDE (Step 13 bonus page)
+═══════════════════════════════════════════════════════════ */
+.guide-step{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:16px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);margin-bottom:10px;
+}
+.guide-num{
+  width:36px;height:36px;border-radius:50%;background:var(--accent);
+  color:#fff;font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 2px 8px var(--accent-glow);
+}
+.guide-content .gt{font-weight:600;font-size:14px;margin-bottom:4px}
+.guide-content .gs{font-size:13px;color:var(--text-muted);line-height:1.6}
+.guide-code{
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:12px 16px;font-family:monospace;font-size:13px;color:var(--accent);
+  margin:8px 0;overflow-x:auto;white-space:pre-wrap;word-break:break-all;
+}
+.info-box{
+  background:var(--info-soft);border:1px solid color-mix(in srgb,var(--info) 25%,transparent);
+  border-radius:var(--r);padding:14px 16px;font-size:13.5px;color:var(--text);
+  display:flex;gap:10px;align-items:flex-start;line-height:1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST + SPINNER
+═══════════════════════════════════════════════════════════ */
+#toast{
+  position:fixed;bottom:20px;right:20px;max-width:320px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:11px 16px;
+  font-size:13.5px;box-shadow:var(--shadow-md);
+  transform:translateY(14px);opacity:0;
+  transition:all .3s ease;pointer-events:none;z-index:9000;
+}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{border-left:3px solid var(--accent)}
+#toast.err{border-left:3px solid var(--danger)}
+#toast.wrn{border-left:3px solid var(--warn)}
+
+.spin{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════ */
+@media(max-width:880px){
+  :root{--sidebar-w:240px}
+  .sidebar{
+    position:fixed;left:0;top:var(--topbar-h);bottom:0;
+    transform:translateX(-100%);z-index:150;box-shadow:var(--shadow-lg);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-backdrop{display:block}
+  #menuBtn{display:flex}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .score-grid{grid-template-columns:repeat(3,1fr)}
+  .two-col{grid-template-columns:1fr}
+  .three-col{grid-template-columns:1fr 1fr}
+  .action-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:540px){
+  .main{padding:16px 14px 60px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .score-grid{grid-template-columns:1fr 1fr}
+  .three-col{grid-template-columns:1fr}
+  .action-grid{grid-template-columns:1fr}
+  .theme-grid{grid-template-columns:1fr}
+  .ov-motive{display:none}
+  .ov-div{display:none}
+  .quiz-wrap{max-width:100%}
+  .overall-banner{flex-direction:column;align-items:flex-start;gap:10px}
+}
+@media(max-width:360px){
+  .topbar{padding:0 12px 0 10px}
+  .streak-pill{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SETUP OVERLAY ═══════════ -->
+<div class="setup-overlay" id="setupOverlay">
+  <div class="setup-card">
+    <div class="setup-title">Welcome to Eloquent <span class="beacon" style="display:inline-block;vertical-align:middle"></span></div>
+    <p class="setup-sub">Your free AI English speaking coach. Paste your API keys below for full features — or skip to try in Demo Mode.</p>
+    <div class="api-step"><div class="api-num">1</div><div class="api-text"><div class="t">Deepgram — Speech to Text</div><div class="s">$200 free (~750 hrs). Get key: <a href="https://console.deepgram.com" target="_blank">console.deepgram.com</a></div></div></div>
+    <div class="api-step"><div class="api-num">2</div><div class="api-text"><div class="t">SpeechSuper — Pronunciation &amp; Fluency</div><div class="s">Free trial: <a href="https://speechsuper.com" target="_blank">speechsuper.com</a></div></div></div>
+    <div class="api-step"><div class="api-num">3</div><div class="api-text"><div class="t">WordsAPI — Vocabulary (via RapidAPI)</div><div class="s">2,500 req/day free: <a href="https://rapidapi.com/dpventures/api/wordsapi" target="_blank">rapidapi.com</a></div></div></div>
+    <div style="margin-top:18px">
+      <div class="field"><label>Deepgram Key</label><input type="password" id="sDG" placeholder="dg_••••••••••"/></div>
+      <div class="field"><label>SpeechSuper Key</label><input type="password" id="sSS" placeholder="••••••••"/></div>
+      <div class="field" style="margin-bottom:18px"><label>WordsAPI RapidAPI Key</label><input type="password" id="sWA" placeholder="••••••••"/></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px 20px" onclick="UI.saveSetup()">✓ Save &amp; Start Training</button>
+    <button class="skip-link" onclick="UI.skipSetup()">Skip — use Demo Mode</button>
+  </div>
+</div>
+
+<!-- ═══════════ TOPBAR ═══════════ -->
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="ib" id="menuBtn" onclick="UI.toggleSidebar()" aria-label="Menu">☰</button>
+    <div class="logo"><span class="beacon"></span>Eloquent</div>
+  </div>
+  <div class="topbar-right">
+    <div class="streak-pill">🔥 <span id="streakNum">0</span>-day streak</div>
+    <button class="ib" title="iPhone Guide" onclick="UI.navigate('guide')">📱</button>
+    <button class="ib" title="Settings" onclick="UI.navigate('settings')">⚙</button>
+  </div>
+</div>
+
+<!-- sidebar backdrop -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="UI.closeSidebar()"></div>
+
+<!-- ═══════════ APP BODY ═══════════ -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-group">Practice</div>
+    <div class="nav-item active" onclick="UI.navigate('dashboard')"><span class="nav-ico">🏠</span>Dashboard</div>
+    <div class="nav-item" onclick="UI.navigate('session')"><span class="nav-ico">🎙️</span>New Session</div>
+    <div class="nav-item" onclick="UI.navigate('lessons')"><span class="nav-ico">📚</span>Lessons</div>
+    <div class="nav-item" onclick="UI.navigate('quiz')"><span class="nav-ico">🧠</span>Quiz &amp; Revision</div>
+    <div class="sidebar-group">Analytics</div>
+    <div class="nav-item" onclick="UI.navigate('progress')"><span class="nav-ico">📈</span>Progress</div>
+    <div class="nav-item" onclick="UI.navigate('weaknesses')"><span class="nav-ico">🎯</span>Weaknesses <span class="nav-badge" id="weakBadge" style="display:none">!</span></div>
+    <div class="sidebar-group">Tools</div>
+    <div class="nav-item" onclick="UI.navigate('settings')"><span class="nav-ico">⚙️</span>Settings</div>
+    <div class="nav-item" onclick="UI.navigate('guide')"><span class="nav-ico">📱</span>iPhone Guide</div>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-footer">
+      <div class="xp-card">
+        <div class="xp-label">Level</div>
+        <div class="xp-level" id="sideLevel">B2</div>
+        <div class="xp-sub" id="sideXP">620 / 1000 XP</div>
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpFill" style="width:62%"></div></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main" id="mainContent">
+
+    <!-- ══════════════════════ DASHBOARD ══════════════════════ -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-hdr">
+        <h1 class="page-title" id="dashGreet">Good morning 👋</h1>
+        <p class="page-sub">Track your English speaking journey — every session counts.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-lbl">Sessions</div><div class="stat-val" id="dSessions">0</div><div class="stat-delta up" id="dSessDelta">Start today!</div></div>
+        <div class="stat-card"><div class="stat-lbl">Avg Score</div><div class="stat-val" id="dAvg">—</div><div class="stat-delta up" id="dAvgDelta">No data yet</div></div>
+        <div class="stat-card"><div class="stat-lbl">Words Spoken</div><div class="stat-val" id="dWords">0</div><div class="stat-delta up">total</div></div>
+        <div class="stat-card"><div class="stat-lbl">Streak 🔥</div><div class="stat-val" id="dStreak">0</div><div class="stat-delta" id="dStreakDelta">days</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Skill Snapshot <a onclick="UI.navigate('progress')">Details →</a></div>
+          <div id="dashSkills">
+            <div class="skill-row"><div class="skill-hdr"><span>Grammar</span><span class="skill-score" id="sk-grammar">—</span></div><div class="skill-track"><div class="skill-fill" id="sf-grammar" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Vocabulary</span><span class="skill-score" id="sk-vocab">—</span></div><div class="skill-track"><div class="skill-fill" id="sf-vocab" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Fluency</span><span class="skill-score" id="sk-fluency">—</span></div><div class="skill-track"><div class="skill-fill" id="sf-fluency" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Pronunciation</span><span class="skill-score" id="sk-pron">—</span></div><div class="skill-track"><div class="skill-fill" id="sf-pron" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Coherence</span><span class="skill-score" id="sk-coh">—</span></div><div class="skill-track"><div class="skill-fill" id="sf-coh" style="width:0%"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Sessions <a onclick="UI.navigate('progress')">All →</a></div>
+          <div id="recentList"><div style="color:var(--text-light);font-size:13px;padding:8px 0">No sessions yet — start your first one!</div></div>
+        </div>
+      </div>
+
+      <div class="action-grid">
+        <div class="action-card c1" onclick="UI.navigate('session')"><div class="ac-icon">🎙️</div><div class="ac-title">New Session</div><div class="ac-desc">Start speaking on a generated topic</div></div>
+        <div class="action-card c2" onclick="UI.navigate('quiz')"><div class="ac-icon">🧠</div><div class="ac-title">Quick Quiz</div><div class="ac-desc">Test grammar, vocab &amp; corrections</div></div>
+        <div class="action-card c3" onclick="UI.navigate('lessons')"><div class="ac-icon">📚</div><div class="ac-title">Today's Lesson</div><div class="ac-desc">Targeted practice for weak areas</div></div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ SESSION ══════════════════════ -->
+    <section class="page" id="page-session">
+      <div class="page-hdr">
+        <h1 class="page-title">Speaking Session</h1>
+        <p class="page-sub">Scored on 5 dimensions — grammar, vocabulary, fluency, pronunciation, coherence</p>
+      </div>
+
+      <div class="topic-card">
+        <div class="topic-meta">
+          <span class="cat-tag" id="topicCat">Loading…</span>
+          <span class="diff-tag diff-b2" id="topicDiff">B2</span>
+        </div>
+        <div class="topic-prompt" id="topicPrompt">Generating topic…</div>
+        <div class="topic-hints" id="topicHints"></div>
+        <div class="topic-actions">
+          <button class="btn btn-ghost btn-sm" onclick="TopicGen.next()">🔀 New Topic</button>
+          <button class="btn btn-ghost btn-sm" onclick="TopicGen.nextCat()">📂 Change Category</button>
+          <span style="margin-left:auto;font-size:12px;color:var(--text-muted)" id="topicCtr"></span>
+        </div>
+      </div>
+
+      <div class="sess-status">
+        <span class="s-item">📝 <strong id="sentCount">0</strong> / <span id="sentMin">10</span> sentences</span>
+        <span class="s-sep">·</span>
+        <span class="s-item" id="timerDisplay">⏱️ 00:00</span>
+        <span class="s-sep">·</span>
+        <span class="s-item" id="wpmDisplay">🗣️ — WPM</span>
+        <span class="strict-tag" id="strictTag">🎓 Strict</span>
+      </div>
+
+      <div>
+        <div class="sent-prog"><div class="sent-fill" id="sentFill" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:5px">
+          <span>0</span><span id="sentTargetLbl">Target: 10</span><span>20 max</span>
+        </div>
+      </div>
+
+      <div class="record-zone" id="recordZone">
+        <div class="wavform" id="waveform">
+          <div class="wbar" style="height:8px"></div><div class="wbar" style="height:8px"></div>
+          <div class="wbar" style="height:8px"></div><div class="wbar" style="height:8px"></div>
+          <div class="wbar" style="height:8px"></div><div class="wbar" style="height:8px"></div>
+          <div class="wbar" style="height:8px"></div><div class="wbar" style="height:8px"></div>
+          <div class="wbar" style="height:8px"></div>
+        </div>
+        <div class="proc-spinner" id="spinner"></div>
+        <div class="rec-timer" id="recTimer">00:00</div>
+        <button class="rec-btn" id="recBtn" onclick="Recorder.toggle()">🎙️</button>
+        <p class="rec-label" id="recLabel">Click to start recording</p>
+        <p class="rec-hint">🔒 Audio sent to Deepgram for transcription only — not stored</p>
+      </div>
+
+      <div class="tx-section">
+        <div class="tx-header">
+          Live Transcript
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="badge badge-neutral" id="wordCountBadge">0 words</span>
+            <button class="btn btn-xs btn-ghost" onclick="Session.clear()">Clear</button>
+          </div>
+        </div>
+        <div class="tx-body" id="txBody"><span class="tx-ph">Your speech will appear here after recording…</span></div>
+      </div>
+
+      <div class="analyze-bar">
+        <button class="btn btn-primary" id="analyzeBtn" onclick="Analysis.run()" disabled>🔍 Analyze Speech</button>
+        <button class="btn btn-secondary" onclick="Session.save()">💾 Save Draft</button>
+        <button class="btn btn-ghost btn-sm" onclick="Session.reset()">↺ Reset</button>
+        <span class="ana-hint" id="anaHint">Record speech first</span>
+      </div>
+
+      <div id="resultsWrap" style="display:none">
+        <div class="results-section">
+          <div class="overall-banner">
+            <div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px">Overall Score</div>
+              <div class="ov-big" id="ovScore">—</div>
+              <div style="font-size:12px;color:var(--text-muted)">/10.0</div>
+            </div>
+            <div class="ov-div"></div>
+            <div class="ov-meta">
+              <strong id="ovLabel">—</strong>
+              <p id="ovMeta">—</p>
+            </div>
+            <div class="ov-motive" id="ovMotive"></div>
+          </div>
+          <div class="score-grid" id="scoreGrid"></div>
+          <div class="fb-list" id="fbList"></div>
+          <div id="strictFb"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ LESSONS ══════════════════════ -->
+    <section class="page" id="page-lessons">
+      <div class="page-hdr">
+        <h1 class="page-title">Daily Lessons</h1>
+        <p class="page-sub">Structured modules adapted to your weak areas</p>
+      </div>
+      <div id="lessonWeakAlert" style="display:none;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 25%,transparent);border-radius:var(--r);padding:14px 16px;font-size:13.5px;color:var(--warn)"></div>
+      <div class="three-col" id="lessonsGrid">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ══════════════════════ QUIZ (Step 9) ══════════════════════ -->
+    <section class="page" id="page-quiz">
+      <div class="page-hdr">
+        <h1 class="page-title">Quiz &amp; Revision</h1>
+        <p class="page-sub">Grammar, vocabulary, and error-correction drills — includes mistakes from your sessions</p>
+      </div>
+      <div class="quiz-filters" id="quizFilters">
+        <button class="quiz-filter-btn active" onclick="Quiz.setType('all',this)">All</button>
+        <button class="quiz-filter-btn" onclick="Quiz.setType('grammar',this)">Grammar</button>
+        <button class="quiz-filter-btn" onclick="Quiz.setType('vocabulary',this)">Vocabulary</button>
+        <button class="quiz-filter-btn" onclick="Quiz.setType('corrections',this)">Corrections</button>
+        <button class="quiz-filter-btn" onclick="Quiz.setType('ielts',this)">IELTS Tips</button>
+      </div>
+      <div class="quiz-wrap">
+        <div class="quiz-top">
+          <span id="qStepLbl">Question 1 of 10</span>
+          <span id="qScoreLbl">Score: 0</span>
+        </div>
+        <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="qProgFill" style="width:10%"></div></div>
+        <div class="quiz-card">
+          <div class="quiz-type-tag" id="qTypeLbl">GRAMMAR</div>
+          <div class="quiz-q" id="qQuestion">Loading question…</div>
+          <div class="quiz-opts" id="qOpts"></div>
+          <div class="quiz-actions">
+            <button class="btn btn-ghost btn-sm" onclick="Quiz.skip()">Skip</button>
+            <button class="btn btn-primary" onclick="Quiz.check()">Check Answer</button>
+          </div>
+        </div>
+        <div id="qResultBanner" style="display:none" class="quiz-result-banner">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px">Session Score</div>
+            <div class="quiz-score-big" id="qFinalScore">0/0</div>
+          </div>
+          <div style="flex:1">
+            <strong id="qFinalLabel">—</strong>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:3px" id="qFinalMsg">—</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="Quiz.restart()">Try Again 🔄</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ PROGRESS (Step 10) ══════════════════════ -->
+    <section class="page" id="page-progress">
+      <div class="page-hdr">
+        <h1 class="page-title">Progress Dashboard</h1>
+        <p class="page-sub">Full analytics — scores, streaks, speaking hours, stored locally</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-lbl">Total Sessions</div><div class="stat-val" id="pSessions">0</div><div class="stat-delta up">lifetime</div></div>
+        <div class="stat-card"><div class="stat-lbl">Best Score</div><div class="stat-val" id="pBest">—</div><div class="stat-delta up">personal best</div></div>
+        <div class="stat-card"><div class="stat-lbl">Speaking Time</div><div class="stat-val" id="pTime">0m</div><div class="stat-delta up">total</div></div>
+        <div class="stat-card"><div class="stat-lbl">Longest Streak</div><div class="stat-val" id="pStreak">0🔥</div><div class="stat-delta up">days</div></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="card-title" style="margin-bottom:12px">Score History
+          <div class="chart-tabs">
+            <button class="chart-tab active" onclick="Chart.render('week',this)">Week</button>
+            <button class="chart-tab" onclick="Chart.render('month',this)">Month</button>
+            <button class="chart-tab" onclick="Chart.render('all',this)">All</button>
+          </div>
+        </div>
+        <div class="chart-area" id="chartArea"></div>
+        <div class="chart-x-line"></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Skill Trends</div>
+          <div id="progSkills">
+            <div class="skill-row"><div class="skill-hdr"><span>Grammar</span><span class="skill-score" id="ps-grammar">—</span></div><div class="skill-track"><div class="skill-fill" id="pf-grammar" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Vocabulary</span><span class="skill-score" id="ps-vocab">—</span></div><div class="skill-track"><div class="skill-fill" id="pf-vocab" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Fluency</span><span class="skill-score" id="ps-fluency">—</span></div><div class="skill-track"><div class="skill-fill" id="pf-fluency" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Pronunciation</span><span class="skill-score" id="ps-pron">—</span></div><div class="skill-track"><div class="skill-fill" id="pf-pron" style="width:0%"></div></div></div>
+            <div class="skill-row"><div class="skill-hdr"><span>Coherence</span><span class="skill-score" id="ps-coh">—</span></div><div class="skill-track"><div class="skill-fill" id="pf-coh" style="width:0%"></div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Activity Calendar (28 days)</div>
+          <div class="heatmap-grid" id="heatmap"></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;color:var(--text-muted)">
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--surface2);border:1px solid var(--border)"></div> None
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--accent-soft)"></div> Low
+            <div style="width:12px;height:12px;border-radius:2px;background:var(--accent)"></div> Active
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Data Management</div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="DB.exportJSON()">⬇ Export Progress (JSON)</button>
+          <button class="btn btn-secondary btn-sm" onclick="DB.importJSON()">⬆ Import Progress</button>
+          <button class="btn btn-danger btn-sm" onclick="DB.clearAll()">🗑 Clear All Data</button>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:10px">📦 All data is stored locally in your browser using localStorage — nothing is sent to servers. Export regularly as backup.</p>
+        <div style="margin-top:10px;font-size:13px;color:var(--text-muted)" id="dbStats"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ WEAKNESSES (Step 11) ══════════════════════ -->
+    <section class="page" id="page-weaknesses">
+      <div class="page-hdr">
+        <h1 class="page-title">Weakness Detection</h1>
+        <p class="page-sub">AI-detected patterns from all your sessions — updated after every analysis</p>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Current Weak Areas</div>
+          <div id="weakList"><div style="color:var(--text-light);font-size:13px">No data yet — complete a session to see weaknesses.</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recommended Lessons</div>
+          <div id="recLessons"><div style="color:var(--text-light);font-size:13px">Complete a session first.</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Fixed Issues 🎉</div>
+        <div id="fixedList"><div style="color:var(--text-light);font-size:13px">None yet — keep practicing!</div></div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ SETTINGS (Step 12) ══════════════════════ -->
+    <section class="page" id="page-settings">
+      <div class="page-hdr">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-sub">API keys, themes, and session preferences</p>
+      </div>
+
+      <!-- Theme selector -->
+      <div class="card">
+        <div class="card-title">Choose Your Theme</div>
+        <div class="theme-grid">
+          <div class="theme-swatch-card" id="ts-parchment" onclick="UI.setTheme('parchment')">
+            <div class="ts-preview" style="background:linear-gradient(135deg,#d4e8da,#faf8f4);border:1px solid #d0c9b8"></div>
+            <div class="ts-name">☀️ Parchment</div>
+            <div class="ts-desc">Warm cream — best for daytime study sessions</div>
+          </div>
+          <div class="theme-swatch-card" id="ts-midnight" onclick="UI.setTheme('midnight')">
+            <div class="ts-preview" style="background:linear-gradient(135deg,#1a2550,#171b26);border:1px solid #2a3050"></div>
+            <div class="ts-name">🌙 Midnight Scholar</div>
+            <div class="ts-desc">Deep navy — focused night study, easy on eyes</div>
+          </div>
+          <div class="theme-swatch-card" id="ts-forest" onclick="UI.setTheme('forest')">
+            <div class="ts-preview" style="background:linear-gradient(135deg,#0e3020,#112218);border:1px solid #1e4228"></div>
+            <div class="ts-name">🌿 Forest Focus</div>
+            <div class="ts-desc">Rich green — calm, distraction-free concentration</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Keys -->
+      <div class="card" style="max-width:560px">
+        <div class="card-title">API Keys</div>
+        <div class="field"><label>Deepgram API Key</label><input type="password" id="stDG" placeholder="dg_•••"/></div>
+        <div class="field"><label>SpeechSuper App Key</label><input type="password" id="stSS" placeholder="ss_•••"/></div>
+        <div class="field"><label>WordsAPI RapidAPI Key</label><input type="password" id="stWA" placeholder="•••"/></div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="UI.saveKeys()">Save Keys</button>
+          <button class="btn btn-ghost btn-sm" onclick="UI.testAPIs()">Test All APIs</button>
+        </div>
+        <div id="apiStatus" class="api-status-row" style="display:none"></div>
+      </div>
+
+      <!-- Session Prefs -->
+      <div class="card" style="max-width:560px">
+        <div class="card-title">Session Preferences</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:14px;margin-bottom:14px">
+          <div><strong>Strict Teacher Mode</strong><br><span style="font-size:12px;color:var(--text-muted)">Require corrections before next session</span></div>
+          <input type="checkbox" id="prefStrict" style="width:18px;height:18px;accent-color:var(--accent)" checked/>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:14px;margin-bottom:16px">
+          <div><strong>Min Sentences</strong><br><span style="font-size:12px;color:var(--text-muted)">Reject sessions below this count</span></div>
+          <select id="prefMin" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;color:var(--text);font-size:13px">
+            <option>8</option><option value="10" selected>10</option><option>12</option><option>15</option><option>20</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="UI.savePrefs()">Save Preferences</button>
+      </div>
+    </section>
+
+    <!-- ══════════════════════ IPHONE GUIDE (Step 13) ══════════════════════ -->
+    <section class="page" id="page-guide">
+      <div class="page-hdr">
+        <h1 class="page-title">📱 Use Eloquent on iPhone — Free</h1>
+        <p class="page-sub">Turn this web app into a full iPhone app using PWA (Progressive Web App) technology — completely free, no App Store needed</p>
+      </div>
+
+      <div class="info-box">
+        <span style="font-size:20px;flex-shrink:0">ℹ️</span>
+        <div><strong>What is a PWA?</strong> A Progressive Web App lets you install any website to your iPhone home screen. It runs fullscreen like a native app, works offline for some features, and costs nothing. Eloquent is already PWA-ready.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Method 1 — Safari "Add to Home Screen" (Easiest)</div>
+        <div class="guide-step">
+          <div class="guide-num">1</div>
+          <div class="guide-content">
+            <div class="gt">Open Eloquent in Safari on your iPhone</div>
+            <div class="gs">Important: must be Safari, not Chrome or Firefox. Go to this URL in Safari:</div>
+            <div class="guide-code" id="pwaUrl">Loading URL…</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">2</div>
+          <div class="guide-content">
+            <div class="gt">Tap the Share button</div>
+            <div class="gs">At the bottom of Safari, tap the square with an arrow pointing up (⬆) — the Share button.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">3</div>
+          <div class="guide-content">
+            <div class="gt">Select "Add to Home Screen"</div>
+            <div class="gs">Scroll down in the share sheet and tap "Add to Home Screen". Give it a name like "Eloquent" and tap Add.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">4</div>
+          <div class="guide-content">
+            <div class="gt">Launch from Home Screen</div>
+            <div class="gs">Eloquent now appears on your home screen like a real app. It opens fullscreen with no browser UI — just like a native app!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Method 2 — Host on GitHub Pages (Free, Permanent URL)</div>
+        <div class="guide-step">
+          <div class="guide-num">1</div>
+          <div class="guide-content">
+            <div class="gt">Create a free GitHub account</div>
+            <div class="gs">Go to <a href="https://github.com" target="_blank">github.com</a> and sign up. It's completely free.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">2</div>
+          <div class="guide-content">
+            <div class="gt">Create a new repository</div>
+            <div class="gs">Click "New repository", name it <strong>eloquent-trainer</strong>, make it Public, then create it.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">3</div>
+          <div class="guide-content">
+            <div class="gt">Upload the HTML file</div>
+            <div class="gs">Rename the downloaded file to <code>index.html</code>. Upload it to the repo via "Add file → Upload files".</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">4</div>
+          <div class="guide-content">
+            <div class="gt">Enable GitHub Pages</div>
+            <div class="gs">Go to Settings → Pages → Source: "Deploy from branch" → Branch: main → /root → Save. Your URL will be:</div>
+            <div class="guide-code">https://yourusername.github.io/eloquent-trainer</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">5</div>
+          <div class="guide-content">
+            <div class="gt">Add to iPhone home screen</div>
+            <div class="gs">Open that URL in Safari on your iPhone, then follow Method 1 steps 2–4. Your keys and progress data save to the iPhone's localStorage.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Method 3 — Netlify Drop (30-second deploy)</div>
+        <div class="guide-step">
+          <div class="guide-num">1</div>
+          <div class="guide-content">
+            <div class="gt">Go to Netlify Drop</div>
+            <div class="gs">Open <a href="https://app.netlify.com/drop" target="_blank">app.netlify.com/drop</a> — no account needed.</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">2</div>
+          <div class="guide-content">
+            <div class="gt">Drag &amp; drop the file</div>
+            <div class="gs">Rename your file to <code>index.html</code>. Drag it into the Netlify Drop page. It will deploy in under 30 seconds with a free HTTPS URL like:</div>
+            <div class="guide-code">https://random-name-123.netlify.app</div>
+          </div>
+        </div>
+        <div class="guide-step">
+          <div class="guide-num">3</div>
+          <div class="guide-content">
+            <div class="gt">Open in Safari → Add to Home Screen</div>
+            <div class="gs">Copy the Netlify URL, open in Safari on iPhone, then follow Method 1 steps 2–4. Done!</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎤 Microphone on iPhone — Important Notes</div>
+        <div style="font-size:13.5px;color:var(--text-muted);line-height:1.9">
+          <p>• <strong>Safari required</strong> — only Safari on iOS supports <code>getUserMedia</code> (microphone access)</p>
+          <p>• When you first tap 🎙️ Record, Safari will ask "Allow Eloquent to use your microphone" — tap <strong>Allow</strong></p>
+          <p>• If you accidentally denied permission: Go to iPhone <strong>Settings → Safari → Microphone → Allow</strong></p>
+          <p>• The <strong>Deepgram API key</strong> is stored in your iPhone's localStorage — it stays private on your device</p>
+          <p>• <strong>Progress data</strong> is saved locally — export it as JSON backup from the Progress page before clearing Safari cache</p>
+          <p>• For best audio quality, use iPhone's built-in mic or wired earphones in a quiet room</p>
+        </div>
+      </div>
+
+      <div class="info-box" style="background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 25%,transparent)">
+        <span style="font-size:20px;flex-shrink:0">💡</span>
+        <div><strong>Pro Tip:</strong> The fastest free option is <strong>Netlify Drop</strong> (Method 3). Just drag your file and get a shareable HTTPS URL in 30 seconds — no account needed. Then add to iPhone home screen via Safari.</div>
+      </div>
+    </section>
+
+  </main><!-- end .main -->
+</div><!-- end .app-body -->
+
+<div id="toast"></div>
+<input type="file" id="importFileInput" accept=".json" style="display:none" onchange="DB.processImport(event)"/>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT MODULES
+════════════════════════════════════════════════════ -->
+<script>
+"use strict";
+/* ───────────────────────────────────────────────────────────
+   DB — localStorage "database" with structured daily progress
+─────────────────────────────────────────────────────────── */
+const DB = {
+  K:{
+    SESSIONS:'eq_sessions',DAILY:'eq_daily',STREAK:'eq_streak',
+    WEAKNESSES:'eq_weaknesses',PREFS:'eq_prefs',WORDS:'eq_totalwords',
+    QUIZ:'eq_quiz_scores',VERSION:'eq_v',
+  },
+  VERSION:'2.0',
+  init(){
+    if(!localStorage.getItem(this.K.VERSION)){
+      localStorage.setItem(this.K.VERSION,this.VERSION);
+      localStorage.setItem(this.K.STREAK,JSON.stringify({current:0,longest:0,lastDate:''}));
+    }
+  },
+  getSessions(){return JSON.parse(localStorage.getItem(this.K.SESSIONS)||'[]')},
+  getPrefs(){return JSON.parse(localStorage.getItem(this.K.PREFS)||'{"strict":true,"minSent":10}')},
+  getStreak(){return JSON.parse(localStorage.getItem(this.K.STREAK)||'{"current":0,"longest":0,"lastDate":""}')},
+  getWeaknesses(){return JSON.parse(localStorage.getItem(this.K.WEAKNESSES)||'{}')},
+  getDailyLog(){return JSON.parse(localStorage.getItem(this.K.DAILY)||'{}')},
+  getQuizScores(){return JSON.parse(localStorage.getItem(this.K.QUIZ)||'[]')},
+
+  saveSession(result){
+    // Sessions list
+    const sessions=this.getSessions();
+    const record={
+      id:Date.now(),
+      ts:result.timestamp,
+      overall:result.overall,
+      scores:result.scores,
+      sentences:result.sentences,
+      wpm:result.wpm,
+      duration:result.duration,
+      words:result.text?result.text.split(/\s+/).filter(Boolean).length:0,
+      topicCat:document.getElementById('topicCat')?.textContent||'',
+      topicText:document.getElementById('topicPrompt')?.textContent?.slice(0,80)||'',
+      corrections:result.grammar?.corrections?.map(c=>c.wrong)||[],
+      fillerCount:result.coherence?.fillerCount||0,
+      grammarErrors:result.grammar?.errorCount||0,
+      weakAreas:this._detectWeakAreas(result.scores),
+    };
+    sessions.unshift(record);
+    localStorage.setItem(this.K.SESSIONS,JSON.stringify(sessions.slice(0,100)));
+
+    // Total words
+    const tw=parseInt(localStorage.getItem(this.K.WORDS)||'0')+record.words;
+    localStorage.setItem(this.K.WORDS,String(tw));
+
+    // Daily log — keyed by YYYY-MM-DD
+    const today=new Date().toISOString().slice(0,10);
+    const daily=this.getDailyLog();
+    if(!daily[today]) daily[today]={sessions:0,totalScore:0,totalWords:0,topScores:[]};
+    daily[today].sessions++;
+    daily[today].totalScore+=result.overall;
+    daily[today].totalWords+=record.words;
+    daily[today].topScores.push(result.overall);
+    localStorage.setItem(this.K.DAILY,JSON.stringify(daily));
+
+    // Streak update
+    this._updateStreak(today);
+
+    // Weakness tracking
+    this._updateWeaknesses(record);
+
+    return record;
+  },
+
+  _detectWeakAreas(scores){
+    const areas=[];
+    if(scores.grammar<6.5) areas.push('grammar');
+    if(scores.vocabulary<6.5) areas.push('vocabulary');
+    if(scores.fluency<6.5) areas.push('fluency');
+    if(scores.pronunciation<6.5) areas.push('pronunciation');
+    if(scores.coherence<6.5) areas.push('coherence');
+    return areas;
+  },
+
+  _updateStreak(todayStr){
+    const s=this.getStreak();
+    const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if(s.lastDate===todayStr){
+      // already counted today
+    } else if(s.lastDate===yesterday){
+      s.current+=1;
+    } else if(s.lastDate==='' || s.lastDate<yesterday){
+      s.current=1;
+    }
+    s.longest=Math.max(s.longest,s.current);
+    s.lastDate=todayStr;
+    localStorage.setItem(this.K.STREAK,JSON.stringify(s));
+    document.getElementById('streakNum').textContent=s.current;
+  },
+
+  _updateWeaknesses(record){
+    const w=this.getWeaknesses();
+    record.weakAreas.forEach(area=>{
+      if(!w[area]) w[area]={count:0,sessions:0,firstSeen:record.ts,lastSeen:record.ts};
+      w[area].count++;
+      w[area].sessions++;
+      w[area].lastSeen=record.ts;
+    });
+    // Track filler words
+    if(record.fillerCount>5){
+      if(!w.fillers) w.fillers={count:0,sessions:0,firstSeen:record.ts,lastSeen:record.ts};
+      w.fillers.count+=record.fillerCount;
+      w.fillers.sessions++;
+      w.fillers.lastSeen=record.ts;
+    }
+    localStorage.setItem(this.K.WEAKNESSES,JSON.stringify(w));
+    // Show badge on sidebar
+    const badge=document.getElementById('weakBadge');
+    if(badge) badge.style.display=Object.keys(w).length>0?'':'none';
+  },
+
+  getAvgScores(){
+    const sessions=this.getSessions().slice(0,20);
+    if(!sessions.length) return null;
+    const keys=['grammar','vocabulary','fluency','pronunciation','coherence'];
+    const avgs={};
+    keys.forEach(k=>{
+      const vals=sessions.map(s=>s.scores?.[k]).filter(v=>v!=null);
+      avgs[k]=vals.length?Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10:0;
+    });
+    avgs.overall=Math.round((sessions.reduce((a,s)=>a+(s.overall||0),0)/sessions.length)*10)/10;
+    return avgs;
+  },
+
+  saveQuizScore(score,total,type){
+    const q=this.getQuizScores();
+    q.unshift({ts:Date.now(),score,total,type,pct:Math.round(score/total*100)});
+    localStorage.setItem(this.K.QUIZ,JSON.stringify(q.slice(0,50)));
+  },
+
+  exportJSON(){
+    const data={
+      version:this.VERSION,
+      exportDate:new Date().toISOString(),
+      sessions:this.getSessions(),
+      daily:this.getDailyLog(),
+      streak:this.getStreak(),
+      weaknesses:this.getWeaknesses(),
+      quizScores:this.getQuizScores(),
+      totalWords:parseInt(localStorage.getItem(this.K.WORDS)||'0'),
+    };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`eloquent-progress-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();URL.revokeObjectURL(url);
+    UI.toast('Progress exported!','ok');
+  },
+
+  importJSON(){document.getElementById('importFileInput').click()},
+
+  processImport(e){
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(!data.sessions) throw new Error('Invalid file');
+        if(data.sessions) localStorage.setItem(this.K.SESSIONS,JSON.stringify(data.sessions));
+        if(data.daily) localStorage.setItem(this.K.DAILY,JSON.stringify(data.daily));
+        if(data.streak) localStorage.setItem(this.K.STREAK,JSON.stringify(data.streak));
+        if(data.weaknesses) localStorage.setItem(this.K.WEAKNESSES,JSON.stringify(data.weaknesses));
+        if(data.totalWords) localStorage.setItem(this.K.WORDS,String(data.totalWords));
+        UI.toast(`Imported ${data.sessions.length} sessions!`,'ok');
+        UI.refreshAll();
+      } catch(err){UI.toast('Import failed: invalid file','err')}
+    };
+    reader.readAsText(file);
+    e.target.value='';
+  },
+
+  clearAll(){
+    if(!confirm('Delete ALL your progress data? This cannot be undone.')) return;
+    Object.values(this.K).forEach(k=>localStorage.removeItem(k));
+    this.init();
+    UI.toast('All data cleared','wrn');
+    UI.refreshAll();
+  },
+
+  getDBStats(){
+    const s=this.getSessions();
+    const tw=parseInt(localStorage.getItem(this.K.WORDS)||'0');
+    const daily=Object.keys(this.getDailyLog()).length;
+    return `${s.length} sessions · ${tw.toLocaleString()} words spoken · ${daily} active days · ~${Math.round(JSON.stringify(localStorage).length/1024)}KB stored`;
+  },
+};
+
+/* ───────────────────────────────────────────────────────────
+   STEP 2 — TOPIC GENERATOR (30+ topics, 6 categories)
+─────────────────────────────────────────────────────────── */
+const TopicGen=(()=>{
+  const CATS=[
+    {id:'debate',lbl:'💬 Debate',diff:'B2',dc:'diff-b2',topics:[
+      {p:'Social media has done more harm than good to modern society. Agree or disagree? Justify with specific examples.',h:['Give 2–3 examples','Consider both sides','State your position clearly']},
+      {p:'Universities should be free for all students regardless of income. Argue for or against.',h:['Address economic impact','Equality vs. quality','Reference real policies']},
+      {p:'Remote work is more productive than office work for most employees. Discuss both views.',h:['Use: however, on the other hand','Mention productivity research','End with a recommendation']},
+      {p:'Artificial intelligence will eventually replace most human jobs. To what extent do you agree?',h:['Define timeframe','Address both losses and new roles','Use hedging: arguably, it seems']},
+      {p:'Children under 13 should be completely banned from social media. Argue your position.',h:['Cite mental health research','Parental responsibility','Precise academic vocabulary']},
+      {p:'Space exploration is a waste of money when Earth has so many unsolved problems. Agree?',h:['Scientific benefits vs. cost','Use discourse markers','At least 2 arguments per side']},
+    ]},
+    {id:'ielts',lbl:'🎯 IELTS',diff:'B2–C1',dc:'diff-c1',topics:[
+      {p:'Describe a time when you made a difficult decision. What happened and how did it affect you?',h:['Cover: when/what/why/outcome','Use past tense consistently','Aim for 2 minutes of speech']},
+      {p:'Describe a skill you would like to learn. Why and how would you go about it?',h:['Use future structures: I would/plan to','Be specific about the skill','Give concrete reasons']},
+      {p:'Describe a memorable journey or trip. Where, who with, and why was it memorable?',h:['Set scene vividly','Use narrative past tenses','Include sensory details']},
+      {p:'Talk about a person who has had a significant influence on your life. Who are they, and what was their impact?',h:['Use relative clauses','Organize chronologically','Specific anecdotes only']},
+      {p:'Describe a time you faced a challenge and overcame it. What did you learn?',h:['Build tension then resolution','Use contrast: although/despite','End with a clear lesson']},
+    ]},
+    {id:'daily',lbl:'🌅 Daily Life',diff:'B1',dc:'diff-b1',topics:[
+      {p:'Describe your ideal morning routine and explain why that routine works well for you.',h:['Use: first, then, finally','Explain reasoning','Be specific and personal']},
+      {p:'Talk about your favourite meal. How is it prepared and why does it hold special meaning?',h:['Describe taste, texture, smell','Use procedural language','Connect to memory/culture']},
+      {p:'How do you manage stress in your daily life? What strategies have you found most effective?',h:['Use present perfect for experience','Give 3+ specific techniques','Explain why they work']},
+      {p:'Describe the neighbourhood where you live. What do you like and dislike about it?',h:['Use spatial language','Balance positives and negatives','Be descriptive but concise']},
+    ]},
+    {id:'story',lbl:'📖 Story',diff:'B1–B2',dc:'diff-b2',topics:[
+      {p:'Begin a story that starts with: "When I opened the old envelope, I never expected what was inside…"',h:['Use vivid descriptive language','Build tension gradually','Include dialogue naturally']},
+      {p:'Tell the story of the most interesting person you have ever met. How did you meet?',h:['Open with a strong scene','Use indirect speech','Show, don\'t tell']},
+      {p:'Describe a situation where something went completely wrong but turned out better than expected.',h:['Use contrast markers','Keep chronological order','End with what you learned']},
+    ]},
+    {id:'opinion',lbl:'💡 Opinion',diff:'B2',dc:'diff-b2',topics:[
+      {p:'What is the greatest challenge facing young people today? Explain your reasoning with examples.',h:['State position in sentence 1','Support with 3 distinct reasons','Acknowledge counter-views']},
+      {p:'Should governments have the right to censor internet content? Give a structured argument.',h:['Address free speech','Consider extremes','Use formal register throughout']},
+      {p:'Is happiness a choice or a result of circumstances? Develop a philosophical argument.',h:['Define happiness early','Reference psychology if known','Avoid oversimplification']},
+    ]},
+    {id:'news',lbl:'🌍 Global Issues',diff:'C1',dc:'diff-c1',topics:[
+      {p:'Discuss the causes and consequences of rising global temperatures. What responsibilities do individuals have?',h:['Use passive for causes','Distinguish individual vs. systemic','Precise environmental vocabulary']},
+      {p:'How should governments balance economic growth with environmental protection?',h:['Explore "green economy"','Use economic vocabulary','Acknowledge international inequality']},
+      {p:'Discuss the impact of automation on employment. Are the fears justified?',h:['Reference Industrial Revolution parallels','Displacement vs. transformation','Effective hedging language']},
+    ]},
+  ];
+  let catIdx=0,topicIdx=0,count=0;
+
+  function _display(cat,topic){
+    document.getElementById('topicCat').textContent=cat.lbl;
+    document.getElementById('topicDiff').textContent=cat.diff;
+    document.getElementById('topicDiff').className=`diff-tag ${cat.dc}`;
+    document.getElementById('topicPrompt').textContent=topic.p;
+    const hEl=document.getElementById('topicHints');
+    hEl.innerHTML=topic.h.map(h=>`<div class="t-hint">💡 ${_esc(h)}</div>`).join('');
+    count++;
+    document.getElementById('topicCtr').textContent=`Topic #${count}`;
+    const minMap={'B1':10,'B1–B2':10,'B2':12,'B2–C1':14,'C1':14};
+    const min=minMap[cat.diff]||10;
+    document.getElementById('sentMin').textContent=min;
+    document.getElementById('sentTargetLbl').textContent=`Target: ${min}`;
+    Session.minSent=min;
+    Session.reset();
+  }
+
+  function next(){
+    const cat=CATS[catIdx];
+    let ni;
+    do{ni=Math.floor(Math.random()*cat.topics.length)}while(cat.topics.length>1&&ni===topicIdx);
+    topicIdx=ni;
+    _display(cat,cat.topics[ni]);
+    UI.toast('New topic loaded','ok');
+  }
+
+  function nextCat(){
+    catIdx=(catIdx+1)%CATS.length;
+    topicIdx=0;
+    _display(CATS[catIdx],CATS[catIdx].topics[0]);
+    UI.toast(`Category: ${CATS[catIdx].lbl}`,'ok');
+  }
+
+  function init(){_display(CATS[0],CATS[0].topics[Math.floor(Math.random()*CATS[0].topics.length)])}
+  return{next,nextCat,init};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 3 — RECORDER (MediaRecorder API)
+─────────────────────────────────────────────────────────── */
+const Recorder=(()=>{
+  let mr=null,chunks=[],stream=null,interval=null,secs=0,active=false,blob=null;
+
+  async function toggle(){active?stop():await start()}
+
+  async function start(){
+    try{stream=await navigator.mediaDevices.getUserMedia({audio:true,video:false})}
+    catch(e){UI.toast('Mic denied — allow in browser/iPhone settings','err');return}
+    chunks=[];
+    const mime=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':
+      MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')?'audio/ogg;codecs=opus':'audio/webm';
+    mr=new MediaRecorder(stream,{mimeType:mime});
+    mr.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data)};
+    mr.onstop=()=>{blob=new Blob(chunks,{type:mime});_onStop(blob)};
+    mr.start(250);active=true;secs=0;
+    _uiRecording(true);
+    interval=setInterval(()=>{
+      secs++;
+      const m=String(Math.floor(secs/60)).padStart(2,'0'),s=String(secs%60).padStart(2,'0');
+      document.getElementById('recTimer').textContent=`${m}:${s}`;
+      document.getElementById('timerDisplay').textContent=`⏱️ ${m}:${s}`;
+      const wc=Session.raw.split(/\s+/).filter(Boolean).length;
+      if(secs>4){const wpm=Math.round((wc/secs)*60);document.getElementById('wpmDisplay').textContent=`🗣️ ${wpm} WPM`}
+    },1000);
+  }
+
+  function stop(){
+    if(!mr||mr.state==='inactive')return;
+    mr.stop();stream.getTracks().forEach(t=>t.stop());
+    clearInterval(interval);active=false;
+    _uiProcessing();
+  }
+
+  async function _onStop(b){
+    const t=await DeepgramSTT.transcribe(b);
+    if(t) Session.append(t);
+    _uiIdle();
+  }
+
+  function _uiRecording(on){
+    const z=document.getElementById('recordZone'),btn=document.getElementById('recBtn');
+    if(on){z.classList.add('recording');btn.classList.add('on');btn.textContent='⏹';document.getElementById('recLabel').textContent='Recording… tap to stop'}
+    else{z.classList.remove('recording');btn.classList.remove('on');btn.textContent='🎙️'}
+  }
+  function _uiProcessing(){
+    const z=document.getElementById('recordZone'),btn=document.getElementById('recBtn');
+    z.classList.remove('recording');z.classList.add('processing');
+    btn.disabled=true;document.getElementById('recLabel').textContent='Transcribing…';
+  }
+  function _uiIdle(){
+    const z=document.getElementById('recordZone'),btn=document.getElementById('recBtn');
+    z.classList.remove('processing');btn.disabled=false;
+    document.getElementById('recLabel').textContent='Tap to record more, or Analyze';
+  }
+
+  return{toggle,stop,getBlob:()=>blob,getSecs:()=>secs,isActive:()=>active};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 4 — DEEPGRAM STT
+─────────────────────────────────────────────────────────── */
+const DeepgramSTT=(()=>{
+  const URL_BASE='https://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&filler_words=true';
+  const DEMOS=[
+    "I believe social media has fundamentally changed the way we communicate. On one hand, it allows people to connect across geographical boundaries and share informations instantly. However, I am agree that it also spreads misinformation very fast. Research suggests that people are more better informed about global events than ever before, yet the quality of that information is often questionable. We need stronger regulations to address these very big concerns.",
+    "When I think about technology and its impact on society, I feel um genuinely conflicted. The innovations of the past decade have been nothing short of remarkable. Artificial intelligence, renewable energy, and medical breakthroughs have all emerged from technological progress. Nevertheless, there are significant concerns about privacy, job displacement, and the digital divide. Personally I think the benefits outweigh the risks if we approach development responsibly and ethically. In conclusion, a balanced approach is essential.",
+    "Climate change represents perhaps the most pressing challenge of our time. The scientific consensus is clear that human activities are responsible for rising global temperatures. We see the consequences in melting ice caps, more frequent extreme weather events, and rising sea levels. Governments must take decisive action by investing in renewable energy and updating climate policies. As individuals, we also bear responsibility to reduce our carbon footprint. In summary, collective action at every level is urgently needed.",
+  ];
+  let dIdx=0;
+  async function transcribe(blob){
+    const key=localStorage.getItem('dg_key');
+    if(!key){await _wait(1600);UI.toast('Demo transcript — add Deepgram key in Settings','wrn');return DEMOS[dIdx++%DEMOS.length]}
+    try{
+      const res=await _retry(()=>fetch(URL_BASE,{method:'POST',headers:{'Authorization':`Token ${key}`,'Content-Type':blob.type||'audio/webm'},body:blob}));
+      if(!res.ok)throw new Error(`Deepgram ${res.status}`);
+      const data=await res.json();
+      return data?.results?.channels?.[0]?.alternatives?.[0]?.transcript||'';
+    }catch(e){UI.toast(`STT error: ${e.message.slice(0,50)}`,'err');return null}
+  }
+  async function _retry(fn,n=3){
+    for(let i=0;i<n;i++){try{const r=await fn();if(r.status===429){await _wait(2000*(i+1));continue}return r}catch(e){if(i===n-1)throw e;await _wait(1000*(i+1))}}
+  }
+  function _wait(ms){return new Promise(r=>setTimeout(r,ms))}
+  return{transcribe};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 5 — LANGUAGETOOL GRAMMAR ENGINE
+─────────────────────────────────────────────────────────── */
+const Grammar=(()=>{
+  const SEV={typographical:.3,misspelling:.5,grammar:1,style:.2,other:.4};
+  const DEMO=[
+    {message:'"am agree" is incorrect. Use "agree" directly.',replacements:['agree'],offset:20,length:8,rule:{issueType:'grammar'}},
+    {message:'"informations" is uncountable — use "information".',replacements:['information'],offset:70,length:12,rule:{issueType:'grammar'}},
+    {message:'"more better" is a double comparative. Use "better" or "much better".',replacements:['better','much better'],offset:130,length:11,rule:{issueType:'grammar'}},
+  ];
+  async function analyze(text){
+    if(!text||text.length<10) return{score:10,errorCount:0,corrections:[],highlights:_esc(text)};
+    try{
+      const res=await fetch('https://api.languagetool.org/v2/check',{
+        method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:new URLSearchParams({language:'en-US',text}).toString(),
+      });
+      if(!res.ok) throw new Error('LT '+res.status);
+      const d=await res.json();
+      return _process(d.matches||[],text,false);
+    }catch(e){
+      console.warn('[Grammar]',e);
+      return _process(DEMO,text,true);
+    }
+  }
+  function _process(matches,text,demo){
+    let penalty=0;
+    const corrections=[];
+    const ranges=[];
+    for(const m of matches){
+      const type=(m.rule?.issueType||'other').toLowerCase();
+      penalty+=SEV[type]||.5;
+      const reps=(m.replacements||[]).slice(0,3).map(r=>r.value||r).filter(Boolean);
+      corrections.push({wrong:text.slice(m.offset,m.offset+m.length),suggestions:reps,message:m.message||'',offset:m.offset,length:m.length});
+      ranges.push({s:m.offset,e:m.offset+m.length});
+    }
+    const score=Math.max(1,Math.min(10,Math.round((10-penalty)*10)/10));
+    const highlights=_buildHL(text,ranges);
+    return{score,errorCount:matches.length,corrections,highlights,demo};
+  }
+  function _buildHL(text,ranges){
+    const s=[...ranges].sort((a,b)=>a.s-b.s);
+    let r='',cur=0;
+    for(const rng of s){
+      if(rng.s<cur) continue;
+      r+=_esc(text.slice(cur,rng.s));
+      r+=`<mark class="err" title="Grammar issue">${_esc(text.slice(rng.s,rng.e))}</mark>`;
+      cur=rng.e;
+    }
+    return r+_esc(text.slice(cur));
+  }
+  return{analyze};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 6 — WORDSAPI VOCABULARY
+─────────────────────────────────────────────────────────── */
+const Vocab=(()=>{
+  const BASIC=new Set(['good','bad','big','small','nice','very','really','get','make','thing','people','like','use','know','go','say','see','think','come','want','look','take','give','new','old','hard','fast','slow','easy','happy','sad','angry','afraid','busy','beautiful','ugly','strange','difficult','simple','break','start','stop','help','change','try','keep','show','important','problem','place','work','need','feel','move','great','high','low','long','different','possible','few','large','young','early','other']);
+  const DEMO_SYNS={bad:['detrimental','adverse','harmful'],good:['beneficial','advantageous','favorable'],big:['substantial','considerable','significant'],very:['exceedingly','remarkably','considerably'],important:['crucial','pivotal','essential'],difficult:['challenging','demanding','formidable'],change:['transform','alter','modify'],show:['demonstrate','illustrate','reveal'],help:['facilitate','assist','support'],start:['initiate','commence','launch'],think:['contend','argue','maintain'],use:['employ','utilize','leverage'],need:['require','necessitate','demand'],happy:['content','gratified','pleased'],sad:['melancholy','disheartened','dejected'],new:['novel','innovative','contemporary'],fast:['expeditious','swift','rapid'],easy:['straightforward','effortless','uncomplicated']};
+  const cache={};
+  async function analyze(text){
+    const words=text.toLowerCase().match(/\b[a-z]{3,}\b/g)||[];
+    const freq={};words.forEach(w=>{freq[w]=(freq[w]||0)+1});
+    const unique=Object.keys(freq).length;
+    const total=words.length;
+    const uRatio=total>0?unique/total:0;
+    const stops=new Set(['because','however','therefore','although','between','through','during','against','without','should','would','could','these','those','being','having','making','taking','saying','people','things','years','after','before']);
+    const advanced=Object.keys(freq).filter(w=>w.length>=7&&!BASIC.has(w)&&!stops.has(w));
+    const basicFound=Object.entries(freq).filter(([w])=>BASIC.has(w)).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([w])=>w);
+    const suggestions=[];
+    for(const word of basicFound){const s=await _syns(word);if(s.length) suggestions.push({word,synonyms:s.slice(0,4)})}
+    const uScore=Math.min(10,Math.max(1,uRatio*20));
+    const bonus=Math.min(2,advanced.length*.15);
+    const pen=Math.min(3,basicFound.length*.3);
+    const score=Math.max(1,Math.min(10,Math.round((uScore+bonus-pen)*10)/10));
+    return{score,suggestions,uniqueRatio:Math.round(uRatio*100),uniqueWords:unique,totalWords:total,advancedCount:advanced.length,advancedWords:advanced.slice(0,8),basicFound};
+  }
+  async function _syns(word){
+    if(cache[word]) return cache[word];
+    const key=localStorage.getItem('wa_key');
+    if(!key){cache[word]=DEMO_SYNS[word]||[];return cache[word]}
+    try{
+      const r=await fetch(`https://wordsapiv1.p.rapidapi.com/words/${encodeURIComponent(word)}/synonyms`,{headers:{'X-RapidAPI-Key':key,'X-RapidAPI-Host':'wordsapiv1.p.rapidapi.com'}});
+      if(r.status===429){UI.toast('WordsAPI limit — using cached','wrn');return DEMO_SYNS[word]||[]}
+      if(!r.ok) throw new Error('WordsAPI '+r.status);
+      const d=await r.json();cache[word]=(d.synonyms||[]).filter(s=>s.length>3);return cache[word];
+    }catch(e){return DEMO_SYNS[word]||[]}
+  }
+  return{analyze};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 7 — SPEECHSUPER PRONUNCIATION & FLUENCY
+─────────────────────────────────────────────────────────── */
+const Pronunciation=(()=>{
+  const FILLERS=/\b(um|uh|er|uhh|umm|like,|you know|basically|literally|sort of|kind of)\b/gi;
+  const PHONEMES={'/θ/':/\b(the|this|that|these|those|think|thought|three|through|thirty)\b/gi,'/ð/':/\b(though|although|other|either|weather|together|mother|father|brother)\b/gi,'/æ/':/\b(have|had|back|last|half|class|path|after|laugh|past)\b/gi};
+
+  async function analyze(blob,refText){
+    const key=localStorage.getItem('ss_key');
+    if(!key||!blob) return _estimate(refText);
+    try{
+      const b64=await _toB64(blob);
+      const r=await fetch('https://api.speechsuper.com/coren/eval.do',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({appKey:key,request:{coreType:'sent.eval',refText:refText||'',audioType:'wav',audioSampleRate:16000,audioEncodeType:'base64',userId:'eloquent'},audio:b64.split(',')[1]}),
+      });
+      if(!r.ok) throw new Error('SS '+r.status);
+      const d=await r.json();
+      if(d.status!=='ok'&&d.code!==0) throw new Error(d.message||'SS error');
+      const res=d.result||{};
+      return{pronScore:Math.round(Math.min(10,(res.pronunciationScore||70)/10)*10)/10,fluScore:Math.round(Math.min(10,(res.fluencyScore||68)/10)*10)/10,wpm:res.speechRate||110,fillerCount:0,phonemeTips:[],source:'speechsuper'};
+    }catch(e){console.warn('[SpeechSuper]',e);return _estimate(refText)}
+  }
+
+  function _estimate(text){
+    if(!text) return{pronScore:6.5,fluScore:6.5,wpm:110,fillerCount:0,phonemeTips:[],source:'est'};
+    const words=text.split(/\s+/).filter(Boolean);
+    const fillers=(text.match(FILLERS)||[]).length;
+    const dur=Recorder.getSecs();
+    const wpm=dur>3?Math.round((words.length/dur)*60):110;
+    let flu=7.0-fillers*.25;
+    if(wpm<80)flu-=1.5;else if(wpm<100)flu-=.8;else if(wpm>=120&&wpm<=160)flu+=.5;
+    flu=Math.max(1,Math.min(10,flu));
+    const pron=Math.max(1,Math.min(10,6.5+Math.min(1.5,words.filter(w=>w.length>8).length*.05)));
+    const phonemeTips=[];
+    for(const[ph,re] of Object.entries(PHONEMES)){const f=text.match(re);if(f)phonemeTips.push({ph,words:[...new Set(f)].slice(0,3)})}
+    return{pronScore:Math.round(pron*10)/10,fluScore:Math.round(flu*10)/10,wpm,fillerCount:fillers,phonemeTips,source:'est'};
+  }
+  function _toB64(b){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)})}
+  return{analyze};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 8 — SCORING & COHERENCE ENGINE
+─────────────────────────────────────────────────────────── */
+const Scoring=(()=>{
+  const DM={contrast:/\b(however|nevertheless|on the other hand|in contrast|whereas|although|despite|even though|yet)\b/gi,addition:/\b(furthermore|moreover|in addition|additionally|besides|what's more)\b/gi,cause:/\b(because|therefore|consequently|as a result|thus|hence|since|owing to)\b/gi,example:/\b(for example|for instance|such as|to illustrate|specifically|in particular)\b/gi,conclusion:/\b(in conclusion|to summarize|overall|to sum up|ultimately|in short|all in all)\b/gi,opinion:/\b(I believe|I think|I argue|in my opinion|from my perspective|I would argue|personally)\b/gi,sequence:/\b(firstly|secondly|finally|to begin|first of all|next|then|subsequently)\b/gi};
+  const FILLERS=/\b(um|uh|er|uhh|umm|like,|you know|basically|literally)\b/gi;
+
+  function coherence(text,sents){
+    let dm=0;for(const[,re] of Object.entries(DM)){if(re.test(text))dm++}
+    const lens=sents.map(s=>s.trim().split(/\s+/).length);
+    const avg=lens.reduce((a,b)=>a+b,0)/Math.max(1,lens.length);
+    const variety=lens.reduce((a,b)=>a+Math.abs(b-avg),0)/Math.max(1,lens.length);
+    const hasIntro=/\b(to begin|firstly|I believe|in my opinion|I think that)\b/i.test(text.slice(0,200));
+    const hasConcl=/\b(in conclusion|to summarize|overall|in short|ultimately)\b/i.test(text.slice(-200));
+    const fillers=(text.match(FILLERS)||[]).length;
+    const fillerWrds=text.match(FILLERS)||[];
+    const reps=_reps(text);
+    let score=4+dm*.5+Math.min(2,variety*.15)+(hasIntro?1:0)+(hasConcl?1:0)-Math.min(1.5,fillers*.3)-Math.min(1,reps.length*.25)+Math.min(2,sents.length*.1);
+    return{score:Math.max(1,Math.min(10,Math.round(score*1.2*10)/10)),dm,fillerCount:fillers,fillerWords:fillerWrds,reps,hasIntro,hasConcl};
+  }
+
+  function _reps(text){
+    const ws=text.toLowerCase().match(/\b[a-z]{4,}\b/g)||[];
+    const stops=new Set(['that','this','with','from','they','have','been','were','their','there','which','what','when','will','also','very','more','most','some','many','about','into','than','then','such','just','does','your','after','before','should','would','could','these','those','being','having','making','going','taking','people','things']);
+    const f={};ws.forEach(w=>{if(!stops.has(w))f[w]=(f[w]||0)+1});
+    return Object.entries(f).filter(([,c])=>c>=4).map(([w,c])=>({word:w,count:c}));
+  }
+
+  function sents(text){return text.split(/[.!?]+/).filter(s=>s.trim().split(/\s+/).length>=3)}
+
+  async function evaluate({text,blob,duration}){
+    if(!text||text.trim().length<20) return null;
+    const sentences=sents(text);
+    const[g,v]=await Promise.all([Grammar.analyze(text),Vocab.analyze(text)]);
+    const p=await Pronunciation.analyze(blob,text);
+    const c=coherence(text,sentences);
+    const scores={grammar:g.score,vocabulary:v.score,fluency:p.fluScore,pronunciation:p.pronScore,coherence:c.score};
+    const W={grammar:.25,vocabulary:.20,fluency:.20,pronunciation:.20,coherence:.15};
+    const overall=Math.round(Object.entries(W).reduce((s,[k,w])=>s+scores[k]*w,0)*10)/10;
+    const strictV=[];
+    const prefs=DB.getPrefs();
+    if(prefs.strict){
+      if(sentences.length<Session.minSent) strictV.push(`Only ${sentences.length} sentences (need ${Session.minSent})`);
+      if(c.fillerCount>8) strictV.push(`${c.fillerCount} filler words (max 8)`);
+      if(c.reps.length>3) strictV.push(`"${c.reps.slice(0,2).map(r=>r.word).join('", "')}" overused`);
+    }
+    const result={overall,scores,grammar:g,vocabulary:v,pronunciation:p,coherence:c,sentences:sentences.length,duration,wpm:p.wpm,text,strictViolations:strictV,motivate:_motivate(overall,scores),timestamp:Date.now()};
+    DB.saveSession(result);
+    return result;
+  }
+
+  function _motivate(ov,sc){
+    const weak=Object.entries(sc).sort((a,b)=>a[1]-b[1])[0];
+    if(ov>=9) return'Outstanding — Band 8+ IELTS equivalent! 🏆';
+    if(ov>=8) return`Excellent work! 🌟 Your ${weak[0]} is still the area to push on.`;
+    if(ov>=7) return`Great session! 💪 ${_cap(weak[0])} needs focus next time.`;
+    if(ov>=6) return`Good effort! 📈 Prioritize ${_cap(weak[0])} in your next session.`;
+    return`Keep going! 💡 Focus on ${_cap(weak[0])} — consistency beats talent.`;
+  }
+  function _cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+  return{evaluate,sents};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   SESSION STATE
+─────────────────────────────────────────────────────────── */
+const Session={
+  raw:'',minSent:10,
+  append(t){
+    if(!t) return;
+    this.raw+=(this.raw?' ':'')+t;
+    this._updateTx();this._updateCounts();
+    document.getElementById('analyzeBtn').disabled=false;
+    document.getElementById('anaHint').textContent='Ready to analyze';
+  },
+  _updateTx(){
+    const b=document.getElementById('txBody');
+    if(!this.raw){b.innerHTML='<span class="tx-ph">Your speech will appear here…</span>';return}
+    const esc=this.raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    b.innerHTML=esc.replace(/\b(um|uh|er|uhh|umm)\b/gi,m=>`<mark class="filler" title="Filler word">${m}</mark>`);
+    const wc=this.raw.split(/\s+/).filter(Boolean).length;
+    document.getElementById('wordCountBadge').textContent=`${wc} words`;
+  },
+  _updateCounts(){
+    const sc=Scoring.sents(this.raw).length,min=this.minSent;
+    document.getElementById('sentCount').textContent=sc;
+    const pct=Math.min(100,(sc/20)*100);
+    document.getElementById('sentFill').style.width=pct+'%';
+    document.getElementById('sentFill').className='sent-fill'+(sc>20?' over':'');
+    document.getElementById('anaHint').textContent=sc<min?`Need ${min-sc} more sentence${min-sc!==1?'s':''}`:`${sc} sentences ✓`;
+  },
+  clear(){this.raw='';this._updateTx();this._updateCounts();document.getElementById('wordCountBadge').textContent='0 words';document.getElementById('analyzeBtn').disabled=true},
+  save(){if(!this.raw){UI.toast('Nothing to save','wrn');return}const d=JSON.parse(localStorage.getItem('eq_drafts')||'[]');d.unshift({t:this.raw,ts:Date.now()});localStorage.setItem('eq_drafts',JSON.stringify(d.slice(0,10)));UI.toast('Draft saved!','ok')},
+  reset(){
+    this.raw='';this._updateTx();this._updateCounts();
+    document.getElementById('wpmDisplay').textContent='🗣️ — WPM';
+    document.getElementById('timerDisplay').textContent='⏱️ 00:00';
+    document.getElementById('recTimer').textContent='00:00';
+    document.getElementById('resultsWrap').style.display='none';
+    document.getElementById('analyzeBtn').disabled=true;
+    document.getElementById('analyzeBtn').innerHTML='🔍 Analyze Speech';
+    document.getElementById('anaHint').textContent='Record speech first';
+    document.getElementById('wordCountBadge').textContent='0 words';
+  },
+};
+
+/* ───────────────────────────────────────────────────────────
+   ANALYSIS ORCHESTRATOR
+─────────────────────────────────────────────────────────── */
+const Analysis={
+  async run(){
+    const t=Session.raw;
+    if(!t||t.trim().length<20){UI.toast('Record 3+ sentences first','wrn');return}
+    const p=DB.getPrefs();
+    if(p.strict&&Scoring.sents(t).length<Session.minSent){UI.toast(`Strict: need ${Session.minSent} sentences (have ${Scoring.sents(t).length})`, 'err');return}
+    const btn=document.getElementById('analyzeBtn');
+    btn.disabled=true;btn.innerHTML='<span class="spin"></span>Analyzing…';
+    try{
+      const r=await Scoring.evaluate({text:t,blob:Recorder.getBlob(),duration:Recorder.getSecs()});
+      if(!r){UI.toast('Analysis failed — try again','err');return}
+      this._render(r);
+      UI.toast(`Done! Overall: ${r.overall}/10`,'ok');
+      UI.refreshAll();
+    }catch(e){console.error(e);UI.toast('Error — check console','err')}
+    finally{btn.disabled=false;btn.innerHTML='🔍 Re-Analyze'}
+  },
+
+  _render(r){
+    const wrap=document.getElementById('resultsWrap');
+    wrap.style.display='block';
+    wrap.scrollIntoView({behavior:'smooth',block:'start'});
+
+    // Overall
+    document.getElementById('ovScore').textContent=r.overall.toFixed(1);
+    const lbl=r.overall>=8?'Excellent':r.overall>=7?'Good':r.overall>=6?'Satisfactory':'Needs Work';
+    document.getElementById('ovLabel').textContent=lbl;
+    document.getElementById('ovMeta').textContent=`${r.sentences} sentences · ${r.wpm} WPM · ${r.duration}s`;
+    document.getElementById('ovMotive').textContent=r.motivate;
+    const col=r.overall>=8?'var(--accent)':r.overall>=6?'var(--warn)':'var(--danger)';
+    document.getElementById('ovScore').style.color=col;
+
+    // Score rings
+    const rings=[
+      {lbl:'Grammar',sc:r.scores.grammar,fb:`${r.grammar.errorCount} errors`,stroke:'#4a7c59'},
+      {lbl:'Vocabulary',sc:r.scores.vocabulary,fb:`${r.vocabulary.uniqueWords} unique`,stroke:'#b8600f'},
+      {lbl:'Fluency',sc:r.scores.fluency,fb:`${r.wpm} WPM`,stroke:'#2c6ca8'},
+      {lbl:'Pronunciation',sc:r.scores.pronunciation,fb:r.pronunciation.source==='est'?'Estimated':'SpeechSuper',stroke:'#7c4a9a'},
+      {lbl:'Coherence',sc:r.scores.coherence,fb:`${r.coherence.dm} marker types`,stroke:'#8a6020'},
+    ];
+    const circ=2*Math.PI*30;
+    document.getElementById('scoreGrid').innerHTML=rings.map(d=>{
+      const dash=(d.sc/10)*circ;
+      return`<div class="score-card"><div class="sc-lbl">${d.lbl}</div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 70 70" width="70" height="70">
+            <circle class="ring-bg" cx="35" cy="35" r="30"/>
+            <circle class="ring-fg" cx="35" cy="35" r="30" stroke="${d.stroke}" stroke-dasharray="${dash.toFixed(1)} ${(circ-dash).toFixed(1)}" stroke-dashoffset="0"/>
+          </svg>
+          <span class="ring-num">${d.sc.toFixed(1)}</span>
+        </div>
+        <div class="sc-fb">${d.fb}</div></div>`;
+    }).join('');
+
+    // Transcript highlights
+    if(r.grammar.highlights){document.getElementById('txBody').innerHTML=r.grammar.highlights}
+
+    // Feedback list
+    const fl=document.getElementById('fbList');
+    fl.innerHTML='';
+    // Grammar
+    fl.appendChild(_fbItem('📐 Grammar',r.grammar.errorCount>0?`badge-err`:'badge-ok',r.grammar.errorCount>0?`${r.grammar.errorCount} errors`:'No errors',
+      (r.grammar.demo?'<div style="color:var(--warn);font-size:12px;margin-bottom:8px">⚠️ Demo analysis — connect API for live results</div>':'')+
+      (r.grammar.corrections?.map(c=>`<div class="corr"><span class="cw">${_esc(c.wrong)}</span><span class="ca">→</span><span class="cr">${_esc(c.suggestions[0]||'?')}</span>${c.suggestions.slice(1).map(s=>`<span class="cs">/ ${_esc(s)}</span>`).join('')}</div><div style="font-size:12px;color:var(--text-muted);margin:2px 0 6px 4px">${_esc(c.message)}</div>`).join('')||'<p style="color:var(--accent)">✓ No corrections needed!</p>')));
+
+    // Vocabulary
+    fl.appendChild(_fbItem('📖 Vocabulary',`badge-warn`,`${r.vocabulary.suggestions?.length||0} upgrades`,
+      `<div style="margin-bottom:8px;font-size:13px;color:var(--text-muted)">Unique ratio: <strong>${r.vocabulary.uniqueRatio}%</strong> · Advanced words: <strong>${r.vocabulary.advancedCount}</strong> · Total: <strong>${r.vocabulary.totalWords}</strong></div>`+
+      (r.vocabulary.advancedWords?.length?`<p style="margin-bottom:8px;font-size:13px"><strong>🌟 Strong words:</strong> ${r.vocabulary.advancedWords.join(', ')}</p>`:'')+
+      (r.vocabulary.suggestions?.map(s=>`<div class="corr"><span class="cw">${_esc(s.word)}</span><span class="ca">→</span>${s.synonyms.map(sy=>`<span class="cr">${_esc(sy)}</span>`).join('<span class="ca">/</span>')}</div>`).join('')||'')));
+
+    // Fluency
+    const fip=r.coherence.fillerCount;
+    fl.appendChild(_fbItem('🗣️ Fluency & Pronunciation',r.scores.fluency>=7?'badge-ok':'badge-warn',`${r.wpm} WPM · ${fip} fillers`,
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;font-size:13px"><strong style="display:block;margin-bottom:3px">Speech Rate</strong><span style="font-size:22px;font-family:var(--fd)">${r.wpm}</span> WPM<br><span style="color:var(--text-muted);font-size:12px">Target: 110–160</span>${r.wpm<100?'<br><span style="color:var(--warn)">⚠️ Speak faster</span>':r.wpm>175?'<br><span style="color:var(--warn)">⚠️ Slightly fast</span>':'<br><span style="color:var(--accent)">✓ Good pace</span>'}</div>
+        <div style="background:var(--surface2);border-radius:8px;padding:12px;font-size:13px"><strong style="display:block;margin-bottom:3px">Filler Words</strong><span style="font-size:22px;font-family:var(--fd)">${fip}</span> detected<br>${fip>5?'<span style="color:var(--danger)">⚠️ Practice pausing</span>':'<span style="color:var(--accent)">✓ Under control</span>'}</div>
+      </div>`+
+      (r.pronunciation.phonemeTips?.length?`<p style="font-size:13px;font-weight:600;margin-bottom:6px">🔊 Phoneme tips:</p>${r.pronunciation.phonemeTips.map(pt=>`<div style="font-size:13px;margin-bottom:4px">• <strong>${_esc(pt.ph||pt.phoneme||pt.word)}</strong>${pt.words?' — words: <em>'+pt.words.join(', ')+'</em>':''}</div>`).join('')}`:'<p style="font-size:13px;color:var(--accent)">✓ No specific phoneme issues detected</p>')+
+      (r.pronunciation.source==='est'?'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">ℹ️ Add SpeechSuper key for precise phoneme scoring.</p>':'')));
+
+    // Coherence
+    fl.appendChild(_fbItem('🌀 Coherence',r.scores.coherence>=7?'badge-ok':'badge-warn',`${r.coherence.dm} marker types`,
+      `<div style="margin-bottom:8px;font-size:13px;color:var(--text-muted)">Discourse markers: <strong>${r.coherence.dm}</strong> · ${r.coherence.hasIntro?'✓ Intro':'✗ No intro'} · ${r.coherence.hasConcl?'✓ Conclusion':'✗ No conclusion'}</div>`+
+      (r.coherence.reps?.length?`<p style="color:var(--warn);font-size:13px;margin-bottom:6px">⚠️ Overused: ${r.coherence.reps.map(rp=>`<strong>${rp.word}</strong> ×${rp.count}`).join(', ')}</p>`:'<p style="color:var(--accent);font-size:13px">✓ No excessive repetition</p>')+
+      `<div style="font-size:12.5px;color:var(--text-muted);margin-top:8px">💡 ${!r.coherence.hasIntro?'Open with a clear position. ':''}${!r.coherence.hasConcl?'Add "In conclusion…" at the end. ':''}${r.coherence.dm<3?'Use more discourse markers (however, furthermore, as a result). ':''}</div>`));
+
+    // Strict
+    const sf=document.getElementById('strictFb');
+    if(r.strictViolations?.length){
+      sf.style.display='block';
+      sf.innerHTML=`<div style="background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 25%,transparent);border-radius:var(--r);padding:14px;font-size:13.5px;color:var(--warn)"><strong>🎓 Strict Mode — Address before next session:</strong><ul style="margin:8px 0 0 16px">${r.strictViolations.map(v=>`<li style="margin-bottom:3px">${_esc(v)}</li>`).join('')}</ul></div>`;
+    }else sf.style.display='none';
+  },
+};
+
+function _fbItem(title,badgeCls,badgeTxt,bodyHTML){
+  const d=document.createElement('div');d.className='fb-item';
+  d.innerHTML=`<div class="fb-trigger" onclick="this.parentElement.classList.toggle('open')">${_esc(title)}<span class="badge ${badgeCls}" style="margin-left:auto;margin-right:8px">${_esc(badgeTxt)}</span><span class="fb-chev">▼</span></div><div class="fb-body">${bodyHTML}</div>`;
+  return d;
+}
+function _esc(s){if(typeof s!=='string')s=String(s||'');return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+/* ───────────────────────────────────────────────────────────
+   STEP 9 — QUIZ & REVISION GENERATOR
+─────────────────────────────────────────────────────────── */
+const Quiz=(()=>{
+  const BANK=[
+    {type:'grammar',q:'Which uses the past perfect correctly?',opts:['She has left before I arrived.','She had left before I arrived.','She left before I have arrived.','She was leaving before I arrive.'],ans:1},
+    {type:'grammar',q:'Choose the correct article: "She is ___ university professor."',opts:['a','an','the','(none)'],ans:0},
+    {type:'grammar',q:'Which is correct?',opts:['The informations is wrong.','The information are wrong.','The information is wrong.','Informations is wrong.'],ans:2},
+    {type:'grammar',q:'"More better" is an example of:',opts:['A superlative','A double comparative','A irregular adjective','Correct usage'],ans:1},
+    {type:'grammar',q:'"Despite ___ the rain, we went out."',opts:['of','–','from','that'],ans:1},
+    {type:'grammar',q:'By next year, I ___ here for ten years.',opts:['will work','will have worked','would work','am working'],ans:1},
+    {type:'grammar',q:'"I look forward ___ you."',opts:['to meet','to meeting','for meeting','meet'],ans:1},
+    {type:'grammar',q:'Passive voice of "Someone stole my wallet":',opts:['My wallet was stolen.','My wallet has been steal.','My wallet is stolen by someone.','My wallet got steal.'],ans:0},
+    {type:'grammar',q:'If I ___ you, I would apologize.',opts:['am','was','were','would be'],ans:2},
+    {type:'grammar',q:'Which sentence has a dangling modifier?',opts:['Having finished, she left early.','Having finished, the bell rang.','After finishing, she left.','When done, she put down her pen.'],ans:1},
+    {type:'vocabulary',q:'Best upgrade for "very important decision":',opts:['quite important decision','crucial / pivotal decision','very much important decision','big important decision'],ans:1},
+    {type:'vocabulary',q:'"Detrimental" means closest to:',opts:['beneficial','neutral','harmful','accidental'],ans:2},
+    {type:'vocabulary',q:'Academic word for "use":',opts:['utilize / employ','apply / leverage','both A and B','none'],ans:2},
+    {type:'vocabulary',q:'"Consequently" is a ___ marker:',opts:['contrast','cause/result','addition','sequence'],ans:1},
+    {type:'vocabulary',q:'Best synonym for "begin" in formal speech:',opts:['start','get going','initiate / commence','kick off'],ans:2},
+    {type:'corrections',q:'Identify the error: "I am very agree with your point."',opts:['"I am very agree" → "I strongly agree"','No error','Only "very" is wrong','Only "am" is wrong'],ans:0},
+    {type:'corrections',q:'Fix: "The researches shows that…"',opts:['"The research show"','"The research shows"','"The researches show"','No change needed'],ans:1},
+    {type:'corrections',q:'Which is grammatically correct?',opts:['She suggested me to go.','She advised that I should go.','She told me going.','She recommended me going.'],ans:1},
+    {type:'ielts',q:'In IELTS Speaking Part 2, you should speak for:',opts:['30 seconds','1–2 minutes','3–4 minutes','As long as possible'],ans:1},
+    {type:'ielts',q:'A Band 7 IELTS speaker typically:',opts:['Makes no errors','Uses some fillers but speaks fluently','Reads from notes','Speaks very slowly'],ans:1},
+    {type:'ielts',q:'Which opening is best for Part 2?',opts:['Umm, so I want to talk about…','I\'d like to describe a time when…','OK so basically the thing is…','I think the topic is about…'],ans:1},
+    {type:'ielts',q:'"Discourse markers" in IELTS help with:',opts:['Pronunciation','Coherence and fluency','Grammar accuracy','Vocabulary range'],ans:1},
+  ];
+
+  let filtered=[],idx=0,score=0,answered=0,selectedEl=null,currentType='all';
+
+  function setType(type,btn){
+    currentType=type;
+    document.querySelectorAll('.quiz-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    filtered=type==='all'?[...BANK]:BANK.filter(q=>q.type===type);
+    _shuffle(filtered);idx=0;score=0;answered=0;
+    document.getElementById('qResultBanner').style.display='none';
+    _load();
+  }
+
+  function _load(){
+    const pool=filtered.length?filtered:BANK;
+    if(idx>=pool.length){_showResult();return}
+    const q=pool[idx];
+    selectedEl=null;
+    document.getElementById('qStepLbl').textContent=`Question ${idx+1} of ${pool.length}`;
+    document.getElementById('qScoreLbl').textContent=`Score: ${score}`;
+    document.getElementById('qProgFill').style.width=`${((idx+1)/pool.length)*100}%`;
+    document.getElementById('qTypeLbl').textContent=q.type.toUpperCase();
+    document.getElementById('qQuestion').textContent=q.q;
+    const opts=document.getElementById('qOpts');
+    opts.innerHTML=q.opts.map((o,i)=>`<div class="quiz-opt" onclick="Quiz._sel(this,${i})">${String.fromCharCode(65+i)}. ${_esc(o)}</div>`).join('');
+  }
+
+  function _sel(el,i){
+    document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('sel'));
+    el.classList.add('sel');selectedEl=el;
+    selectedEl._idx=i;
+  }
+
+  function check(){
+    if(!selectedEl){UI.toast('Select an answer first','wrn');return}
+    const q=(filtered.length?filtered:BANK)[idx];
+    const correct=selectedEl._idx===q.ans;
+    if(correct){selectedEl.classList.add('correct');score++;UI.toast('✓ Correct! +10 XP','ok')}
+    else{selectedEl.classList.add('wrong');document.querySelectorAll('.quiz-opt')[q.ans].classList.add('correct');UI.toast('✗ Incorrect','err')}
+    document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.add('locked'));
+    answered++;idx++;
+  }
+
+  function skip(){idx++;answered++;_load()}
+
+  function next(){
+    const pool=filtered.length?filtered:BANK;
+    if(idx<pool.length) _load();
+    else _showResult();
+  }
+
+  function _showResult(){
+    const total=answered;const pct=total>0?Math.round(score/total*100):0;
+    document.getElementById('qFinalScore').textContent=`${score}/${total}`;
+    document.getElementById('qFinalLabel').textContent=pct>=80?'Excellent! 🌟':pct>=60?'Good effort 👍':'Keep practicing 💡';
+    document.getElementById('qFinalMsg').textContent=`${pct}% correct — ${total-score} mistakes to review`;
+    document.getElementById('qResultBanner').style.display='flex';
+    DB.saveQuizScore(score,total,currentType);
+  }
+
+  function restart(){setType(currentType,document.querySelector('.quiz-filter-btn.active')||document.querySelector('.quiz-filter-btn'))}
+  function _shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+
+  // init
+  function init(){filtered=[...BANK];_shuffle(filtered);_load()}
+  return{setType,check,skip,next,restart,_sel,init};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 10 — PROGRESS CHART
+─────────────────────────────────────────────────────────── */
+const Chart=(()=>{
+  function render(range,btn){
+    document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    const sessions=DB.getSessions();
+    let data;
+    const now=Date.now();
+    if(range==='week') data=sessions.filter(s=>s.ts>(now-7*864e5)).slice(0,7);
+    else if(range==='month') data=sessions.filter(s=>s.ts>(now-30*864e5)).slice(0,14);
+    else data=sessions.slice(0,20);
+
+    const el=document.getElementById('chartArea');
+    if(!data.length){
+      // placeholder bars
+      const placeholder=[{l:'Mon',v:6.0},{l:'Tue',v:6.8},{l:'Wed',v:5.9},{l:'Thu',v:7.4},{l:'Fri',v:7.1},{l:'Sat',v:7.9},{l:'Sun',v:7.6}];
+      el.innerHTML=placeholder.map(d=>{
+        const h=Math.round((d.v/10)*150);
+        return`<div class="bar-grp"><div class="bar-val">${d.v}</div><div class="bar-col" style="height:${h}px" title="${d.v}/10"></div><div class="bar-lbl">${d.l}</div></div>`;
+      }).join('');
+      return;
+    }
+    data.reverse();
+    const maxV=Math.max(...data.map(s=>s.overall||0),1);
+    el.innerHTML=data.map(s=>{
+      const h=Math.round((s.overall/maxV)*150);
+      const date=new Date(s.ts);
+      const lbl=range==='all'?`${date.getMonth()+1}/${date.getDate()}`:`${date.getMonth()+1}/${date.getDate()}`;
+      return`<div class="bar-grp"><div class="bar-val">${(s.overall||0).toFixed(1)}</div><div class="bar-col" style="height:${Math.max(4,h)}px" title="${s.overall}/10 · ${lbl}"></div><div class="bar-lbl">${lbl}</div></div>`;
+    }).join('');
+  }
+
+  function renderHeatmap(){
+    const daily=DB.getDailyLog();
+    const el=document.getElementById('heatmap');
+    if(!el) return;
+    const days=[];
+    for(let i=27;i>=0;i--){
+      const d=new Date(Date.now()-i*864e5);
+      days.push(d.toISOString().slice(0,10));
+    }
+    el.innerHTML=days.map(day=>{
+      const rec=daily[day];
+      const cnt=rec?rec.sessions:0;
+      const cls=cnt===0?'hm-0':cnt===1?'hm-1':cnt===2?'hm-2':cnt===3?'hm-3':'hm-4';
+      return`<div class="hm-cell ${cls}" title="${day}: ${cnt} session${cnt!==1?'s':''}"></div>`;
+    }).join('');
+  }
+
+  return{render,renderHeatmap};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   STEP 11 — WEAKNESS DETECTION & LESSONS
+─────────────────────────────────────────────────────────── */
+const Weaknesses=(()=>{
+  const LESSONS=[
+    {icon:'🗣️',title:'Fluency Drills',area:'fluency',desc:'Reduce hesitations with timed read-aloud exercises',mins:10,diff:'B2'},
+    {icon:'📐',title:'Grammar in Speech',area:'grammar',desc:'Subject-verb agreement, articles, tense consistency',mins:12,diff:'B1–B2'},
+    {icon:'🧩',title:'Advanced Vocabulary',area:'vocabulary',desc:'Replace basic words with precise academic alternatives',mins:8,diff:'C1'},
+    {icon:'🔊',title:'Phoneme Practice',area:'pronunciation',desc:'Master /θ/, /ð/, /æ/ with shadowing exercises',mins:15,diff:'A2–B1'},
+    {icon:'🌀',title:'Coherence & Discourse',area:'coherence',desc:'Connectors, structure, and discourse markers',mins:10,diff:'B2'},
+    {icon:'💬',title:'Filler Word Elimination',area:'fillers',desc:'Replace um/uh with confident pauses',mins:8,diff:'B1'},
+    {icon:'🎯',title:'IELTS Speaking Strategies',area:'ielts',desc:'Part 1, 2 & 3 techniques and band descriptors',mins:20,diff:'B2–C1'},
+  ];
+
+  const WEAK_META={
+    grammar:{icon:'📐',color:'danger',title:'Grammar Errors',desc:'Frequent grammatical mistakes detected'},
+    vocabulary:{icon:'📖',color:'warn',title:'Basic Vocabulary',desc:'Overuse of simple/common words'},
+    fluency:{icon:'🗣️',color:'info',title:'Fluency Issues',desc:'Slow speech rate or uneven delivery'},
+    pronunciation:{icon:'🔊',color:'warn',title:'Pronunciation',desc:'Phoneme accuracy needs work'},
+    coherence:{icon:'🌀',color:'info',title:'Coherence',desc:'Argument structure and flow'},
+    fillers:{icon:'💬',color:'danger',title:'Filler Words',desc:'Too many um/uh/like detected'},
+  };
+
+  function render(){
+    const w=DB.getWeaknesses();
+    const wEl=document.getElementById('weakList');
+    const rEl=document.getElementById('recLessons');
+
+    if(!Object.keys(w).length){
+      wEl.innerHTML='<div style="color:var(--text-light);font-size:13px">Complete a session to see weaknesses.</div>';
+      rEl.innerHTML='<div style="color:var(--text-light);font-size:13px">Complete a session first.</div>';
+      return;
+    }
+
+    // Sorted by count desc
+    const sorted=Object.entries(w).sort((a,b)=>b[1].count-a[1].count);
+    const sev=(c)=>c>=5?'high':c>=2?'med':'low';
+    wEl.innerHTML=sorted.map(([area,data])=>{
+      const m=WEAK_META[area]||{icon:'⚠️',color:'warn',title:area,desc:''};
+      const colorMap={danger:'var(--danger)',warn:'var(--warn)',info:'var(--info)'};
+      const col=colorMap[m.color]||'var(--warn)';
+      return`<div class="weak-item ${sev(data.count)}">
+        <div class="wi-icon" style="background:color-mix(in srgb,${col} 12%,var(--surface2));color:${col}">${m.icon}</div>
+        <div class="wi-info"><div class="wi-title">${m.title}</div><div class="wi-sub">${m.desc} · ${data.sessions} session${data.sessions!==1?'s':''}</div></div>
+        <div class="wi-count" style="color:${col}">${data.count}</div>
+      </div>`;
+    }).join('');
+
+    // Recommended lessons based on weaknesses
+    const topAreas=sorted.slice(0,3).map(([a])=>a);
+    const recommended=LESSONS.filter(l=>topAreas.includes(l.area)).concat(LESSONS.filter(l=>!topAreas.includes(l.area))).slice(0,4);
+    rEl.innerHTML=recommended.map(l=>{
+      const isTarget=topAreas.includes(l.area);
+      return`<div class="lesson-pill" onclick="UI.toast('${l.title} starting…','ok')">
+        <div class="lp-icon" style="background:${isTarget?'var(--accent-soft)':'var(--surface2)'};color:${isTarget?'var(--accent)':'var(--text-muted)'}">${l.icon}</div>
+        <div class="lp-info"><div class="lp-title">${l.title} ${isTarget?'<span style="font-size:11px;color:var(--danger)">⚡ Priority</span>':''}</div><div class="lp-meta">${l.diff} · ⏱ ${l.mins} min</div></div>
+        <div class="lp-arr">›</div>
+      </div>`;
+    }).join('');
+
+    // Fixed issues
+    const sessions=DB.getSessions();
+    const fixedEl=document.getElementById('fixedList');
+    if(sessions.length<5){fixedEl.innerHTML='<div style="color:var(--text-light);font-size:13px">Keep practicing — improvements show after 5+ sessions.</div>';return}
+    const early=sessions.slice(-5).flatMap(s=>s.weakAreas||[]);
+    const recent=sessions.slice(0,3).flatMap(s=>s.weakAreas||[]);
+    const fixed=early.filter(a=>!recent.includes(a));
+    if(!fixed.length){fixedEl.innerHTML='<div style="color:var(--text-light);font-size:13px">Keep going — fixes will appear here.</div>';return}
+    const unique=[...new Set(fixed)];
+    fixedEl.innerHTML=unique.map(area=>{
+      const m=WEAK_META[area]||{icon:'✅',title:area};
+      return`<div class="weak-item" style="border-left-color:var(--accent)"><div class="wi-icon" style="background:var(--accent-soft);color:var(--accent)">✅</div><div class="wi-info"><div class="wi-title">${m.title}</div><div class="wi-sub">Showing improvement! Keep it up.</div></div></div>`;
+    }).join('');
+  }
+
+  return{render};
+})();
+
+/* ───────────────────────────────────────────────────────────
+   LESSONS PAGE BUILDER
+─────────────────────────────────────────────────────────── */
+function buildLessons(){
+  const LESSONS=[
+    {icon:'🗣️',c:'c1',title:'Fluency Drills',desc:'Reduce hesitations and speak more smoothly with timed read-aloud exercises.',diff:'B2',mins:10},
+    {icon:'📐',c:'c2',title:'Grammar in Speech',desc:'Master subject-verb agreement, articles, and tense consistency in spoken form.',diff:'B1–B2',mins:12},
+    {icon:'🧩',c:'c3',title:'Advanced Vocabulary',desc:'Replace basic words with precise, academic-level alternatives using WordsAPI data.',diff:'C1',mins:8},
+    {icon:'🔊',c:'c1',title:'Phoneme Practice',desc:'Master /θ/, /ð/, /æ/, /ɪ/ with shadowing audio — tied to SpeechSuper feedback.',diff:'A2–B1',mins:15},
+    {icon:'🎯',c:'c2',title:'IELTS Speaking',desc:'Parts 1, 2 & 3 strategies, band descriptors, and timed mock questions.',diff:'B2–C1',mins:20},
+    {icon:'🌀',c:'c3',title:'Coherence & Discourse',desc:'Use connectors, structure arguments, and signal discourse moves naturally.',diff:'B2',mins:10},
+    {icon:'💬',c:'c1',title:'Filler Elimination',desc:'Replace um/uh with confident pauses. Use silence as a rhetorical tool.',diff:'B1',mins:8},
+    {icon:'🎭',c:'c2',title:'Intonation & Stress',desc:'Use word stress and sentence intonation to convey meaning and engagement.',diff:'B1–B2',mins:12},
+    {icon:'📊',c:'c3',title:'IELTS Predictor',desc:'Estimate your IELTS band from session data and get targeted improvement tips.',diff:'B2+',mins:5},
+  ];
+  const diffBadge={['A2–B1']:'badge-info',['B1']:'badge-info',['B1–B2']:'badge-info',['B2']:'badge-warn',['B2–C1']:'badge-warn',['C1']:'badge-err',['B2+']:'badge-warn'};
+  const grid=document.getElementById('lessonsGrid');
+  if(!grid) return;
+  grid.innerHTML=LESSONS.map(l=>`
+    <div class="action-card ${l.c}" onclick="UI.toast('${l.title} starting…','ok')" style="text-align:left;cursor:pointer">
+      <div class="ac-icon">${l.icon}</div>
+      <div class="ac-title">${l.title}</div>
+      <div class="ac-desc" style="margin-bottom:12px">${l.desc}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span class="badge ${diffBadge[l.diff]||'badge-neutral'}">${l.diff}</span>
+        <span style="font-size:12px;color:var(--text-muted)">⏱ ${l.mins} min</span>
+      </div>
+    </div>`).join('');
+
+  // Weak area alert
+  const w=DB.getWeaknesses();
+  const alertEl=document.getElementById('lessonWeakAlert');
+  if(Object.keys(w).length&&alertEl){
+    const topW=Object.entries(w).sort((a,b)=>b[1].count-a[1].count)[0];
+    alertEl.style.display='block';
+    const wMeta={grammar:'Grammar in Speech',vocabulary:'Advanced Vocabulary',fluency:'Fluency Drills',pronunciation:'Phoneme Practice',coherence:'Coherence & Discourse',fillers:'Filler Elimination'};
+    alertEl.textContent=`🎯 Based on your sessions, we recommend starting with "${wMeta[topW[0]]||topW[0]}"`;
+  }
+}
+
+/* ───────────────────────────────────────────────────────────
+   STEP 12 — UI CONTROLLER
+─────────────────────────────────────────────────────────── */
+const UI={
+  navigate(page){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const target=document.getElementById('page-'+page);
+    if(target) target.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n=>{
+      if((n.getAttribute('onclick')||'').includes(`'${page}'`)) n.classList.add('active');
+    });
+    document.getElementById('mainContent').scrollTop=0;
+    this.closeSidebar();
+    if(page==='progress'){Chart.render('week');Chart.renderHeatmap();this._updateProgressPage()}
+    if(page==='weaknesses') Weaknesses.render();
+    if(page==='lessons') buildLessons();
+    if(page==='quiz') Quiz.init();
+    if(page==='settings') this._loadSettingsKeys();
+    if(page==='guide') document.getElementById('pwaUrl').textContent=window.location.href;
+    if(page==='dashboard') this._updateDashboard();
+    if(page==='progress') this._updateDbStats();
+  },
+
+  toggleSidebar(){
+    const s=document.getElementById('sidebar');
+    const b=document.getElementById('sidebarBackdrop');
+    s.classList.toggle('open');
+    b.classList.toggle('active');
+  },
+  closeSidebar(){
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarBackdrop').classList.remove('active');
+  },
+
+  setTheme(t){
+    document.documentElement.setAttribute('data-theme',t);
+    localStorage.setItem('eq_theme',t);
+    document.querySelectorAll('[id^="ts-"]').forEach(el=>el.classList.remove('selected'));
+    document.getElementById('ts-'+t)?.classList.add('selected');
+    this.toast(`Theme: ${t.charAt(0).toUpperCase()+t.slice(1)}`,'ok');
+  },
+
+  saveSetup(){
+    const dg=document.getElementById('sDG').value.trim();
+    const ss=document.getElementById('sSS').value.trim();
+    const wa=document.getElementById('sWA').value.trim();
+    if(dg) localStorage.setItem('dg_key',dg);
+    if(ss) localStorage.setItem('ss_key',ss);
+    if(wa) localStorage.setItem('wa_key',wa);
+    document.getElementById('setupOverlay').classList.add('hidden');
+    this.toast('Keys saved — ready!','ok');
+  },
+  skipSetup(){localStorage.setItem('eq_setup_done','1');document.getElementById('setupOverlay').classList.add('hidden');this.toast('Demo mode — add keys in Settings','wrn')},
+
+  saveKeys(){
+    const dg=document.getElementById('stDG').value.trim();
+    const ss=document.getElementById('stSS').value.trim();
+    const wa=document.getElementById('stWA').value.trim();
+    if(dg) localStorage.setItem('dg_key',dg);
+    if(ss) localStorage.setItem('ss_key',ss);
+    if(wa) localStorage.setItem('wa_key',wa);
+    this.toast('API keys saved!','ok');
+  },
+
+  savePrefs(){
+    const strict=document.getElementById('prefStrict').checked;
+    const minSent=parseInt(document.getElementById('prefMin').value);
+    DB.savePrefs({strict,minSent});
+    Session.minSent=minSent;
+    document.getElementById('sentMin').textContent=minSent;
+    document.getElementById('sentTargetLbl').textContent=`Target: ${minSent}`;
+    document.getElementById('strictTag').style.display=strict?'':'none';
+    this.toast('Preferences saved!','ok');
+  },
+
+  async testAPIs(){
+    const el=document.getElementById('apiStatus');
+    el.style.display='block';
+    el.innerHTML='<span class="spin"></span>Testing…';
+    const rows=[];
+    // LT
+    try{const r=await fetch('https://api.languagetool.org/v2/check',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'language=en-US&text=test'});rows.push(`📐 LanguageTool: ${r.ok?'✅ Connected (free, no key)':'❌ Error '+r.status}`)}
+    catch{rows.push('📐 LanguageTool: ❌ Network error')}
+    rows.push(`🎙️ Deepgram: ${localStorage.getItem('dg_key')?'🔑 Key saved (verified on use)':'⚠️ No key — demo mode'}`);
+    // WordsAPI
+    const waKey=localStorage.getItem('wa_key');
+    if(waKey){try{const r=await fetch('https://wordsapiv1.p.rapidapi.com/words/good/synonyms',{headers:{'X-RapidAPI-Key':waKey,'X-RapidAPI-Host':'wordsapiv1.p.rapidapi.com'}});rows.push(`📖 WordsAPI: ${r.ok?'✅ Connected':'❌ Error '+r.status}`)}catch{rows.push('📖 WordsAPI: ❌ Network error')}}
+    else rows.push('📖 WordsAPI: ⚠️ No key — demo synonyms active');
+    rows.push(`🔊 SpeechSuper: ${localStorage.getItem('ss_key')?'🔑 Key saved (verified on recording)':'⚠️ No key — rule-based estimation'}`);
+    el.innerHTML=rows.join('<br>');
+  },
+
+  _loadSettingsKeys(){
+    const mask=v=>v?v.slice(0,4)+'•'.repeat(Math.max(0,v.length-4)):'';
+    document.getElementById('stDG').placeholder=mask(localStorage.getItem('dg_key'))||'dg_•••';
+    document.getElementById('stSS').placeholder=mask(localStorage.getItem('ss_key'))||'ss_•••';
+    document.getElementById('stWA').placeholder=mask(localStorage.getItem('wa_key'))||'•••';
+    const p=DB.getPrefs();
+    document.getElementById('prefStrict').checked=p.strict!==false;
+    document.getElementById('prefMin').value=p.minSent||10;
+    // Highlight current theme
+    const t=localStorage.getItem('eq_theme')||'parchment';
+    document.querySelectorAll('[id^="ts-"]').forEach(el=>el.classList.remove('selected'));
+    document.getElementById('ts-'+t)?.classList.add('selected');
+  },
+
+  _updateDashboard(){
+    const sessions=DB.getSessions();
+    const streak=DB.getStreak();
+    const tw=parseInt(localStorage.getItem(DB.K.WORDS)||'0');
+    document.getElementById('dSessions').textContent=sessions.length;
+    document.getElementById('dStreak').textContent=streak.current;
+    document.getElementById('dStreakDelta').textContent=`days (best: ${streak.longest})`;
+    document.getElementById('dWords').textContent=tw>999?`${(tw/1000).toFixed(1)}k`:tw;
+    document.getElementById('streakNum').textContent=streak.current;
+    const avgs=DB.getAvgScores();
+    if(avgs){
+      document.getElementById('dAvg').textContent=avgs.overall.toFixed(1);
+      document.getElementById('dAvgDelta').textContent=`avg last 20 sessions`;
+      const skills={grammar:'sk-grammar',vocabulary:'sk-vocab',fluency:'sk-fluency',pronunciation:'sk-pron',coherence:'sk-coh'};
+      const fills={grammar:'sf-grammar',vocabulary:'sf-vocab',fluency:'sf-fluency',pronunciation:'sf-pron',coherence:'sf-coh'};
+      for(const[k,id] of Object.entries(skills)){
+        document.getElementById(id).textContent=`${(avgs[k]||0).toFixed(1)} / 10`;
+        document.getElementById(fills[k]).style.width=`${(avgs[k]||0)*10}%`;
+      }
+    }
+    // Recent sessions list
+    const rl=document.getElementById('recentList');
+    if(!sessions.length){rl.innerHTML='<div style="color:var(--text-light);font-size:13px">No sessions yet.</div>';return}
+    const icons=['🗣️','📰','🎭','💬','📖'];
+    rl.innerHTML=sessions.slice(0,4).map((s,i)=>`
+      <div class="recent-sess">
+        <div class="s-ico">${icons[i%icons.length]}</div>
+        <div class="s-inf">
+          <div class="s-topic">${_esc(s.topicText?.slice(0,44)||'Speaking session')}…</div>
+          <div class="s-meta">${s.sentences} sentences · ${s.wpm||'—'} WPM · ${new Date(s.ts).toLocaleDateString()}</div>
+        </div>
+        <div class="s-scr">${(s.overall||0).toFixed(1)}</div>
+      </div>`).join('');
+    // Best session indicator
+    if(sessions.length){const best=Math.max(...sessions.map(s=>s.overall||0));document.getElementById('dAvgDelta').textContent=`best: ${best.toFixed(1)}`}
+  },
+
+  _updateProgressPage(){
+    const sessions=DB.getSessions();
+    const streak=DB.getStreak();
+    const tw=parseInt(localStorage.getItem(DB.K.WORDS)||'0');
+    const totalSecs=sessions.reduce((a,s)=>a+(s.duration||0),0);
+    const totalMins=Math.round(totalSecs/60);
+    document.getElementById('pSessions').textContent=sessions.length;
+    document.getElementById('pTime').textContent=totalMins>60?`${(totalMins/60).toFixed(1)}h`:`${totalMins}m`;
+    document.getElementById('pStreak').textContent=streak.longest+'🔥';
+    if(sessions.length){const best=Math.max(...sessions.map(s=>s.overall||0));document.getElementById('pBest').textContent=best.toFixed(1)}
+    const avgs=DB.getAvgScores();
+    if(avgs){
+      const m={grammar:'ps-grammar',vocabulary:'ps-vocab',fluency:'ps-fluency',pronunciation:'ps-pron',coherence:'ps-coh'};
+      const f={grammar:'pf-grammar',vocabulary:'pf-vocab',fluency:'pf-fluency',pronunciation:'pf-pron',coherence:'pf-coh'};
+      for(const[k,id] of Object.entries(m)){document.getElementById(id).textContent=`${(avgs[k]||0).toFixed(1)}/10`;document.getElementById(f[k]).style.width=`${(avgs[k]||0)*10}%`}
+    }
+  },
+
+  _updateDbStats(){
+    const el=document.getElementById('dbStats');
+    if(el) el.textContent=DB.getDBStats();
+  },
+
+  refreshAll(){
+    this._updateDashboard();
+    // Update sidebar xp/level based on sessions
+    const sessions=DB.getSessions();
+    const xp=sessions.length*40+Math.round((DB.getAvgScores()?.overall||0)*10);
+    const levels=[{l:'A2',max:200},{l:'B1',max:500},{l:'B2',max:1000},{l:'C1',max:2000},{l:'C2',max:9999}];
+    let level=levels[0],pct=0;
+    for(const lv of levels){if(xp<lv.max){level=lv;pct=Math.round(((xp-(levels[levels.indexOf(lv)-1]?.max||0))/(lv.max-(levels[levels.indexOf(lv)-1]?.max||0)))*100);break}}
+    document.getElementById('sideLevel').textContent=level.l;
+    document.getElementById('sideXP').textContent=`${xp} / ${level.max} XP`;
+    document.getElementById('xpFill').style.width=`${Math.min(100,pct)}%`;
+    // Weakness badge
+    const w=DB.getWeaknesses();
+    const badge=document.getElementById('weakBadge');
+    if(badge) badge.style.display=Object.keys(w).length?'':'none';
+  },
+
+  toast(msg,type='ok'){
+    const t=document.getElementById('toast');
+    t.textContent=msg;t.className=`show ${type}`;
+    clearTimeout(this._tt);
+    this._tt=setTimeout(()=>t.className='',3200);
+  },
+};
+
+/* ───────────────────────────────────────────────────────────
+   INIT
+─────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  // DB init
+  DB.init();
+
+  // Theme
+  const theme=localStorage.getItem('eq_theme')||'parchment';
+  document.documentElement.setAttribute('data-theme',theme);
+
+  // First run
+  if(localStorage.getItem('dg_key')||localStorage.getItem('ss_key')||localStorage.getItem('eq_setup_done')){
+    document.getElementById('setupOverlay').classList.add('hidden');
+  }
+
+  // Greet
+  const h=new Date().getHours();
+  const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('dashGreet').textContent=`${g} 👋`;
+
+  // Prefs
+  const p=DB.getPrefs();
+  Session.minSent=p.minSent||10;
+  if(!p.strict) document.getElementById('strictTag').style.display='none';
+
+  // Streak
+  const streak=DB.getStreak();
+  document.getElementById('streakNum').textContent=streak.current;
+
+  // Init modules
+  TopicGen.init();
+  buildLessons();
+  UI._updateDashboard();
+  UI.refreshAll();
+
+  // Set PWA url
+  const puEl=document.getElementById('pwaUrl');
+  if(puEl) puEl.textContent=window.location.href;
+
+  // Keyboard shortcut: Space = toggle record (on session page)
+  document.addEventListener('keydown',e=>{
+    if(e.code==='Space'&&e.target.tagName==='BODY'&&document.getElementById('page-session').classList.contains('active')){
+      e.preventDefault();Recorder.toggle();
+    }
+  });
+
+  // PWA service worker registration
+  if('serviceWorker' in navigator){
+    const sw=`
+      const CACHE='eloquent-v1';
+      const ASSETS=[self.location.href];
+      self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+      self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>new Response('Offline',{status:503}))))});
+    `;
+    const blob=new Blob([sw],{type:'application/javascript'});
+    const url=URL.createObjectURL(blob);
+    navigator.serviceWorker.register(url).catch(()=>{});
+  }
+});
+</script>
+</body>
+</html>
