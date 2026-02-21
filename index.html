@@ -7254,7 +7254,7 @@
         return { render };
       })();
 
-      /* ═══════════════════════════════════════════════════════
+      {% comment %} /* ═══════════════════════════════════════════════════════
          EXTRA DB METHODS
       ═══════════════════════════════════════════════════════ */
       DB.getWritingDrafts = function () {
@@ -7358,7 +7358,7 @@
           Math.round(size / 1024) +
           "KB stored"
         );
-      };
+      }; {% endcomment %}
 
       /* ═══════════════════════════════════════════════════════
          LIVE CONTENT FETCHER — Free APIs, no key required
@@ -7634,9 +7634,7 @@
         }
       }
       function syncImportData() {
-        const code = (
-          document.getElementById("syncImportCode").value || ""
-        ).trim();
+        const code = (document.getElementById("syncImportCode").value || "").trim();
         const status = document.getElementById("syncImportStatus");
         if (!code) {
           status.textContent = "Paste a sync code first.";
@@ -7644,34 +7642,43 @@
         }
         try {
           const data = JSON.parse(decodeURIComponent(atob(code)));
-          if (!data.v || !data.sessions) {
+          if (!data.sessions) {
             status.textContent = "Invalid sync code.";
             return;
           }
+          
           const existing = DB.getSessions();
           const existTs = new Set(existing.map((s) => s.ts));
-          const newSess = (data.sessions || []).filter(
-            (s) => !existTs.has(s.ts),
-          );
-          const merged = [...existing, ...newSess]
-            .sort((a, b) => b.ts - a.ts)
-            .slice(0, 200);
+          const newSess = (data.sessions || []).filter((s) => !existTs.has(s.ts));
+          const merged = [...existing, ...newSess].sort((a, b) => b.ts - a.ts).slice(0, 200);
           localStorage.setItem(DB.K.SESSIONS, JSON.stringify(merged));
+          
+          const existingDrafts = DB.getWritingDrafts();
+          const existDraftTs = new Set(existingDrafts.map((d) => d.ts));
+          const newDrafts = (data.writing || []).filter((d) => !existDraftTs.has(d.ts));
+          const mergedDrafts = [...existingDrafts, ...newDrafts].sort((a, b) => b.ts - a.ts).slice(0, 50);
+          DB._safeSet("eq_writing_drafts", mergedDrafts);
+
           if (data.prefs) DB.savePrefs(data.prefs);
-          if (data.writing) DB._safeSet("eq_writing_drafts", data.writing);
-          if (data.readingProg)
-            DB._safeSet("eq_reading_prog", data.readingProg);
-          status.innerHTML =
-            '<span style="color:var(--accent)">✅ Imported! ' +
-            newSess.length +
-            " new sessions merged.</span>";
-          UI.refreshAll && UI.refreshAll();
-          setTimeout(
-            () => document.getElementById("syncModal").classList.add("hidden"),
-            1800,
-          );
+          if (data.readingProg) DB._safeSet("eq_reading_prog", data.readingProg);
+          if (data.daily) localStorage.setItem(DB.K.DAILY, JSON.stringify(data.daily));
+          if (data.streak) localStorage.setItem(DB.K.STREAK, JSON.stringify(data.streak));
+          if (data.weaknesses) localStorage.setItem(DB.K.WEAKNESSES, JSON.stringify(data.weaknesses));
+          if (data.quizScores) localStorage.setItem(DB.K.QUIZ, JSON.stringify(data.quizScores));
+          
+          const currentWords = parseInt(localStorage.getItem(DB.K.WORDS) || "0");
+          const importedWords = data.totalWords || 0;
+          localStorage.setItem(DB.K.WORDS, String(Math.max(currentWords, importedWords)));
+
+          const message = newSess.length === 0 
+            ? "✅ Devices are already fully synced!" 
+            : `✅ Sync Complete! ${newSess.length} new sessions merged.`;
+            
+          status.innerHTML = `<span style="color:var(--accent)">${message}</span>`;
+          if (typeof UI !== "undefined" && UI.refreshAll) UI.refreshAll();
+          setTimeout(() => document.getElementById("syncModal").classList.add("hidden"), 2000);
         } catch (e) {
-          status.textContent = "Failed: " + e.message;
+          status.textContent = "Failed: Invalid or corrupt sync code.";
         }
       }
 
