@@ -2899,6 +2899,7 @@
      JAVASCRIPT MODULES -->
     <script>
       "use strict";
+     
       /* ───────────────────────────────────────────────────────────
          DB — localStorage "database" with structured daily progress
       ─────────────────────────────────────────────────────────── */
@@ -2928,8 +2929,7 @@
         },
         getPrefs() {
           return JSON.parse(
-            localStorage.getItem(this.K.PREFS) ||
-              '{"strict":true,"minSent":10}',
+            localStorage.getItem(this.K.PREFS) || '{"strict":true,"minSent":10}',
           );
         },
         savePrefs(prefs) {
@@ -2937,8 +2937,7 @@
         },
         getStreak() {
           return JSON.parse(
-            localStorage.getItem(this.K.STREAK) ||
-              '{"current":0,"longest":0,"lastDate":""}',
+            localStorage.getItem(this.K.STREAK) || '{"current":0,"longest":0,"lastDate":""}',
           );
         },
         getWeaknesses() {
@@ -2961,38 +2960,23 @@
             sentences: result.sentences,
             wpm: result.wpm,
             duration: result.duration,
-            words: result.text
-              ? result.text.split(/\s+/).filter(Boolean).length
-              : 0,
+            words: result.text ? result.text.split(/\s+/).filter(Boolean).length : 0,
             topicCat: document.getElementById("topicCat")?.textContent || "",
-            topicText:
-              document
-                .getElementById("topicPrompt")
-                ?.textContent?.slice(0, 80) || "",
+            topicText: document.getElementById("topicPrompt")?.textContent?.slice(0, 80) || "",
             corrections: result.grammar?.corrections?.map((c) => c.wrong) || [],
             fillerCount: result.coherence?.fillerCount || 0,
             grammarErrors: result.grammar?.errorCount || 0,
             weakAreas: this._detectWeakAreas(result.scores),
           };
           sessions.unshift(record);
-          localStorage.setItem(
-            this.K.SESSIONS,
-            JSON.stringify(sessions.slice(0, 100)),
-          );
+          localStorage.setItem(this.K.SESSIONS, JSON.stringify(sessions.slice(0, 100)));
 
-          const tw =
-            parseInt(localStorage.getItem(this.K.WORDS) || "0") + record.words;
+          const tw = parseInt(localStorage.getItem(this.K.WORDS) || "0") + record.words;
           localStorage.setItem(this.K.WORDS, String(tw));
 
           const today = new Date().toISOString().slice(0, 10);
           const daily = this.getDailyLog();
-          if (!daily[today])
-            daily[today] = {
-              sessions: 0,
-              totalScore: 0,
-              totalWords: 0,
-              topScores: [],
-            };
+          if (!daily[today]) daily[today] = { sessions: 0, totalScore: 0, totalWords: 0, topScores: [] };
           daily[today].sessions++;
           daily[today].totalScore += result.overall;
           daily[today].totalWords += record.words;
@@ -3017,9 +3001,7 @@
 
         _updateStreak(todayStr) {
           const s = this.getStreak();
-          const yesterday = new Date(Date.now() - 86400000)
-            .toISOString()
-            .slice(0, 10);
+          const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
           if (s.lastDate === todayStr) {
           } else if (s.lastDate === yesterday) {
             s.current += 1;
@@ -3035,98 +3017,70 @@
         _updateWeaknesses(record) {
           const w = this.getWeaknesses();
           record.weakAreas.forEach((area) => {
-            if (!w[area])
-              w[area] = {
-                count: 0,
-                sessions: 0,
-                firstSeen: record.ts,
-                lastSeen: record.ts,
-              };
+            if (!w[area]) w[area] = { count: 0, sessions: 0, firstSeen: record.ts, lastSeen: record.ts };
             w[area].count++;
             w[area].sessions++;
             w[area].lastSeen = record.ts;
           });
           if (record.fillerCount > 5) {
-            if (!w.fillers)
-              w.fillers = {
-                count: 0,
-                sessions: 0,
-                firstSeen: record.ts,
-                lastSeen: record.ts,
-              };
+            if (!w.fillers) w.fillers = { count: 0, sessions: 0, firstSeen: record.ts, lastSeen: record.ts };
             w.fillers.count += record.fillerCount;
             w.fillers.sessions++;
             w.fillers.lastSeen = record.ts;
           }
           localStorage.setItem(this.K.WEAKNESSES, JSON.stringify(w));
           const badge = document.getElementById("weakBadge");
-          if (badge)
-            badge.style.display = Object.keys(w).length > 0 ? "" : "none";
+          if (badge) badge.style.display = Object.keys(w).length > 0 ? "" : "none";
         },
 
         getAvgScores() {
           const sessions = this.getSessions().slice(0, 20);
           if (!sessions.length) return null;
-          const keys = [
-            "grammar",
-            "vocabulary",
-            "fluency",
-            "pronunciation",
-            "coherence",
-          ];
+          const keys = ["grammar", "vocabulary", "fluency", "pronunciation", "coherence"];
           const avgs = {};
           keys.forEach((k) => {
-            const vals = sessions
-              .map((s) => s.scores?.[k])
-              .filter((v) => v != null);
-            avgs[k] = vals.length
-              ? Math.round(
-                  (vals.reduce((a, b) => a + b, 0) / vals.length) * 10,
-                ) / 10
-              : 0;
+            const vals = sessions.map((s) => s.scores?.[k]).filter((v) => v != null);
+            avgs[k] = vals.length ? Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10 : 0;
           });
-          avgs.overall =
-            Math.round(
-              (sessions.reduce((a, s) => a + (s.overall || 0), 0) /
-                sessions.length) *
-                10,
-            ) / 10;
+          avgs.overall = Math.round((sessions.reduce((a, s) => a + (s.overall || 0), 0) / sessions.length) * 10) / 10;
           return avgs;
         },
 
         saveQuizScore(score, total, type) {
           const q = this.getQuizScores();
-          q.unshift({
-            ts: Date.now(),
-            score,
-            total,
-            type,
-            pct: Math.round((score / total) * 100),
-          });
+          q.unshift({ ts: Date.now(), score, total, type, pct: Math.round((score / total) * 100) });
           localStorage.setItem(this.K.QUIZ, JSON.stringify(q.slice(0, 50)));
         },
 
+        // --- DATA MANAGEMENT & HELPER METHODS ---
         exportJSON() {
-          const data = {
-            version: this.VERSION,
-            exportDate: new Date().toISOString(),
-            sessions: this.getSessions(),
-            daily: this.getDailyLog(),
-            streak: this.getStreak(),
-            weaknesses: this.getWeaknesses(),
-            quizScores: this.getQuizScores(),
-            totalWords: parseInt(localStorage.getItem(this.K.WORDS) || "0"),
-          };
-          const blob = new Blob([JSON.stringify(data, null, 2)], {
-            type: "application/json",
-          });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `eloquent-progress-${new Date().toISOString().slice(0, 10)}.json`;
-          a.click();
-          URL.revokeObjectURL(url);
-          UI.toast("Progress exported!", "ok");
+          try {
+            const data = {
+              version: this.VERSION,
+              exportDate: new Date().toISOString(),
+              sessions: this.getSessions(),
+              daily: this.getDailyLog(),
+              streak: this.getStreak(),
+              weaknesses: this.getWeaknesses(),
+              prefs: this.getPrefs(),
+              writing: this.getWritingDrafts(),
+              quizScores: this.getQuizScores(),
+              readingProg: this.getReadingProgress(),
+              totalWords: parseInt(localStorage.getItem(this.K.WORDS) || "0"),
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `eloquent-progress-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            if (typeof UI !== 'undefined') UI.toast("Progress exported successfully!", "ok");
+          } catch (e) {
+            if (typeof UI !== 'undefined') UI.toast("Export failed", "err");
+          }
         },
 
         importJSON() {
@@ -3141,29 +3095,36 @@
             try {
               const data = JSON.parse(ev.target.result);
               if (!data.sessions) throw new Error("Invalid file");
-              if (data.sessions)
-                localStorage.setItem(
-                  this.K.SESSIONS,
-                  JSON.stringify(data.sessions),
-                );
-              if (data.daily)
-                localStorage.setItem(this.K.DAILY, JSON.stringify(data.daily));
-              if (data.streak)
-                localStorage.setItem(
-                  this.K.STREAK,
-                  JSON.stringify(data.streak),
-                );
-              if (data.weaknesses)
-                localStorage.setItem(
-                  this.K.WEAKNESSES,
-                  JSON.stringify(data.weaknesses),
-                );
-              if (data.totalWords)
-                localStorage.setItem(this.K.WORDS, String(data.totalWords));
-              UI.toast(`Imported ${data.sessions.length} sessions!`, "ok");
-              UI.refreshAll();
+              
+              const existing = this.getSessions();
+              const existTs = new Set(existing.map((s) => s.ts));
+              const newSess = (data.sessions || []).filter((s) => !existTs.has(s.ts));
+              const merged = [...existing, ...newSess].sort((a, b) => b.ts - a.ts).slice(0, 200);
+              localStorage.setItem(this.K.SESSIONS, JSON.stringify(merged));
+              
+              const existingDrafts = this.getWritingDrafts();
+              const existDraftTs = new Set(existingDrafts.map((d) => d.ts));
+              const newDrafts = (data.writing || []).filter((d) => !existDraftTs.has(d.ts));
+              const mergedDrafts = [...existingDrafts, ...newDrafts].sort((a, b) => b.ts - a.ts).slice(0, 50);
+              this._safeSet("eq_writing_drafts", mergedDrafts);
+
+              if (data.daily) localStorage.setItem(this.K.DAILY, JSON.stringify(data.daily));
+              if (data.streak) localStorage.setItem(this.K.STREAK, JSON.stringify(data.streak));
+              if (data.weaknesses) localStorage.setItem(this.K.WEAKNESSES, JSON.stringify(data.weaknesses));
+              if (data.prefs) this.savePrefs(data.prefs);
+              if (data.readingProg) this._safeSet("eq_reading_prog", data.readingProg);
+              if (data.quizScores) localStorage.setItem(this.K.QUIZ, JSON.stringify(data.quizScores));
+              
+              const currentWords = parseInt(localStorage.getItem(this.K.WORDS) || "0");
+              const importedWords = data.totalWords || 0;
+              localStorage.setItem(this.K.WORDS, String(Math.max(currentWords, importedWords)));
+
+              if (typeof UI !== 'undefined') {
+                UI.toast(`Imported successfully! ${newSess.length} new sessions merged.`, "ok");
+                if (UI.refreshAll) UI.refreshAll();
+              }
             } catch (err) {
-              UI.toast("Import failed: invalid file", "err");
+              if (typeof UI !== 'undefined') UI.toast("Import failed: invalid JSON file", "err");
             }
           };
           reader.readAsText(file);
@@ -3171,20 +3132,78 @@
         },
 
         clearAll() {
-          if (!confirm("Delete ALL your progress data? This cannot be undone."))
-            return;
-          Object.values(this.K).forEach((k) => localStorage.removeItem(k));
+          if (!confirm("Delete ALL your progress data? This cannot be undone.")) return;
+          Object.keys(localStorage).forEach((k) => {
+             if (k.startsWith("eq_") || k.startsWith("dg_") || k.startsWith("ss_") || k.startsWith("wa_")) {
+                 localStorage.removeItem(k);
+             }
+          });
           this.init();
-          UI.toast("All data cleared", "wrn");
-          UI.refreshAll();
+          if (typeof UI !== 'undefined') {
+             UI.toast("All data cleared", "wrn");
+             if (UI.refreshAll) UI.refreshAll();
+          }
+        },
+
+        getWritingDrafts() { return this._safeGet("eq_writing_drafts", []); },
+        
+        saveWritingDraft(text, mode, score) {
+          const drafts = this.getWritingDrafts();
+          drafts.unshift({
+            id: Date.now(),
+            ts: Date.now(),
+            text: text.slice(0, 5000),
+            mode: mode || "freewrite",
+            score: score,
+            words: text.trim().split(/\s+/).filter(Boolean).length,
+          });
+          this._safeSet("eq_writing_drafts", drafts.slice(0, 30));
+        },
+        
+        getReadingProgress() { return this._safeGet("eq_reading_prog", {}); },
+        
+        markArticleRead(id) {
+          const p = this.getReadingProgress();
+          p[id] = { read: true, ts: Date.now() };
+          this._safeSet("eq_reading_prog", p);
+        },
+        
+        _safeGet(key, fallback) {
+          try {
+            const v = localStorage.getItem(key);
+            return v !== null ? JSON.parse(v) : fallback;
+          } catch (e) { return fallback; }
+        },
+        
+        _safeSet(key, val) {
+          try {
+            localStorage.setItem(key, JSON.stringify(val));
+            return true;
+          } catch (e) {
+            if (e.name === "QuotaExceededError") {
+              const s = this.getSessions();
+              if (s.length > 40) localStorage.setItem(this.K.SESSIONS, JSON.stringify(s.slice(0, 40)));
+              try {
+                localStorage.setItem(key, JSON.stringify(val));
+                return true;
+              } catch { return false; }
+            }
+            return false;
+          }
         },
 
         getDBStats() {
           const s = this.getSessions();
           const tw = parseInt(localStorage.getItem(this.K.WORDS) || "0");
           const daily = Object.keys(this.getDailyLog()).length;
-          return `${s.length} sessions · ${tw.toLocaleString()} words spoken · ${daily} active days · ~${Math.round(JSON.stringify(localStorage).length / 1024)}KB stored`;
-        },
+          let size = 0;
+          try {
+            for (const k in localStorage) {
+               if (localStorage.hasOwnProperty(k)) size += localStorage[k].length + k.length;
+            }
+          } catch {}
+          return `${s.length} sessions · ${tw.toLocaleString()} words spoken · ${daily} active days · ~${Math.round(size / 1024)}KB stored`;
+        }
       };
 
       /* ───────────────────────────────────────────────────────────
