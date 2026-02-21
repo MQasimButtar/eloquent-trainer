@@ -84,6 +84,7 @@ a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 button,input,select,textarea{font-family:var(--fb);outline:none}
 button{cursor:pointer}
+img,svg,video,canvas{max-width:100%;height:auto}
 
 /* ═══════════════════════════════════════════════════════════
    LAYOUT — fixed topbar, scrollable sidebar + main
@@ -199,9 +200,9 @@ button{cursor:pointer}
 /* ── Mobile overlay for sidebar ── */
 .sidebar-backdrop{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;
-  opacity:0;transition:opacity var(--t);
+  opacity:0;transition:opacity var(--t);pointer-events:none;
 }
-.sidebar-backdrop.active{opacity:1}
+.sidebar-backdrop.active{opacity:1;pointer-events:auto}
 
 /* ═══════════════════════════════════════════════════════════
    PAGES
@@ -284,6 +285,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:4px 0}
   display:flex;align-items:center;justify-content:center;
   padding:16px;
   animation:fadein .35s ease;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
 #loginOverlay.hidden{display:none!important}
 .login-card{
@@ -536,9 +538,9 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
 .quiz-opt.correct{border-color:var(--accent);background:var(--accent-soft)}
 .quiz-opt.wrong{border-color:var(--danger);background:var(--danger-soft)}
 .quiz-opt.locked{pointer-events:none}
-.quiz-actions{margin-top:18px;display:flex;gap:9px;justify-content:flex-end}
+.quiz-actions{margin-top:18px;display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap}
 .quiz-result-banner{
-  display:flex;align-items:center;gap:16px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
   background:var(--grad);border:1px solid color-mix(in srgb,var(--accent) 20%,var(--border));
   border-radius:var(--r);padding:20px 24px;margin-top:4px;
 }
@@ -676,6 +678,7 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
     position:fixed;left:0;top:var(--topbar-h);bottom:0;
     transform:translateX(-100%);z-index:150;box-shadow:var(--shadow-lg);
     height: calc(100% - var(--topbar-h));
+    width:min(260px,82vw);
   }
   .sidebar.open{transform:translateX(0)}
   .sidebar-backdrop{display:block}
@@ -702,6 +705,40 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
   .ov-div{display:none}
   .quiz-wrap{max-width:100%}
   .overall-banner{flex-direction:column;align-items:flex-start;gap:10px}
+  :root{--topbar-h:56px}
+  body{font-size:14px}
+  .logo{font-size:17px}
+  .ib{width:32px;height:32px;font-size:14px}
+  .page-title{font-size:24px}
+  .page-sub{font-size:13px}
+  .card,.stat-card,.topic-card,.listen-card,.tip-card,.speed-reader-box{padding:16px}
+  .quiz-card{padding:20px}
+  .overall-banner{padding:16px}
+  .ov-big{font-size:40px}
+  .quiz-score-big{font-size:36px}
+  .quiz-q{font-size:17px}
+  .quiz-result-banner{padding:16px}
+  .login-card,.setup-card{padding:24px}
+  .setup-title{font-size:22px}
+  .login-logo{font-size:24px}
+  .reading-mode-inner{padding:18px 14px 72px}
+  .rm-title{font-size:22px}
+  .speed-word{font-size:32px;min-height:44px}
+  .guide-step{flex-direction:column}
+  .topic-card::after{font-size:80px;right:10px;bottom:-10px}
+  #toast{right:12px;left:12px;max-width:none}
+  .tip-card{flex-direction:column}
+  .btn{white-space:normal}
+}
+@media(max-width:420px){
+  .main{padding:14px 12px 64px}
+  .stats-row{grid-template-columns:1fr}
+  .score-grid{grid-template-columns:1fr}
+  .page-title{font-size:22px}
+  .ov-big{font-size:34px}
+  .quiz-score-big{font-size:32px}
+  .stat-val{font-size:22px}
+  .quiz-card{padding:18px}
 }
 @media(max-width:360px){
   .topbar{padding:0 12px 0 10px}
