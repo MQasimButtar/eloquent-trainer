@@ -64,11 +64,17 @@
    RESET + BASE
 ═══════════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden}
-body{
-  font-family:var(--fb);background:var(--bg);color:var(--text);
-  font-size:15px;line-height:1.6;
-  transition:background var(--t),color var(--t);
+html { height: 100%; width: 100%; }
+body { 
+  height: 100%; 
+  height: 100dvh; 
+  width: 100%; 
+  overflow: hidden; 
+  display: flex; 
+  flex-direction: column; 
+  font-family: var(--fb); background: var(--bg); color: var(--text);
+  font-size: 15px; line-height: 1.6;
+  transition: background var(--t), color var(--t);
 }
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -83,9 +89,12 @@ button{cursor:pointer}
    LAYOUT — fixed topbar, scrollable sidebar + main
 ═══════════════════════════════════════════════════════════ */
 .topbar{
-  position:fixed;top:0;left:0;right:0;
-  height:var(--topbar-h);z-index:200;
-  background:var(--surface);border-bottom:1px solid var(--border);
+  position:relative; 
+  flex-shrink:0; 
+  height:var(--topbar-h);
+  z-index:200;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
   padding:0 20px 0 16px;
   box-shadow:var(--shadow-xs);
@@ -93,23 +102,29 @@ button{cursor:pointer}
 }
 .app-body{
   display:flex;
-  height:100vh;
-  padding-top:var(--topbar-h);
+  flex: 1;
+  min-height: 0; 
+  width: 100%;
 }
 .sidebar{
   width:var(--sidebar-w);
   flex-shrink:0;
+  height: 100%; 
   background:var(--surface);
   border-right:1px solid var(--border);
   display:flex;flex-direction:column;
   overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
   transition:transform var(--t),width var(--t),background var(--t);
   z-index:100;
 }
 .main{
   flex:1;
+  min-height: 0; 
+  min-width: 0; 
   overflow-y:auto;
   overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
   padding:28px 32px 48px;
   scroll-behavior:smooth;
   background:var(--bg);
@@ -259,6 +274,47 @@ button{cursor:pointer}
 
 /* divider */
 hr.divider{border:none;border-top:1px solid var(--border);margin:4px 0}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGIN OVERLAY
+═══════════════════════════════════════════════════════════ */
+#loginOverlay{
+  position:fixed;inset:0;z-index:99999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;
+  animation:fadein .35s ease;
+}
+#loginOverlay.hidden{display:none!important}
+.login-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;padding:40px;max-width:380px;width:100%;
+  box-shadow:var(--shadow-lg);text-align:center;
+}
+.login-logo{font-family:var(--fd);font-size:28px;letter-spacing:-.3px;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
+.login-sub{color:var(--text-muted);font-size:13.5px;margin-bottom:28px}
+.login-field{margin-bottom:16px;text-align:left}
+.login-field label{display:block;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
+.login-field input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:11px 14px;font-size:14px;color:var(--text);
+  transition:border-color var(--t),box-shadow var(--t);
+}
+.login-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);outline:none}
+.login-error{
+  background:var(--danger-soft);color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 25%,transparent);
+  border-radius:var(--r-xs);padding:9px 13px;font-size:13px;margin-bottom:14px;
+  display:none;
+}
+.login-error.show{display:block}
+.login-btn{
+  width:100%;padding:12px 20px;background:var(--accent);color:#fff;
+  border:none;border-radius:var(--r-sm);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all var(--t);box-shadow:0 2px 8px var(--accent-glow);
+}
+.login-btn:hover{opacity:.9;transform:translateY(-1px)}
+.login-btn:active{transform:none}
+.login-lock{font-size:40px;margin-bottom:16px}
 
 /* ═══════════════════════════════════════════════════════════
    SETUP OVERLAY
@@ -619,6 +675,7 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
   .sidebar{
     position:fixed;left:0;top:var(--topbar-h);bottom:0;
     transform:translateX(-100%);z-index:150;box-shadow:var(--shadow-lg);
+    height: calc(100% - var(--topbar-h));
   }
   .sidebar.open{transform:translateX(0)}
   .sidebar-backdrop{display:block}
@@ -628,6 +685,11 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
   .two-col{grid-template-columns:1fr}
   .three-col{grid-template-columns:1fr 1fr}
   .action-grid{grid-template-columns:1fr 1fr}
+  
+  .bottom-nav{display:flex}
+  .app-body{padding-bottom:56px} 
+  .main{padding: 24px 16px 80px;} 
+  #toast{bottom:68px!important}
 }
 @media(max-width:540px){
   .main{padding:16px 14px 60px}
@@ -645,9 +707,146 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
   .topbar{padding:0 12px 0 10px}
   .streak-pill{display:none}
 }
+
+/* ═══ BOTTOM NAV (Mobile 4-tab) ═══════════════════════════ */
+.bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:190;
+  height:56px;background:var(--surface);border-top:1px solid var(--border);
+  align-items:stretch;box-shadow:0 -2px 12px rgba(0,0,0,.08);
+}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;font-size:10px;font-weight:600;
+  color:var(--text-muted);cursor:pointer;border:none;background:none;
+  padding:4px 2px;letter-spacing:.3px;transition:color var(--t);
+  -webkit-tap-highlight-color:transparent}
+.bn-item.active{color:var(--accent)}
+.bn-ico{font-size:18px;line-height:1}
+
+/* ═══ WRITING ═══════════════════════════════════════════════ */
+.writing-mode-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.wmode-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;
+  padding:6px 16px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--text-muted);
+  transition:all var(--t);-webkit-appearance:none}
+.wmode-btn.active{background:var(--accent2);color:#fff;border-color:var(--accent2)}
+.writing-toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;
+  background:var(--surface2);border-bottom:1px solid var(--border);
+  border-radius:var(--r-sm) var(--r-sm) 0 0}
+.wt-btn{background:transparent;border:1px solid var(--border);border-radius:4px;
+  padding:4px 10px;font-size:12.5px;cursor:pointer;color:var(--text-muted);
+  transition:all var(--t);-webkit-appearance:none}
+.wt-btn:hover{background:var(--surface3);color:var(--text)}
+.writing-editor{width:100%;min-height:260px;background:var(--surface);
+  border:1px solid var(--border);border-top:none;
+  border-radius:0 0 var(--r-sm) var(--r-sm);
+  padding:16px;font-size:15px;line-height:1.8;color:var(--text);
+  resize:vertical;-webkit-appearance:none;font-family:var(--fd)}
+.writing-editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);outline:none}
+.writing-stats-bar{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;
+  color:var(--text-muted);padding:8px 0}
+.writing-prompt-card{background:var(--grad);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px;position:relative;overflow:hidden}
+.writing-prompt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent2),var(--accent))}
+
+/* ═══ READING ════════════════════════════════════════════════ */
+.article-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;box-shadow:var(--shadow-sm);transition:transform var(--t),box-shadow var(--t)}
+.article-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.article-img{width:100%;height:120px;display:flex;align-items:center;
+  justify-content:center;font-size:48px;background:var(--surface2)}
+.article-body{padding:16px}
+.article-cat{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:6px}
+.article-title{font-family:var(--fd);font-size:16px;line-height:1.4;margin-bottom:8px;font-weight:600}
+.article-meta{font-size:12px;color:var(--text-muted)}
+.article-read-btn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  font-size:12.5px;font-weight:600;color:var(--accent);cursor:pointer}
+.reading-mode-overlay{position:fixed;inset:0;z-index:500;background:var(--bg);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;animation:pagein .3s ease}
+.reading-mode-overlay.open{display:block}
+.reading-mode-inner{max-width:680px;margin:0 auto;padding:24px 20px 80px}
+.rm-topbar{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;flex-wrap:wrap;gap:10px;position:sticky;top:0;
+  background:var(--bg);padding:12px 0;z-index:10;border-bottom:1px solid var(--border)}
+.rm-title{font-family:var(--fd);font-size:26px;line-height:1.3;margin-bottom:8px}
+.rm-meta{font-size:13px;color:var(--text-muted);margin-bottom:24px}
+.rm-body{font-size:16px;line-height:1.9;font-family:var(--fd)}
+.rm-body p{margin-bottom:16px}
+.font-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.font-sz-btn{width:30px;height:30px;border-radius:50%;background:var(--surface2);
+  border:1px solid var(--border);font-size:14px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--text-muted)}
+.comprehension-q{background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:14px;margin-top:10px}
+.comp-q-text{font-weight:600;font-size:14px;margin-bottom:10px}
+.comp-opts{display:flex;flex-direction:column;gap:7px}
+.comp-opt{padding:9px 13px;background:var(--surface);border:2px solid var(--border);
+  border-radius:var(--r-xs);cursor:pointer;font-size:13.5px;transition:all var(--t)}
+.comp-opt:hover{border-color:var(--accent);background:var(--accent-soft)}
+.comp-opt.correct{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.comp-opt.wrong{border-color:var(--danger);background:var(--danger-soft);color:var(--danger)}
+.speed-reader-box{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:28px;text-align:center;margin-top:16px}
+.speed-word{font-family:var(--fd);font-size:40px;font-weight:700;color:var(--text);
+  min-height:56px;display:flex;align-items:center;justify-content:center;
+  transition:opacity .1s}
+.speed-controls{display:flex;align-items:center;gap:10px;justify-content:center;
+  margin-top:16px;flex-wrap:wrap}
+
+/* ═══ LISTENING ═════════════════════════════════════════════ */
+.listen-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.listen-track-title{font-family:var(--fd);font-size:17px;font-weight:600;margin-bottom:4px}
+.listen-track-meta{font-size:12.5px;color:var(--text-muted);margin-bottom:14px}
+.listen-transcript{background:var(--surface2);border-radius:var(--r-sm);padding:14px;
+  font-size:14px;line-height:1.8;max-height:200px;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;margin-top:4px}
+.dictation-box{width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:12px;font-size:14px;line-height:1.7;
+  color:var(--text);min-height:100px;resize:vertical;-webkit-appearance:none;
+  font-family:var(--fb)}
+
+/* ═══ TIPS ══════════════════════════════════════════════════ */
+.tip-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;box-shadow:var(--shadow-xs);display:flex;gap:16px;align-items:flex-start}
+.tip-icon{font-size:26px;flex-shrink:0;width:44px;height:44px;
+  background:var(--accent-soft);border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center}
+.tip-title{font-weight:700;font-size:14px;margin-bottom:5px}
+.tip-body{font-size:13.5px;color:var(--text-muted);line-height:1.65}
+.tip-tag{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:700;
+  letter-spacing:.6px;text-transform:uppercase;background:var(--accent-soft);
+  color:var(--accent);padding:2px 8px;border-radius:8px}
+.daily-date-pill{background:var(--accent2-soft);color:var(--accent2);font-size:12px;
+  font-weight:700;padding:3px 12px;border-radius:20px;
+  border:1px solid color-mix(in srgb,var(--accent2) 28%,transparent)}
+
+/* ═══ RESPONSIVE UPDATES ═══════════════════════════════════ */
+{% comment %} @media(max-width:880px){
+  .bottom-nav{display:flex}
+  .app-body{padding-bottom:56px}
+  #toast{bottom:68px!important}
+} {% endcomment %}
+
 </style>
 </head>
 <body>
+
+<!-- ═══════════ LOGIN OVERLAY ═══════════ -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-lock">🔒</div>
+    <div class="login-logo"><span class="beacon"></span>Eloquent</div>
+    <p class="login-sub">Your private speaking trainer. Enter your password to continue.</p>
+    <div id="loginError" class="login-error">Incorrect password. Please try again.</div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter password…" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')Auth.login()"/>
+    </div>
+    <button class="login-btn" onclick="Auth.login()">Unlock →</button>
+  </div>
+</div>
 
 <!-- ═══════════ SETUP OVERLAY ═══════════ -->
 <div class="setup-overlay" id="setupOverlay">
@@ -667,7 +866,39 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
   </div>
 </div>
 
-<!-- ═══════════ TOPBAR ═══════════ -->
+<!-- READING MODE OVERLAY -->
+<div class="reading-mode-overlay" id="readingModeOverlay">
+  <div class="reading-mode-inner">
+    <div class="rm-topbar">
+      <button class="btn btn-ghost btn-sm" onclick="Reading.closeMode()">← Back</button>
+      <div class="font-controls">
+        <button class="font-sz-btn" onclick="Reading.changeFontSize(-1)" title="Smaller">A−</button>
+        <button class="font-sz-btn" onclick="Reading.changeFontSize(1)" title="Larger">A+</button>
+        <button class="btn btn-secondary btn-sm" id="speedToggleBtn" onclick="Reading.toggleSpeedReader()">⚡ Speed</button>
+        <button class="btn btn-primary btn-sm" onclick="Reading.downloadPDF()">⬇ PDF</button>
+      </div>
+    </div>
+    <h1 class="rm-title" id="rmTitle"></h1>
+    <div class="rm-meta" id="rmMeta"></div>
+    <div class="rm-body" id="rmBody"></div>
+    <div id="speedReaderWrap" style="display:none">
+      <div class="speed-reader-box">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">Speed Reading</div>
+        <div class="speed-word" id="speedWordEl">Press Play</div>
+        <div style="margin-top:6px;font-size:12px;color:var(--text-muted)" id="speedProgEl">0 / 0</div>
+        <div class="speed-controls">
+          <button class="btn btn-ghost btn-sm" onclick="Reading.speedAdjust(-50)">−50</button>
+          <span id="speedWpmEl" style="font-size:13px;color:var(--text-muted);min-width:70px;text-align:center">250 WPM</span>
+          <button class="btn btn-ghost btn-sm" onclick="Reading.speedAdjust(50)">+50</button>
+          <button class="btn btn-primary" id="speedPlayBtn" onclick="Reading.speedToggle()">▶ Play</button>
+        </div>
+      </div>
+    </div>
+    <div id="rmComprehension" style="margin-top:32px"></div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
 <div class="topbar">
   <div style="display:flex;align-items:center;gap:10px">
     <button class="ib" id="menuBtn" onclick="UI.toggleSidebar()" aria-label="Menu">☰</button>
@@ -688,15 +919,20 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
 
   <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
-    <div class="sidebar-group">Practice</div>
+    <div class="sidebar-group">Learn</div>
     <div class="nav-item active" onclick="UI.navigate('dashboard')"><span class="nav-ico">🏠</span>Dashboard</div>
-    <div class="nav-item" onclick="UI.navigate('session')"><span class="nav-ico">🎙️</span>New Session</div>
+    <div class="nav-item" onclick="UI.navigate('speaking')"><span class="nav-ico">🎙️</span>Speaking</div>
+    <div class="nav-item" onclick="UI.navigate('writing')"><span class="nav-ico">✍️</span>Writing</div>
+    <div class="nav-item" onclick="UI.navigate('reading')"><span class="nav-ico">📖</span>Reading</div>
+    <div class="nav-item" onclick="UI.navigate('listening')"><span class="nav-ico">🎧</span>Listening</div>
+    <div class="sidebar-group">Practice</div>
     <div class="nav-item" onclick="UI.navigate('lessons')"><span class="nav-ico">📚</span>Lessons</div>
     <div class="nav-item" onclick="UI.navigate('quiz')"><span class="nav-ico">🧠</span>Quiz &amp; Revision</div>
+    <div class="nav-item" onclick="UI.navigate('tips')"><span class="nav-ico">💡</span>Daily Tips</div>
     <div class="sidebar-group">Analytics</div>
     <div class="nav-item" onclick="UI.navigate('progress')"><span class="nav-ico">📈</span>Progress</div>
     <div class="nav-item" onclick="UI.navigate('weaknesses')"><span class="nav-ico">🎯</span>Weaknesses <span class="nav-badge" id="weakBadge" style="display:none">!</span></div>
-    <div class="sidebar-group">Tools</div>
+    <div class="sidebar-group">More</div>
     <div class="nav-item" onclick="UI.navigate('settings')"><span class="nav-ico">⚙️</span>Settings</div>
     <div class="nav-item" onclick="UI.navigate('guide')"><span class="nav-ico">📱</span>iPhone Guide</div>
     <div class="sidebar-spacer"></div>
@@ -745,14 +981,14 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
       </div>
 
       <div class="action-grid">
-        <div class="action-card c1" onclick="UI.navigate('session')"><div class="ac-icon">🎙️</div><div class="ac-title">New Session</div><div class="ac-desc">Start speaking on a generated topic</div></div>
+        <div class="action-card c1" onclick="UI.navigate('speaking')"><div class="ac-icon">🎙️</div><div class="ac-title">New Session</div><div class="ac-desc">Start speaking on a generated topic</div></div>
         <div class="action-card c2" onclick="UI.navigate('quiz')"><div class="ac-icon">🧠</div><div class="ac-title">Quick Quiz</div><div class="ac-desc">Test grammar, vocab &amp; corrections</div></div>
         <div class="action-card c3" onclick="UI.navigate('lessons')"><div class="ac-icon">📚</div><div class="ac-title">Today's Lesson</div><div class="ac-desc">Targeted practice for weak areas</div></div>
       </div>
     </section>
 
     <!-- ══════════════════════ SESSION ══════════════════════ -->
-    <section class="page" id="page-session">
+    <section class="page" id="page-speaking">
       <div class="page-hdr">
         <h1 class="page-title">Speaking Session</h1>
         <p class="page-sub">Scored on 5 dimensions — grammar, vocabulary, fluency, pronunciation, coherence</p>
@@ -840,6 +1076,11 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
           <div class="fb-list" id="fbList"></div>
           <div id="strictFb"></div>
         </div>
+      </div>
+      <!-- Daily Tip Card -->
+      <div class="card" id="dashTipCard">
+        <div class="card-title">Today's Tip <a onclick="UI.navigate('tips')" style="cursor:pointer">All Tips →</a></div>
+        <div id="dashTipContent"></div>
       </div>
     </section>
 
@@ -1167,8 +1408,136 @@ mark.filler{background:var(--info-soft);border-bottom:2px dotted var(--info);bor
       </div>
     </section>
 
+
+
+    <!-- ══ WRITING ══════════════════════════════════════ -->
+    <section class="page" id="page-writing">
+      <div class="page-hdr">
+        <h1 class="page-title">✍️ Writing Practice</h1>
+        <p class="page-sub">Grammar analysis, vocabulary suggestions, structure feedback & auto-save</p>
+      </div>
+      <div class="writing-mode-tabs">
+        <button class="wmode-btn active" onclick="Writing.setMode('freewrite',this)">✍️ Free Write</button>
+        <button class="wmode-btn" onclick="Writing.setMode('prompt',this)">💡 Prompted</button>
+        <button class="wmode-btn" onclick="Writing.setMode('essay',this)">📄 Essay</button>
+        <button class="wmode-btn" onclick="Writing.setMode('email',this)">📧 Email</button>
+      </div>
+      <div class="writing-prompt-card" id="writingPromptCard" style="display:none">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent2);margin-bottom:8px" id="writingPromptCat">WRITING PROMPT</div>
+        <div style="font-family:var(--fd);font-size:17px;line-height:1.55;margin-bottom:12px" id="writingPromptText">Loading…</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="Writing.newPrompt()">🔀 New Prompt</button>
+          <span style="font-size:12px;color:var(--text-muted);align-self:center" id="writingPromptDiff"></span>
+        </div>
+      </div>
+      <div>
+        <div class="writing-toolbar">
+          <button class="wt-btn" onclick="Writing.insertText('However, ')">However,</button>
+          <button class="wt-btn" onclick="Writing.insertText('Furthermore, ')">Furthermore,</button>
+          <button class="wt-btn" onclick="Writing.insertText('In conclusion, ')">In conclusion,</button>
+          <button class="wt-btn" onclick="Writing.insertText('Despite ')">Despite</button>
+          <button class="wt-btn" onclick="Writing.insertText('Nevertheless, ')">Nevertheless,</button>
+          <span style="margin-left:auto;font-size:12px;color:var(--text-muted)" id="writingWordCount">0 words</span>
+        </div>
+        <textarea class="writing-editor" id="writingEditor" placeholder="Start writing here… (auto-saved every 30 seconds)" oninput="Writing.onInput(this)"></textarea>
+        <div class="writing-stats-bar">
+          <span>📝 <strong id="wWordCount2">0</strong> words</span>
+          <span>📊 <strong id="wSentCount">0</strong> sentences</span>
+          <span>⏱ <strong id="wReadTime">0</strong> min read</span>
+          <span id="wAutoSaveStatus" style="color:var(--accent);font-size:12px"></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="writingAnalyzeBtn" onclick="Writing.analyze()">🔍 Analyze Writing</button>
+        <button class="btn btn-secondary" onclick="Writing.saveDraft()">💾 Save Draft</button>
+        <button class="btn btn-secondary" onclick="Writing.downloadTxt()">⬇ Download .txt</button>
+        <button class="btn btn-ghost btn-sm" onclick="Writing.clearEditor()">↺ Clear</button>
+        <button class="btn btn-ghost btn-sm" onclick="Writing.loadDrafts()">📂 Drafts</button>
+      </div>
+      <div id="writingFeedback" style="display:none">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">Writing Analysis</div>
+          <div class="stats-row" style="margin-bottom:20px">
+            <div class="stat-card"><div class="stat-lbl">Grammar</div><div class="stat-val" id="wGrammarScore" style="font-size:22px">—</div><div class="stat-delta">/10</div></div>
+            <div class="stat-card"><div class="stat-lbl">Vocabulary</div><div class="stat-val" id="wVocabScore" style="font-size:22px">—</div><div class="stat-delta">/10</div></div>
+            <div class="stat-card"><div class="stat-lbl">Structure</div><div class="stat-val" id="wStructScore" style="font-size:22px">—</div><div class="stat-delta">/10</div></div>
+            <div class="stat-card"><div class="stat-lbl">Overall</div><div class="stat-val" id="wOverallScore" style="font-size:22px;color:var(--accent)">—</div><div class="stat-delta">/10</div></div>
+          </div>
+          <div id="writingFbList"></div>
+          <div id="writingHighlighted" style="display:none;margin-top:16px;padding:16px;background:var(--surface2);border-radius:var(--r-sm);font-size:14px;line-height:1.8"></div>
+        </div>
+      </div>
+      <div class="card" id="writingDraftsCard" style="display:none">
+        <div class="card-title">Saved Drafts <a onclick="document.getElementById('writingDraftsCard').style.display='none'">Close ×</a></div>
+        <div id="writingDraftsList"></div>
+      </div>
+    </section>
+
+    <!-- ══ READING ════════════════════════════════════════ -->
+    <section class="page" id="page-reading">
+      <div class="page-hdr">
+        <h1 class="page-title">📖 Daily Reading</h1>
+        <p class="page-sub">Curated articles with comprehension questions, speed-reading mode, and PDF download</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="quiz-filter-btn active" onclick="Reading.filter('all',this)">All</button>
+        <button class="quiz-filter-btn" onclick="Reading.filter('science',this)">🔬 Science</button>
+        <button class="quiz-filter-btn" onclick="Reading.filter('culture',this)">🎭 Culture</button>
+        <button class="quiz-filter-btn" onclick="Reading.filter('tech',this)">💻 Tech</button>
+        <button class="quiz-filter-btn" onclick="Reading.filter('health',this)">🏥 Health</button>
+        <button class="quiz-filter-btn" onclick="Reading.filter('society',this)">🌍 Society</button>
+      </div>
+      <div class="three-col" id="readingGrid"></div>
+    </section>
+
+    <!-- ══ LISTENING ══════════════════════════════════════ -->
+    <section class="page" id="page-listening">
+      <div class="page-hdr">
+        <h1 class="page-title">🎧 Listening Practice</h1>
+        <p class="page-sub">Audio exercises, transcript follow-along, dictation, and shadowing</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="quiz-filter-btn active" onclick="Listening.setTab('exercises',this)">🎧 Exercises</button>
+        <button class="quiz-filter-btn" onclick="Listening.setTab('dictation',this)">✏️ Dictation</button>
+        <button class="quiz-filter-btn" onclick="Listening.setTab('shadowing',this)">🔊 Shadowing</button>
+      </div>
+      <div id="listeningContent"></div>
+    </section>
+
+    <!-- ══ DAILY TIPS ═════════════════════════════════════  -->
+    <section class="page" id="page-tips">
+      <div class="page-hdr">
+        <h1 class="page-title">💡 Daily Tips</h1>
+        <p class="page-sub">Practical English improvement strategies — one highlight per day, all tips available below</p>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-weight:700;font-size:15px">Today's Focus</div>
+        <div class="daily-date-pill" id="tipDatePill"></div>
+      </div>
+      <div id="dailyTipHighlight"></div>
+      <div style="font-weight:700;font-size:15px;margin-top:8px;margin-bottom:4px">All Tips</div>
+      <div id="tipsGrid" style="display:flex;flex-direction:column;gap:12px"></div>
+    </section>
+
   </main><!-- end .main -->
+
 </div><!-- end .app-body -->
+
+<!-- BOTTOM NAV (Mobile) -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="bn-item" onclick="UI.navigate('speaking')" id="bn-speaking">
+    <span class="bn-ico">🎙️</span><span>Speaking</span>
+  </button>
+  <button class="bn-item" onclick="UI.navigate('writing')" id="bn-writing">
+    <span class="bn-ico">✍️</span><span>Writing</span>
+  </button>
+  <button class="bn-item" onclick="UI.navigate('reading')" id="bn-reading">
+    <span class="bn-ico">📖</span><span>Reading</span>
+  </button>
+  <button class="bn-item" onclick="UI.navigate('listening')" id="bn-listening">
+    <span class="bn-ico">🎧</span><span>Listening</span>
+  </button>
+</div>
 
 <div id="toast"></div>
 <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="DB.processImport(event)"/>
@@ -2168,14 +2537,21 @@ const UI={
     });
     document.getElementById('mainContent').scrollTop=0;
     this.closeSidebar();
-    if(page==='progress'){Chart.render('week');Chart.renderHeatmap();this._updateProgressPage()}
+    if(page==='progress'){Chart.render('week');Chart.renderHeatmap();this._updateProgressPage();this._updateDbStats();}
     if(page==='weaknesses') Weaknesses.render();
     if(page==='lessons') buildLessons();
     if(page==='quiz') Quiz.init();
     if(page==='settings') this._loadSettingsKeys();
-    if(page==='guide') document.getElementById('pwaUrl').textContent=window.location.href;
-    if(page==='dashboard') this._updateDashboard();
-    if(page==='progress') this._updateDbStats();
+    if(page==='guide'){const pu=document.getElementById('pwaUrl');if(pu)pu.textContent=window.location.href;}
+    if(page==='dashboard'){this._updateDashboard();Tips.render();}
+    if(page==='reading') Reading.init();
+    if(page==='listening') Listening.init();
+    if(page==='tips') Tips.render();
+    // Save last page
+    localStorage.setItem('eq_last_page',page);
+    // Update bottom nav
+    document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+    const bnBtn=document.getElementById('bn-'+page);if(bnBtn)bnBtn.classList.add('active');
   },
 
   toggleSidebar(){
@@ -2265,37 +2641,53 @@ const UI={
     const sessions=DB.getSessions();
     const streak=DB.getStreak();
     const tw=parseInt(localStorage.getItem(DB.K.WORDS)||'0');
-    document.getElementById('dSessions').textContent=sessions.length;
-    document.getElementById('dStreak').textContent=streak.current;
-    document.getElementById('dStreakDelta').textContent=`days (best: ${streak.longest})`;
-    document.getElementById('dWords').textContent=tw>999?`${(tw/1000).toFixed(1)}k`:tw;
-    document.getElementById('streakNum').textContent=streak.current;
+
+    // HELPER: Only update text if the HTML element actually exists
+    const setTxt = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+
+    setTxt('dSessions', sessions.length);
+    setTxt('dStreak', streak.current);
+    setTxt('dStreakDelta', `days (best: ${streak.longest})`);
+    setTxt('dWords', tw>999 ? `${(tw/1000).toFixed(1)}k` : tw);
+    setTxt('streakNum', streak.current);
+
     const avgs=DB.getAvgScores();
     if(avgs){
-      document.getElementById('dAvg').textContent=avgs.overall.toFixed(1);
-      document.getElementById('dAvgDelta').textContent=`avg last 20 sessions`;
+      setTxt('dAvg', avgs.overall.toFixed(1));
+      setTxt('dAvgDelta', `avg last 20 sessions`);
       const skills={grammar:'sk-grammar',vocabulary:'sk-vocab',fluency:'sk-fluency',pronunciation:'sk-pron',coherence:'sk-coh'};
       const fills={grammar:'sf-grammar',vocabulary:'sf-vocab',fluency:'sf-fluency',pronunciation:'sf-pron',coherence:'sf-coh'};
       for(const[k,id] of Object.entries(skills)){
-        document.getElementById(id).textContent=`${(avgs[k]||0).toFixed(1)} / 10`;
-        document.getElementById(fills[k]).style.width=`${(avgs[k]||0)*10}%`;
+        setTxt(id, `${(avgs[k]||0).toFixed(1)} / 10`);
+        const fillEl = document.getElementById(fills[k]);
+        if(fillEl) fillEl.style.width=`${(avgs[k]||0)*10}%`;
       }
     }
+    
     // Recent sessions list
     const rl=document.getElementById('recentList');
-    if(!sessions.length){rl.innerHTML='<div style="color:var(--text-light);font-size:13px">No sessions yet.</div>';return}
-    const icons=['🗣️','📰','🎭','💬','📖'];
-    rl.innerHTML=sessions.slice(0,4).map((s,i)=>`
-      <div class="recent-sess">
-        <div class="s-ico">${icons[i%icons.length]}</div>
-        <div class="s-inf">
-          <div class="s-topic">${_esc(s.topicText?.slice(0,44)||'Speaking session')}…</div>
-          <div class="s-meta">${s.sentences} sentences · ${s.wpm||'—'} WPM · ${new Date(s.ts).toLocaleDateString()}</div>
-        </div>
-        <div class="s-scr">${(s.overall||0).toFixed(1)}</div>
-      </div>`).join('');
+    if(rl){
+      if(!sessions.length){
+        rl.innerHTML='<div style="color:var(--text-light);font-size:13px">No sessions yet.</div>';
+      } else {
+        const icons=['🗣️','📰','🎭','💬','📖'];
+        rl.innerHTML=sessions.slice(0,4).map((s,i)=>`
+          <div class="recent-sess">
+            <div class="s-ico">${icons[i%icons.length]}</div>
+            <div class="s-inf">
+              <div class="s-topic">${_esc(s.topicText?.slice(0,44)||'Speaking session')}…</div>
+              <div class="s-meta">${s.sentences} sentences · ${s.wpm||'—'} WPM · ${new Date(s.ts).toLocaleDateString()}</div>
+            </div>
+            <div class="s-scr">${(s.overall||0).toFixed(1)}</div>
+          </div>`).join('');
+      }
+    }
+    
     // Best session indicator
-    if(sessions.length){const best=Math.max(...sessions.map(s=>s.overall||0));document.getElementById('dAvgDelta').textContent=`best: ${best.toFixed(1)}`}
+    if(sessions.length){
+      const best=Math.max(...sessions.map(s=>s.overall||0));
+      setTxt('dAvgDelta', `best: ${best.toFixed(1)}`);
+    }
   },
 
   _updateProgressPage(){
@@ -2347,9 +2739,52 @@ const UI={
 };
 
 /* ───────────────────────────────────────────────────────────
+   AUTH  — simple password gate (change PASSWORD below)
+   The password is hashed so it's not plain-text in the source.
+─────────────────────────────────────────────────────────── */
+const Auth = {
+  // To change password: run in console →  Auth.hashPassword('yourNewPassword')
+  // then replace the HASH value below with the result.
+  HASH: '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', // default: "password"
+  SESSION_KEY: 'eq_auth_session',
+
+  async hashPassword(pw) {
+    const enc = new TextEncoder().encode(pw);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  },
+
+  async login() {
+    const pw = document.getElementById('loginPassword').value;
+    const hash = await this.hashPassword(pw);
+    const err = document.getElementById('loginError');
+    if (hash === this.HASH) {
+      sessionStorage.setItem(this.SESSION_KEY, '1');
+      document.getElementById('loginOverlay').classList.add('hidden');
+      err.classList.remove('show');
+      document.getElementById('loginPassword').value = '';
+    } else {
+      err.classList.add('show');
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginPassword').focus();
+    }
+  },
+
+  check() {
+    if (sessionStorage.getItem(this.SESSION_KEY) === '1') {
+      document.getElementById('loginOverlay').classList.add('hidden');
+    }
+    // else overlay stays visible
+  }
+};
+
+/* ───────────────────────────────────────────────────────────
    INIT
 ─────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded',()=>{
+  // Auth check
+  Auth.check();
+  setTimeout(()=>document.getElementById('loginPassword')?.focus(),100);
   // DB init
   DB.init();
 
@@ -2358,29 +2793,41 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.documentElement.setAttribute('data-theme',theme);
 
   // First run
-  if(localStorage.getItem('dg_key')||localStorage.getItem('ss_key')||localStorage.getItem('eq_setup_done')){
-    document.getElementById('setupOverlay').classList.add('hidden');
+  const setupOverlay = document.getElementById('setupOverlay');
+  if(setupOverlay && (localStorage.getItem('dg_key')||localStorage.getItem('ss_key')||localStorage.getItem('eq_setup_done'))){
+    setupOverlay.classList.add('hidden');
   }
 
   // Greet
   const h=new Date().getHours();
   const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-  document.getElementById('dashGreet').textContent=`${g} 👋`;
+  const dashGreet = document.getElementById('dashGreet');
+  if (dashGreet) dashGreet.textContent=`${g} 👋`;
 
   // Prefs
   const p=DB.getPrefs();
   Session.minSent=p.minSent||10;
-  if(!p.strict) document.getElementById('strictTag').style.display='none';
+  const strictTag = document.getElementById('strictTag');
+  if (!p.strict && strictTag) strictTag.style.display='none';
 
   // Streak
   const streak=DB.getStreak();
-  document.getElementById('streakNum').textContent=streak.current;
+  const streakNum = document.getElementById('streakNum');
+  if (streakNum) streakNum.textContent=streak.current;
 
   // Init modules
   TopicGen.init();
   buildLessons();
   UI._updateDashboard();
   UI.refreshAll();
+  Tips.render();
+  Reading.init();
+  Listening.init();
+  // Navigate to last page if session is active
+  const _lastPage=localStorage.getItem('eq_last_page');
+  if(_lastPage&&_lastPage!=='dashboard'&&sessionStorage.getItem(Auth.SESSION_KEY)==='1'){
+    setTimeout(()=>UI.navigate(_lastPage),100);
+  }
 
   // Set PWA url
   const puEl=document.getElementById('pwaUrl');
@@ -2406,6 +2853,654 @@ document.addEventListener('DOMContentLoaded',()=>{
     navigator.serviceWorker.register(url).catch(()=>{});
   }
 });
+
+
+/* ═══════════════════════════════════════════════════════
+   WRITING MODULE
+═══════════════════════════════════════════════════════ */
+const Writing=(()=>{
+  const PROMPTS={
+    prompt:[
+      {cat:'Opinion',diff:'B2',p:'Should university education be free for everyone? Argue both sides and reach a conclusion.'},
+      {cat:'Description',diff:'B1',p:'Describe a place that holds special meaning to you. Why is it important to you?'},
+      {cat:'Narrative',diff:'B1-B2',p:'Write about a time when you made a difficult decision. What happened and what did you learn?'},
+      {cat:'Discussion',diff:'C1',p:'Some people believe that social media does more harm than good. To what extent do you agree?'},
+      {cat:'Report',diff:'B2',p:'Write a short report on the advantages and disadvantages of working from home.'},
+      {cat:'Argument',diff:'B2',p:'Is it better to live in a city or the countryside? Give your opinion with reasons and examples.'},
+    ],
+    essay:[
+      {cat:'IELTS Task 2',diff:'B2-C1',p:'Technology has made people\'s lives easier. However, some argue it has also made people lazier. Discuss both views and give your own opinion.'},
+      {cat:'Academic Essay',diff:'C1',p:'To what extent has globalisation been beneficial for developing countries? Support your argument with evidence.'},
+    ],
+    email:[
+      {cat:'Formal Complaint',diff:'B1',p:'Write a formal email to a hotel manager complaining about your recent stay. Be polite but clear about the issues.'},
+      {cat:'Covering Letter',diff:'B2',p:'Write a covering letter for a job as an English teacher. Highlight your relevant skills and experience.'},
+    ],
+    freewrite:[],
+  };
+  let mode='freewrite',promptIdx=0,promptSet=[],autoTimer=null;
+
+  function setMode(m,btn){
+    mode=m;
+    document.querySelectorAll('.wmode-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const pc=document.getElementById('writingPromptCard');
+    if(mode==='freewrite'){if(pc)pc.style.display='none';}
+    else{if(pc)pc.style.display='block';promptSet=PROMPTS[mode]||[];promptIdx=0;_showPrompt();}
+    document.getElementById('writingEditor')?.focus();
+  }
+
+  function _showPrompt(){
+    if(!promptSet.length)return;
+    const p=promptSet[promptIdx%promptSet.length];
+    const t=document.getElementById('writingPromptText');if(t)t.textContent=p.p;
+    const c=document.getElementById('writingPromptCat');if(c)c.textContent=p.cat;
+    const d=document.getElementById('writingPromptDiff');if(d)d.textContent=p.diff;
+  }
+
+  function newPrompt(){
+    promptIdx++;_showPrompt();
+    const ed=document.getElementById('writingEditor');if(ed){ed.value='';onInput(ed);}
+    UI.toast('New prompt!','ok');
+  }
+
+  function onInput(el){
+    const text=el.value||'';
+    const words=text.trim()?text.trim().split(/\s+/).length:0;
+    const sents=text.split(/[.!?]+/).filter(s=>s.trim().length>3).length;
+    const readTime=Math.max(1,Math.ceil(words/200));
+    const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+    setEl('writingWordCount',words+' words');
+    setEl('wWordCount2',words);
+    setEl('wSentCount',sents);
+    setEl('wReadTime',readTime);
+    // Auto-save
+    clearTimeout(autoTimer);
+    if(words>10){
+      autoTimer=setTimeout(()=>{
+        DB.saveWritingDraft(text,mode,null);
+        const s=document.getElementById('wAutoSaveStatus');
+        if(s){s.textContent='✓ Auto-saved';setTimeout(()=>{s.textContent=''},2500);}
+      },30000);
+    }
+  }
+
+  function insertText(txt){
+    const ed=document.getElementById('writingEditor');if(!ed)return;
+    const s=ed.selectionStart,e=ed.selectionEnd;
+    ed.value=ed.value.slice(0,s)+txt+ed.value.slice(e);
+    ed.selectionStart=ed.selectionEnd=s+txt.length;
+    ed.focus();onInput(ed);
+  }
+
+  async function analyze(){
+    const text=document.getElementById('writingEditor')?.value||'';
+    if(text.trim().length<30){UI.toast('Write at least 30 characters first','wrn');return;}
+    const btn=document.getElementById('writingAnalyzeBtn');
+    if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span>Analyzing…';}
+    try{
+      const[g,v]=await Promise.all([Grammar.analyze(text),Vocab.analyze(text)]);
+      const words=text.split(/\s+/).filter(Boolean).length;
+      const paragraphs=text.split(/\n+/).filter(Boolean).length||1;
+      const hasIntro=/(I (believe|think|would like)|In this|This essay|The aim|Firstly)/i.test(text);
+      const hasConcl=/(in conclusion|to summarize|overall|in summary|to conclude|finally)/i.test(text);
+      const hasBody=paragraphs>=2;
+      const structScore=Math.min(10,4+(hasIntro?2:0)+(hasConcl?2:0)+(hasBody?1:0)+(paragraphs>=3?1:0));
+      const overall=Math.round((g.score*.35+v.score*.35+structScore*.30)*10)/10;
+      DB.saveWritingDraft(text,mode,overall);
+      document.getElementById('writingFeedback').style.display='block';
+      const setTxt=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+      setTxt('wGrammarScore',g.score.toFixed(1));
+      setTxt('wVocabScore',v.score.toFixed(1));
+      setTxt('wStructScore',structScore.toFixed(1));
+      setTxt('wOverallScore',overall.toFixed(1));
+      const hl=document.getElementById('writingHighlighted');
+      if(g.highlights&&hl){hl.style.display='block';hl.innerHTML='<strong style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px">Grammar Highlights</strong><div style="margin-top:10px">'+g.highlights+'</div>';}
+      const fl=document.getElementById('writingFbList');fl.innerHTML='';
+      fl.appendChild(_fbItem('📐 Grammar',g.errorCount>0?'badge-err':'badge-ok',g.errorCount>0?g.errorCount+' issues':'No errors',
+        (g.corrections?.map(c=>`<div class="corr"><span class="cw">${_esc(c.wrong)}</span><span class="ca">→</span><span class="cr">${_esc(c.suggestions[0]||'?')}</span></div><div style="font-size:12px;color:var(--text-muted);margin-bottom:5px">${_esc(c.message)}</div>`).join('')||'<p style="color:var(--accent)">✓ No errors found!</p>')));
+      fl.appendChild(_fbItem('📖 Vocabulary','badge-warn',(v.suggestions?.length||0)+' upgrades',
+        `<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Unique ratio: <strong>${v.uniqueRatio}%</strong> · Advanced words: <strong>${v.advancedCount}</strong></div>`+
+        (v.suggestions?.map(s=>`<div class="corr"><span class="cw">${_esc(s.word)}</span><span class="ca">→</span>${s.synonyms.slice(0,3).map(sy=>`<span class="cr">${_esc(sy)}</span>`).join('<span class="ca">/</span>')}</div>`).join('')||'<p style="color:var(--accent)">Good vocabulary use!</p>')));
+      fl.appendChild(_fbItem('📝 Structure',structScore>=7?'badge-ok':'badge-warn',paragraphs+' paragraphs',
+        `<ul style="font-size:13px;line-height:2.2;list-style:none;padding:0">
+          <li>${hasIntro?'✅':'❌'} Introduction / opening statement</li>
+          <li>${hasBody?'✅':'❌'} Body paragraphs (2+)</li>
+          <li>${hasConcl?'✅':'❌'} Conclusion</li>
+          <li>${paragraphs>=3?'✅':'⚠️'} 3+ paragraphs (found ${paragraphs})</li>
+          <li>${words>=150?'✅':'⚠️'} Word count: ${words} ${words<150?'(aim for 150+)':''}</li>
+        </ul>`));
+      document.getElementById('writingFeedback').scrollIntoView({behavior:'smooth',block:'start'});
+      UI.toast('Analysis done: '+overall.toFixed(1)+'/10','ok');
+    }catch(e){console.error(e);UI.toast('Analysis error','err');}
+    finally{if(btn){btn.disabled=false;btn.innerHTML='🔍 Analyze Writing';}}
+  }
+
+  function saveDraft(){
+    const text=document.getElementById('writingEditor')?.value||'';
+    if(!text.trim()){UI.toast('Nothing to save','wrn');return;}
+    DB.saveWritingDraft(text,mode,null);
+    UI.toast('Draft saved!','ok');
+    const s=document.getElementById('wAutoSaveStatus');if(s)s.textContent='✓ Saved';
+  }
+
+  function clearEditor(){
+    const ed=document.getElementById('writingEditor');if(!ed)return;
+    ed.value='';onInput(ed);
+    document.getElementById('writingFeedback').style.display='none';
+    UI.toast('Cleared','ok');
+  }
+
+  function downloadTxt(){
+    const text=document.getElementById('writingEditor')?.value||'';
+    if(!text.trim()){UI.toast('Nothing to download','wrn');return;}
+    const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='writing-'+new Date().toISOString().slice(0,10)+'.txt';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    UI.toast('Downloaded!','ok');
+  }
+
+  function loadDrafts(){
+    const drafts=DB.getWritingDrafts();
+    const card=document.getElementById('writingDraftsCard');
+    const list=document.getElementById('writingDraftsList');
+    if(!drafts.length){UI.toast('No saved drafts yet','wrn');return;}
+    card.style.display='block';
+    list.innerHTML=drafts.slice(0,6).map((d,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:500">${_esc(d.text.slice(0,55))}…</div>
+          <div style="font-size:12px;color:var(--text-muted)">${new Date(d.ts).toLocaleDateString()} · ${d.words||0} words${d.score?' · '+d.score+'/10':''}</div>
+        </div>
+        <button class="btn btn-secondary btn-xs" onclick="Writing._loadIdx(${i})">Load</button>
+      </div>`).join('');
+    card.scrollIntoView({behavior:'smooth'});
+  }
+
+  function _loadIdx(i){
+    const drafts=DB.getWritingDrafts();if(!drafts[i])return;
+    const ed=document.getElementById('writingEditor');
+    ed.value=drafts[i].text;onInput(ed);
+    document.getElementById('writingDraftsCard').style.display='none';
+    UI.toast('Draft loaded','ok');
+  }
+
+  return{setMode,onInput,insertText,analyze,saveDraft,clearEditor,downloadTxt,loadDrafts,newPrompt,_loadIdx};
+})();
+
+/* ═══════════════════════════════════════════════════════
+   READING MODULE
+═══════════════════════════════════════════════════════ */
+const Reading=(()=>{
+  const ARTICLES=[
+    {id:'a1',cat:'science',emoji:'🔬',title:'The Mystery of Deep-Sea Bioluminescence',level:'B2',readTime:4,
+      summary:'Over 75% of deep-sea creatures produce their own light — and it\'s transforming medicine.',
+      body:`<p>Deep beneath the ocean surface, in a world of perpetual darkness, an extraordinary phenomenon occurs: living organisms produce their own light. This process, known as bioluminescence, is far more prevalent than scientists once believed.</p><p>Recent research has revealed that approximately 76% of sea creatures living between 200 and 1,000 metres below the surface can generate light. This includes fish, jellyfish, squid, and a variety of bacteria. The mechanisms vary considerably — some organisms use chemical reactions, while others host symbiotic bacteria that produce light on their behalf.</p><p>The evolutionary purposes of bioluminescence are diverse. Predators use flashes of light to attract prey, much like a fisherman's lure. Other creatures use light to communicate with potential mates, signalling their health and genetic fitness. Perhaps most remarkably, some fish use counter-illumination — producing light on their bellies to match the faint light filtering down from above, making them effectively invisible to predators below.</p><p>Scientists are particularly interested in the luciferin-luciferase reaction that powers most bioluminescence. Understanding this mechanism has already led to significant medical breakthroughs. Researchers now use luciferase proteins to track cancer cell growth, monitor gene expression, and develop new diagnostic tools.</p>`,
+      questions:[
+        {q:'What percentage of deep-sea creatures can produce light?',opts:['About 50%','Over 75%','Exactly 100%','Less than 25%'],ans:1},
+        {q:'What is counter-illumination used for?',opts:['Attracting mates','Finding food','Hiding from predators','Communication with peers'],ans:2},
+        {q:'How has bioluminescence helped medicine?',opts:['Treating cancer directly','Tracking cancer cell growth','Replacing surgery','Making vaccines'],ans:1},
+      ]},
+    {id:'a2',cat:'tech',emoji:'💻',title:'The Rise of Small Language Models',level:'B2',readTime:5,
+      summary:'Researchers find that smaller, efficient AI models can rival their massive counterparts on many tasks.',
+      body:`<p>For years, the prevailing wisdom in AI research was straightforward: bigger is better. Larger language models, trained on vast datasets with billions of parameters, consistently outperformed their smaller counterparts. However, a quiet revolution is underway that challenges this assumption.</p><p>Small language models (SLMs), typically containing fewer than 10 billion parameters, are demonstrating remarkable capabilities. Microsoft's Phi series has shown that carefully curated training data can compensate for smaller model size in many practical applications.</p><p>The advantages extend beyond performance. Running on modest hardware, SLMs operate on smartphones and laptops without cloud connectivity. This enables applications where privacy is paramount — medical records, legal documents, and personal communications — where sending data to remote servers is impractical or undesirable.</p><p>Energy consumption represents another compelling argument. Training a large language model can generate carbon emissions equivalent to the lifetime emissions of five automobiles. SLMs require dramatically less energy both to train and to operate, a growing concern for organisations and regulators alike.</p><p>Despite these advantages, SLMs face real limitations. Complex reasoning, creative writing, and nuanced analysis still generally favour larger models. The field is evolving rapidly, however, and researchers believe the gap will narrow considerably as training techniques improve.</p>`,
+      questions:[
+        {q:'What is the main advantage of small language models?',opts:['They are always more accurate','Less energy, work offline','They are cheaper to develop','They were invented first'],ans:1},
+        {q:'What does the Phi series demonstrate?',opts:['Bigger models are always better','Curated data compensates for smaller size','Cloud computing is unnecessary','Privacy is unimportant'],ans:1},
+        {q:'What disadvantage do SLMs still have?',opts:['Use too much energy','Cannot run offline','Complex reasoning still favours larger models','Too expensive'],ans:2},
+      ]},
+    {id:'a3',cat:'culture',emoji:'🎭',title:'Why We Read Fiction: The Empathy Machine',level:'C1',readTime:5,
+      summary:'Neuroscience confirms what readers always knew: literary fiction actively builds empathy.',
+      body:`<p>Long before neuroscientists began mapping the brain's response to narrative, readers understood that fiction had the power to transform perspective. Today, a growing body of research is confirming what Aristotle suspected more than two millennia ago: storytelling is, at its core, a technology for teaching empathy.</p><p>Brain imaging studies reveal that reading literary fiction activates regions of the brain associated with social cognition. When we follow a character through a complex moral dilemma, our brains simulate the experience. We don't merely observe — we inhabit. This neural simulation appears to strengthen the pathways we use in real-world social situations.</p><p>Psychologist Raymond Mar's research consistently shows that fiction readers score higher on tests of empathy and social acuity. Crucially, the relationship appears causal rather than merely correlational — reading fiction doesn't simply attract empathetic people; it actively develops empathetic capacity.</p><p>Sociologist Arlie Hochschild argues that fiction tears down "empathy walls" — barriers that prevent us from feeling what another person feels. In an age of increasing political polarisation and social fragmentation, the novel may prove to be an indispensable tool for rebuilding common ground.</p>`,
+      questions:[
+        {q:'What does brain imaging show about literary fiction?',opts:['Activates memory centres','Activates social cognition regions','Reduces stress hormones','Improves mathematical thinking'],ans:1},
+        {q:'What was Raymond Mar\'s key finding?',opts:['Nonfiction readers are more empathetic','Reading fiction actively develops empathy','Both types of readers are equal','Only children benefit from fiction'],ans:1},
+        {q:'What are "empathy walls" according to Hochschild?',opts:['Barriers to feeling what others feel','Physical barriers in cities','Walls between books','Privacy settings on social media'],ans:0},
+      ]},
+    {id:'a4',cat:'health',emoji:'🏥',title:'The Science of Sleep: Why 8 Hours Matters',level:'B1',readTime:3,
+      summary:'New research confirms chronic sleep deprivation has serious physical and cognitive consequences.',
+      body:`<p>We live in a culture that glorifies busyness and treats sleep as an inconvenience. Yet an overwhelming body of scientific evidence suggests this attitude carries serious consequences. Sleep is not a passive state of rest; it is an active, essential biological process that affects virtually every system in the body.</p><p>During sleep, the brain undergoes a remarkable cleaning process. The glymphatic system, largely inactive during waking hours, becomes highly active, flushing out toxic proteins that accumulate during the day. Among these is beta-amyloid, a protein strongly associated with Alzheimer's disease. Researchers found that just one night of sleep deprivation leads to a measurable increase in beta-amyloid in the brain.</p><p>The cognitive effects of sleep deprivation are equally striking. After 17 to 19 hours without sleep, cognitive performance deteriorates to a level equivalent to a blood alcohol content of 0.05%. Most troublingly, people who are chronically sleep-deprived consistently underestimate the degree of their own impairment.</p><p>The recommended seven to nine hours for adults is not arbitrary. Studies tracking thousands of individuals over decades find that both short sleepers (under six hours) and long sleepers (over nine hours) show elevated risks of cardiovascular disease, type 2 diabetes, and depression.</p>`,
+      questions:[
+        {q:'What does the glymphatic system do during sleep?',opts:['Generates dreams','Flushes out toxic proteins','Regulates body temperature','Stores memories'],ans:1},
+        {q:'What does 17–19 hours without sleep equal in impairment?',opts:['Blood alcohol of 0.10%','Blood alcohol of 0.05%','No measurable impairment','Full legal intoxication'],ans:1},
+        {q:'How many hours of sleep is optimal for most adults?',opts:['5–6 hours','6–7 hours','7–9 hours','More than 9 hours'],ans:2},
+      ]},
+    {id:'a5',cat:'society',emoji:'🌍',title:'Urban Loneliness: The Hidden Epidemic',level:'B2',readTime:4,
+      summary:'Cities worldwide face a loneliness crisis that public health experts now compare to the health risk of smoking.',
+      body:`<p>Paradoxically, the most densely populated places on Earth are generating some of the most profound loneliness. Urban loneliness has reached epidemic proportions in many developed nations, prompting governments to appoint ministers dedicated solely to addressing the problem.</p><p>The UK appointed the world's first Minister for Loneliness in 2018, acknowledging that approximately nine million British people — nearly one in seven — describe themselves as frequently or always lonely. Similar figures have emerged in the United States, Japan, and Australia.</p><p>The health consequences of chronic loneliness are severe. Social isolation increases the risk of premature death by 26% — comparable, according to researchers at Brigham Young University, to smoking 15 cigarettes per day. Lonely individuals experience higher rates of cardiovascular disease, cognitive decline, and depression. Loneliness activates the body's threat response, raising cortisol levels and increasing inflammation.</p><p>Urban planners and public health officials are exploring structural interventions. Mixed-use development, bringing homes, workplaces, and community spaces into closer proximity, has shown promise. Some cities experiment with "social prescribing" — directing patients to community groups and activities rather than medication.</p>`,
+      questions:[
+        {q:'When did the UK appoint its first Minister for Loneliness?',opts:['2015','2018','2020','2022'],ans:1},
+        {q:'Lonely individuals face what increased risk of premature death?',opts:['10%','19%','26%','40%'],ans:2},
+        {q:'What is "social prescribing"?',opts:['Prescribing social media','Directing patients to community groups','A new type of medication','Online therapy'],ans:1},
+      ]},
+    {id:'a6',cat:'science',emoji:'🧬',title:'CRISPR: Rewriting the Book of Life',level:'C1',readTime:5,
+      summary:'Gene editing has moved from laboratory curiosity to clinical reality, raising profound ethical questions.',
+      body:`<p>In 2012, Jennifer Doudna and Emmanuelle Charpentier published research that would earn them the Nobel Prize and permanently alter the trajectory of medicine. They had repurposed a bacterial immune system — the CRISPR-Cas9 complex — into a precise molecular tool capable of editing the human genome with unprecedented accuracy.</p><p>For decades, genetic diseases had been observed, diagnosed, and managed, but rarely cured. Conditions such as sickle cell disease, caused by a single mutation in a single gene, were now theoretically correctable at their molecular source. The first clinical trials began cautiously, and the results have largely exceeded expectations.</p><p>In 2023, regulatory agencies in both the United Kingdom and United States approved the first CRISPR-based therapy for sickle cell disease. Patients who spent their lives managing chronic pain and requiring regular blood transfusions have, in many cases, been functionally cured. The therapy works by reactivating a foetal form of haemoglobin normally switched off after birth.</p><p>Yet the technology raises profound ethical questions. The distinction between somatic editing — modifying cells within an existing patient — and germline editing — making changes inherited by future generations — is both scientifically and ethically charged. Establishing internationally enforceable boundaries around germline editing remains one of the most pressing challenges in bioethics.</p>`,
+      questions:[
+        {q:'Who won the Nobel Prize for developing CRISPR-Cas9?',opts:['Watson and Crick','Doudna and Charpentier','He Jiankui','Fleming and Chain'],ans:1},
+        {q:'How does the approved CRISPR sickle cell therapy work?',opts:['Removes the faulty gene','Reactivates foetal haemoglobin','Replaces red blood cells','Suppresses the immune system'],ans:1},
+        {q:'What is "germline editing"?',opts:['Editing bacteria','Editing cells in existing patients','Changes inherited by future generations','Editing plant genomes'],ans:2},
+      ]},
+  ];
+
+  let currentFilter='all',currentArticle=null,rmFontSize=16;
+  let speedWords=[],speedIdx=0,speedWPM=250,speedInterval=null,speedPlaying=false;
+
+  function filter(cat,btn){
+    currentFilter=cat;
+    document.querySelectorAll('#page-reading .quiz-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    _renderGrid();
+  }
+
+  function _renderGrid(){
+    const grid=document.getElementById('readingGrid');if(!grid)return;
+    const list=currentFilter==='all'?ARTICLES:ARTICLES.filter(a=>a.cat===currentFilter);
+    const prog=DB.getReadingProgress();
+    grid.innerHTML=list.map(a=>{
+      const read=prog[a.id]?.read;
+      return`<div class="article-card">
+        <div class="article-img">${a.emoji}</div>
+        <div class="article-body">
+          <div class="article-cat">${a.cat.toUpperCase()}${read?' · ✅':''}</div>
+          <div class="article-title">${_esc(a.title)}</div>
+          <div class="article-meta">Level ${a.level} · ${a.readTime} min read</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.5">${_esc(a.summary)}</p>
+          <div class="article-read-btn" onclick="Reading.openArticle('${a.id}')">Read Article →</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function openArticle(id){
+    currentArticle=ARTICLES.find(a=>a.id===id);if(!currentArticle)return;
+    DB.markArticleRead(id);
+    const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+    setEl('rmTitle',_esc(currentArticle.title));
+    document.getElementById('rmMeta').textContent=currentArticle.cat+' · Level '+currentArticle.level+' · ~'+currentArticle.readTime+' min read';
+    setEl('rmBody',currentArticle.body);
+    document.getElementById('rmBody').style.fontSize=rmFontSize+'px';
+    _renderComprehension();
+    document.getElementById('readingModeOverlay').classList.add('open');
+    document.body.style.overflow='hidden';
+    // Prepare speed reader
+    speedWords=currentArticle.body.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().split(' ').filter(Boolean);
+    speedIdx=0;speedPlaying=false;
+    const sp=document.getElementById('speedPlayBtn');if(sp)sp.textContent='▶ Play';
+  }
+
+  function closeMode(){
+    document.getElementById('readingModeOverlay').classList.remove('open');
+    document.body.style.overflow='';
+    speedStop();
+    _renderGrid();
+  }
+
+  function _renderComprehension(){
+    const comp=document.getElementById('rmComprehension');if(!comp||!currentArticle)return;
+    comp.innerHTML='<div style="font-weight:700;font-size:16px;margin-bottom:16px">🧠 Comprehension Check</div>'+
+      currentArticle.questions.map((q,qi)=>`
+        <div class="comprehension-q" id="cq${qi}" style="margin-bottom:12px">
+          <div class="comp-q-text">${qi+1}. ${_esc(q.q)}</div>
+          <div class="comp-opts">${q.opts.map((o,oi)=>`<div class="comp-opt" onclick="Reading._answerComp(${qi},${oi},${q.ans},this)">${String.fromCharCode(65+oi)}. ${_esc(o)}</div>`).join('')}</div>
+        </div>`).join('');
+  }
+
+  function _answerComp(qi,sel,ans,el){
+    const q=document.getElementById('cq'+qi);if(!q||q.dataset.done)return;
+    q.dataset.done='1';
+    el.classList.add(sel===ans?'correct':'wrong');
+    if(sel!==ans)q.querySelectorAll('.comp-opt')[ans].classList.add('correct');
+    q.querySelectorAll('.comp-opt').forEach(o=>{o.style.cursor='default';o.onclick=null;});
+    UI.toast(sel===ans?'✓ Correct!':'✗ Incorrect','sel'===ans?'ok':'err');
+  }
+
+  function toggleSpeedReader(){
+    const w=document.getElementById('speedReaderWrap');
+    if(!w)return;
+    w.style.display=w.style.display==='none'?'block':'none';
+    if(w.style.display==='none')speedStop();
+  }
+
+  function speedToggle(){speedPlaying?speedStop():speedStart();}
+
+  function speedStart(){
+    if(speedIdx>=speedWords.length)speedIdx=0;
+    speedPlaying=true;
+    const pb=document.getElementById('speedPlayBtn');if(pb)pb.textContent='⏸ Pause';
+    speedInterval=setInterval(()=>{
+      if(speedIdx>=speedWords.length){speedStop();const pb=document.getElementById('speedPlayBtn');if(pb)pb.textContent='↺ Done';return;}
+      const sw=document.getElementById('speedWordEl');if(sw){sw.style.opacity='0';setTimeout(()=>{sw.textContent=speedWords[speedIdx]||'';sw.style.opacity='1';},60);}
+      const sp=document.getElementById('speedProgEl');if(sp)sp.textContent=(speedIdx+1)+' / '+speedWords.length;
+      speedIdx++;
+    },Math.round(60000/speedWPM));
+  }
+
+  function speedStop(){
+    clearInterval(speedInterval);speedPlaying=false;
+    const pb=document.getElementById('speedPlayBtn');if(pb)pb.textContent='▶ Play';
+  }
+
+  function speedAdjust(delta){
+    speedWPM=Math.max(100,Math.min(600,speedWPM+delta));
+    const el=document.getElementById('speedWpmEl');if(el)el.textContent=speedWPM+' WPM';
+    if(speedPlaying){speedStop();speedStart();}
+  }
+
+  function changeFontSize(delta){
+    rmFontSize=Math.max(12,Math.min(24,rmFontSize+delta));
+    const b=document.getElementById('rmBody');if(b)b.style.fontSize=rmFontSize+'px';
+  }
+
+  function downloadPDF(){
+    if(!currentArticle){UI.toast('Open an article first','wrn');return;}
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${currentArticle.title}</title>
+      <style>
+        body{font-family:Georgia,serif;max-width:680px;margin:40px auto;color:#222;line-height:1.85;font-size:16px;padding:0 20px}
+        h1{font-size:26px;margin-bottom:6px;line-height:1.3}
+        .meta{color:#666;font-size:14px;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid #ddd}
+        p{margin-bottom:14px}
+        .comp{margin-top:36px;border-top:2px solid #ddd;padding-top:24px}
+        .comp h2{font-size:18px;margin-bottom:16px}
+        .cq{margin-bottom:18px;background:#f9f9f9;padding:12px 16px;border-radius:6px}
+        .cq-q{font-weight:bold;margin-bottom:8px}
+        .cq-opt{padding:3px 0;color:#555}
+        @media print{body{margin:20px}button{display:none}}
+      </style></head><body>
+      <h1>${currentArticle.title}</h1>
+      <div class="meta">Category: ${currentArticle.cat} · Level: ${currentArticle.level} · Reading time: ~${currentArticle.readTime} minutes · Eloquent English Trainer</div>
+      ${currentArticle.body}
+      <div class="comp">
+        <h2>Comprehension Questions</h2>
+        ${currentArticle.questions.map((q,i)=>`<div class="cq"><div class="cq-q">${i+1}. ${q.q}</div>${q.opts.map((o,oi)=>`<div class="cq-opt">( ) ${String.fromCharCode(65+oi)}. ${o}</div>`).join('')}</div>`).join('')}
+      </div>
+      <script>window.onload=function(){window.print()}<\/script>
+      </body></html>`;
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    const win=window.open(url,'_blank');
+    if(!win){
+      const a=document.createElement('a');a.href=url;
+      a.download=currentArticle.title.replace(/[^a-z0-9]/gi,'_').toLowerCase()+'.html';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+    }
+    setTimeout(()=>URL.revokeObjectURL(url),8000);
+    UI.toast('Opening print dialog — use "Save as PDF"','ok');
+  }
+
+  function init(){_renderGrid();}
+  return{filter,openArticle,closeMode,_answerComp,toggleSpeedReader,speedToggle,speedAdjust,changeFontSize,downloadPDF,init};
+})();
+
+/* ═══════════════════════════════════════════════════════
+   LISTENING MODULE
+═══════════════════════════════════════════════════════ */
+const Listening=(()=>{
+  const EXERCISES=[
+    {id:'l1',title:'Multitasking: Myth or Reality?',level:'B1-B2',src:'BBC 6 Minute English',
+      transcript:'Research suggests that the human brain cannot actually multitask effectively. What we call multitasking is really rapid task-switching, which reduces performance on each individual task. Studies show that constant multitasking can reduce productivity by up to 40%. The brain needs focused time on a single task to perform at its best. Despite knowing this, many people feel they need to juggle multiple tasks simultaneously in modern workplaces.',
+      questions:['What does research say about the human brain and multitasking?','How much can multitasking reduce productivity?','Why do people still multitask despite the research?']},
+    {id:'l2',title:'The Psychology of Procrastination',level:'B2',src:'TED-Ed Style',
+      transcript:'Procrastination is a remarkably common human experience. Despite knowing we should act, we delay — and this delay comes at a cost. Psychologists have identified two main types: active procrastinators, who deliberately delay because they work better under pressure, and passive procrastinators, who delay due to indecision or inability to act. The key insight is that procrastination is fundamentally an emotion-regulation problem, not a time-management problem. We avoid tasks that make us feel anxious or bored, not tasks we lack time for.',
+      questions:['What are the two main types of procrastinators?','Why is procrastination really an emotion-regulation problem?','What emotions cause people to procrastinate?']},
+    {id:'l3',title:'Cultural Capital and Social Inequality',level:'C1',src:'Academic Lecture Style',
+      transcript:'The concept of cultural capital, developed by sociologist Pierre Bourdieu, proposes that society reproduces inequalities not only through economic capital — financial resources — but through cultural capital: the knowledge, skills, and cultural practices that confer social advantage. Cultural capital exists in three forms: the embodied state, in the lasting dispositions of mind and body; the objectified state, in cultural goods such as books and artworks; and the institutionalised state, recognised through educational qualifications.',
+      questions:['What is cultural capital according to Bourdieu?','Name the three forms of cultural capital.','How does cultural capital reproduce inequality?']},
+  ];
+
+  const DICTATION_PASSAGES=[
+    {label:'Passage 1 — B1',text:'The importance of regular exercise cannot be overstated. Research consistently shows that people who exercise at least three times a week experience significant improvements in both physical and mental health. Even a thirty-minute walk can reduce stress hormones and improve mood considerably.',hint:'Focus on numbers and compound adjectives.'},
+    {label:'Passage 2 — B2',text:'Scientists have published groundbreaking research suggesting that human memory is considerably more malleable than previously believed. Rather than acting as a fixed recording device, the brain actively reconstructs memories each time they are recalled, potentially altering them in the process.',hint:'Pay attention to academic vocabulary and passive constructions.'},
+    {label:'Passage 3 — C1',text:'The proliferation of digital communication technologies has fundamentally transformed interpersonal relationships, particularly among younger generations. Scholars argue that while these technologies facilitate unprecedented connectivity, they simultaneously undermine the depth and authenticity of face-to-face interaction.',hint:'Advanced vocabulary — focus on academic and formal register.'},
+  ];
+
+  const SHADOWING=[
+    {title:'Minimal Pairs: /θ/ vs /d/',text:'The dog thought deeply. This thing seems difficult. Three days of thunder. Those thick threads.',hint:'Tongue between teeth for /θ/ — never use /d/ instead.'},
+    {title:'Sentence Stress & Rhythm',text:'I would LIKE to TALK about CLIMATE change today. The MOST important ISSUE is EDUCATION for ALL. We NEED to FIND a BETTER and more SUSTAINABLE solution.',hint:'Stressed words carry meaning — emphasise content words, not grammar words.'},
+    {title:'Connected Speech: Linking',text:'I want to eat it. Turn it off. I went out at eight. He ran into an old friend yesterday.',hint:'Words link together in natural speech. Practice until it flows smoothly.'},
+  ];
+
+  let currentTab='exercises',currentDictation=-1;
+
+  function setTab(tab,btn){
+    currentTab=tab;
+    document.querySelectorAll('#page-listening .quiz-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    _render();
+  }
+
+  function _render(){
+    const el=document.getElementById('listeningContent');if(!el)return;
+    if(currentTab==='exercises')el.innerHTML=_renderExercises();
+    else if(currentTab==='dictation')el.innerHTML=_renderDictation();
+    else el.innerHTML=_renderShadowing();
+  }
+
+  function _renderExercises(){
+    return EXERCISES.map(ex=>`
+      <div class="listen-card">
+        <div class="listen-track-title">${_esc(ex.title)}</div>
+        <div class="listen-track-meta">Level: ${ex.level} · Source style: ${ex.src}</div>
+        <div style="background:var(--info-soft);border:1px solid color-mix(in srgb,var(--info) 25%,transparent);border-radius:var(--r-sm);padding:12px;font-size:13px;color:var(--text);margin-bottom:14px">
+          🎧 <strong>How to use:</strong> Play the text with the TTS button below, then answer the discussion questions. Use the transcript to follow along.
+          <button class="btn btn-primary btn-sm" style="margin-left:10px" onclick="Listening.speakText(${JSON.stringify(ex.transcript).replace(/"/g,'&quot;')})">🔊 Play Audio (TTS)</button>
+        </div>
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:8px">Transcript</div>
+          <div class="listen-transcript">${_esc(ex.transcript)}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:8px">Discussion Questions</div>
+          ${ex.questions.map((q,i)=>`<div style="font-size:13.5px;padding:8px 0;border-bottom:1px solid var(--border)">${i+1}. ${_esc(q)}</div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  function _renderDictation(){
+    return`<div class="listen-card">
+      <div class="listen-track-title">Dictation Practice</div>
+      <div class="listen-track-meta">Listen, then type exactly what you hear</div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:10px">Select a passage</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${DICTATION_PASSAGES.map((p,i)=>`<button class="quiz-filter-btn" onclick="Listening.selectDictation(${i},this)">${p.label}</button>`).join('')}
+        </div>
+      </div>
+      <div id="dictPassage" style="display:none;background:var(--surface2);border-radius:var(--r-sm);padding:14px;font-size:14px;line-height:1.8;margin-bottom:12px"></div>
+      <textarea class="dictation-box" id="dictInput" placeholder="Type exactly what you hear here…"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="Listening.checkDictation()">✓ Check</button>
+        <button class="btn btn-secondary btn-sm" onclick="Listening.revealDictation()">👁 Reveal</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dictInput').value='';document.getElementById('dictFb').style.display='none'">↺ Clear</button>
+      </div>
+      <div id="dictFb" style="display:none;margin-top:12px;padding:14px;background:var(--surface2);border-radius:var(--r-sm);font-size:13.5px;line-height:1.7"></div>
+    </div>`;
+  }
+
+  function _renderShadowing(){
+    return`<div class="info-box" style="margin-bottom:16px"><span style="font-size:20px;flex-shrink:0">🔊</span>
+      <div><strong>Shadowing Technique:</strong> Listen to the text, then immediately repeat out loud, mimicking rhythm, stress and intonation. One of the most effective methods for improving pronunciation.</div>
+    </div>`+
+    SHADOWING.map((s,i)=>`
+      <div class="listen-card">
+        <div class="listen-track-title">${_esc(s.title)}</div>
+        <div style="background:var(--surface2);border-radius:var(--r-sm);padding:16px;font-family:var(--fd);font-size:16px;line-height:2.1;margin:12px 0">${_esc(s.text)}</div>
+        <div class="info-box" style="margin-bottom:12px"><span>💡</span><div><strong>Focus:</strong> ${_esc(s.hint)}</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="Listening.speakText(${JSON.stringify(s.text).replace(/"/g,'&quot;')},0.8)">🔊 Listen (TTS)</button>
+          <button class="btn btn-secondary btn-sm" onclick="Listening.speakText(${JSON.stringify(s.text).replace(/"/g,'&quot;')},0.6)">🐌 Slow</button>
+          <button class="btn btn-ghost btn-sm" onclick="Recorder.toggle()">🎙️ Record & Compare</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function speakText(text,rate=0.9){
+    if(!('speechSynthesis' in window)){UI.toast('TTS not supported in this browser','wrn');return;}
+    window.speechSynthesis.cancel();
+    const utt=new SpeechSynthesisUtterance(text);
+    utt.rate=rate;utt.lang='en-GB';
+    // Try to use a British voice
+    const voices=window.speechSynthesis.getVoices();
+    const brit=voices.find(v=>v.lang==='en-GB')||voices.find(v=>v.lang.startsWith('en'))||null;
+    if(brit)utt.voice=brit;
+    window.speechSynthesis.speak(utt);
+    UI.toast('Playing…','ok');
+  }
+
+  function selectDictation(idx,btn){
+    currentDictation=idx;
+    document.querySelectorAll('#listeningContent .quiz-filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const p=document.getElementById('dictPassage');
+    if(p){p.style.display='none';p.textContent=DICTATION_PASSAGES[idx].text;}
+    const fb=document.getElementById('dictFb');if(fb)fb.style.display='none';
+    const inp=document.getElementById('dictInput');if(inp)inp.value='';
+    speakText(DICTATION_PASSAGES[idx].text,0.85);
+  }
+
+  function checkDictation(){
+    if(currentDictation<0){UI.toast('Select a passage first','wrn');return;}
+    const input=(document.getElementById('dictInput')?.value||'').trim();
+    if(!input){UI.toast('Type something first','wrn');return;}
+    const original=DICTATION_PASSAGES[currentDictation].text;
+    const orig=original.toLowerCase().replace(/[.,!?;:]/g,'').split(/\s+/);
+    const inp2=input.toLowerCase().replace(/[.,!?;:]/g,'').split(/\s+/);
+    let correct=0;orig.forEach((w,i)=>{if(inp2[i]===w)correct++;});
+    const pct=Math.round((correct/orig.length)*100);
+    const col=pct>=90?'var(--accent)':pct>=70?'var(--warn)':'var(--danger)';
+    const fb=document.getElementById('dictFb');
+    if(fb){
+      fb.style.display='block';
+      fb.innerHTML=`<strong style="color:${col}">${pct}% accuracy</strong> (${correct}/${orig.length} words correct)<br>
+        <span style="color:var(--text-muted);font-size:13px">${_esc(DICTATION_PASSAGES[currentDictation].hint)}</span>
+        ${pct<100?`<div style="margin-top:10px;color:var(--text-muted);font-size:13px">Original: <em>${_esc(original)}</em></div>`:'<div style="color:var(--accent);margin-top:8px;font-weight:600">🎉 Perfect! Excellent listening accuracy.</div>'}`;
+    }
+  }
+
+  function revealDictation(){
+    if(currentDictation<0){UI.toast('Select a passage first','wrn');return;}
+    const p=document.getElementById('dictPassage');
+    if(p)p.style.display=p.style.display==='none'?'block':'none';
+  }
+
+  function init(){_render();}
+  return{setTab,speakText,selectDictation,checkDictation,revealDictation,init};
+})();
+
+/* ═══════════════════════════════════════════════════════
+   DAILY TIPS MODULE
+═══════════════════════════════════════════════════════ */
+const Tips=(()=>{
+  const ALL=[
+    {icon:'🗣️',tag:'Speaking',title:'Use the PEEL structure',body:'When answering questions, use Point → Evidence → Explanation → Link back. This gives your speech a natural, logical flow that examiners and native speakers appreciate.'},
+    {icon:'📝',tag:'Writing',title:'Vary your sentence openings',body:'Do not start every sentence with "I" or "The". Try opening with adverbs (Remarkably,…), participle clauses (Having considered…), or prepositional phrases (In recent years,…).'},
+    {icon:'📖',tag:'Reading',title:'Use context clues for unknown words',body:'Before reaching for a dictionary, infer meaning from context. Look at surrounding sentences, the word\'s grammatical role, and any prefixes or suffixes you recognise.'},
+    {icon:'🎧',tag:'Listening',title:'Predict before you listen',body:'Before any listening task, read questions carefully and predict what vocabulary, numbers, or concepts you might hear. This primes your brain to catch relevant information.'},
+    {icon:'🔤',tag:'Vocabulary',title:'Learn words in collocations',body:'"Big" difference, "vast" difference, "major" difference — words travel with companions. Learning collocations triples the usefulness of every new word you acquire.'},
+    {icon:'📐',tag:'Grammar',title:'Master the present perfect',body:'The present perfect connects past actions to now: "I have lived here for years" (not "I live here for years"). It\'s one of the clearest markers of B2+ level English.'},
+    {icon:'⏱️',tag:'Fluency',title:'Embrace meaningful pauses',body:'Silence is not weakness — it signals thoughtfulness. Use pauses before important points, after complex sentences, and to replace filler words like "um" and "uh".'},
+    {icon:'🌍',tag:'Vocabulary',title:'Read quality English daily — 10 minutes',body:'Consistent daily reading is the single most effective way to build vocabulary. Focus on content slightly above your level to maximise exposure to new language patterns.'},
+    {icon:'🎭',tag:'Pronunciation',title:'Shadow native speakers',body:'Find a short audio clip (30–60 seconds), listen, then immediately repeat, mimicking the exact rhythm and intonation. Do this daily for one month and notice the change.'},
+    {icon:'💡',tag:'Strategy',title:'Record yourself weekly',body:'Most learners are surprised by how different they actually sound. Regular self-recording builds awareness of your real weaknesses, not the ones you imagine you have.'},
+    {icon:'✍️',tag:'Writing',title:'Proofread backwards',body:'Read your writing from the last sentence to the first. This breaks the flow and forces you to evaluate each sentence in isolation, catching errors you\'d otherwise miss.'},
+    {icon:'🧠',tag:'Strategy',title:'Use spaced repetition for vocabulary',body:'Review new vocabulary after 1 day, 3 days, 1 week, then 1 month. This aligns with how long-term memory consolidation works and dramatically reduces forgetting.'},
+    {icon:'🔊',tag:'Pronunciation',title:'Master minimal pairs',body:'Practice words that differ by one sound: ship/sheep, bit/beat, this/these. Minimal pair drills train your ear and mouth to distinguish sounds that may not exist in your native language.'},
+    {icon:'📰',tag:'Reading',title:'Read a quality newspaper daily',body:'The Economist, The Guardian, and BBC News use sophisticated vocabulary in context. 20 minutes of quality reading daily outperforms 2 hours of textbook study.'},
+    {icon:'🎯',tag:'Speaking',title:'Open IELTS Part 2 with a clear statement',body:'Instead of "Umm, so I\'d like to talk about…", try "I\'d like to describe the time when…" or "The experience I want to talk about is…" — it immediately signals Band 7+ language.'},
+    {icon:'🌀',tag:'Coherence',title:'Use three discourse marker families',body:'Sequence (firstly, subsequently), contrast (however, nevertheless), and result (consequently, therefore). Mixing all three types in one response signals sophisticated language use.'},
+  ];
+
+  function render(){
+    const today=new Date();
+    const dayOfYear=Math.floor((today-new Date(today.getFullYear(),0,0))/(1000*60*60*24));
+    const todayIdx=dayOfYear%ALL.length;
+    const tip=ALL[todayIdx];
+
+    // Date pill
+    const dp=document.getElementById('tipDatePill');
+    if(dp)dp.textContent=today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+
+    // Daily highlight
+    const dhl=document.getElementById('dailyTipHighlight');
+    if(dhl)dhl.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--r);padding:24px;box-shadow:var(--shadow-sm)">
+      <div style="font-size:38px;margin-bottom:12px">${tip.icon}</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:6px">TODAY · ${tip.tag}</div>
+      <div style="font-family:var(--fd);font-size:20px;font-weight:600;margin-bottom:10px">${_esc(tip.title)}</div>
+      <div style="font-size:14.5px;color:var(--text-muted);line-height:1.7">${_esc(tip.body)}</div>
+    </div>`;
+
+    // Dashboard preview
+    const dt=document.getElementById('dashTipContent');
+    if(dt)dt.innerHTML=`<div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="font-size:26px">${tip.icon}</div>
+      <div><div style="font-weight:700;font-size:14px;margin-bottom:4px">${_esc(tip.title)}</div>
+      <div style="font-size:13px;color:var(--text-muted)">${_esc(tip.body.slice(0,100))}…</div></div>
+    </div>`;
+
+    // All tips
+    const grid=document.getElementById('tipsGrid');if(!grid)return;
+    grid.innerHTML=ALL.map((t,i)=>`
+      <div class="tip-card${i===todayIdx?' today':''}">
+        <div class="tip-icon">${t.icon}</div>
+        <div style="flex:1">
+          <div class="tip-title">${_esc(t.title)}${i===todayIdx?' <span style="font-size:11px;color:var(--accent)">⭐ Today</span>':''}</div>
+          <div class="tip-body">${_esc(t.body)}</div>
+          <span class="tip-tag">${t.tag}</span>
+        </div>
+      </div>`).join('');
+  }
+  return{render};
+})();
+
+/* ═══════════════════════════════════════════════════════
+   EXTRA DB METHODS
+═══════════════════════════════════════════════════════ */
+DB.getWritingDrafts=function(){return this._safeGet('eq_writing_drafts',[]);};
+DB.saveWritingDraft=function(text,mode,score){
+  const drafts=this.getWritingDrafts();
+  drafts.unshift({id:Date.now(),ts:Date.now(),text:text.slice(0,5000),mode:mode||'freewrite',
+    score:score,words:text.trim().split(/\s+/).filter(Boolean).length});
+  this._safeSet('eq_writing_drafts',drafts.slice(0,30));
+};
+DB.getReadingProgress=function(){return this._safeGet('eq_reading_prog',{});};
+DB.markArticleRead=function(id){
+  const p=this.getReadingProgress();
+  p[id]={read:true,ts:Date.now()};
+  this._safeSet('eq_reading_prog',p);
+};
+DB._safeGet=function(key,fallback){
+  try{const v=localStorage.getItem(key);return v!==null?JSON.parse(v):fallback;}
+  catch(e){return fallback;}
+};
+DB._safeSet=function(key,val){
+  try{localStorage.setItem(key,JSON.stringify(val));return true;}
+  catch(e){if(e.name==='QuotaExceededError'){const s=this.getSessions();if(s.length>40){localStorage.setItem(this.K.SESSIONS,JSON.stringify(s.slice(0,40)));}try{localStorage.setItem(key,JSON.stringify(val));return true;}catch{return false;}}return false;}
+};
+DB.exportJSON=function(){
+  try{
+    const data={version:this.VERSION,exportDate:new Date().toISOString(),
+      sessions:this.getSessions(),daily:this.getDailyLog(),
+      weaknesses:this.getWeaknesses(),prefs:this.getPrefs(),
+      writing:this.getWritingDrafts(),quizScores:this.getQuizScores()};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='eloquent-backup-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    UI.toast('Exported!','ok');
+  }catch(e){UI.toast('Export failed','err');}
+};
+DB.getDBStats=function(){
+  const sessions=this.getSessions().length;
+  const drafts=this.getWritingDrafts().length;
+  let size=0;try{for(const k in localStorage)size+=localStorage[k].length+k.length;}catch{}
+  return sessions+' sessions · '+drafts+' writing drafts · ~'+Math.round(size/1024)+'KB stored';
+};
+
 </script>
 </body>
 </html>
