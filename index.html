@@ -70,6 +70,189 @@
               --theme-swatch:#0e3020;
             }
 
+            [data-theme="Apple"] {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface2: #e8e8ed;
+  --surface3: #d2d2d7;
+  --border: #d2d2d7;
+  --text: #1d1d1f;
+  --text-muted: #86868b;
+  --text-light: #aeaeb2;
+  --accent: #0071e3; /* Apple Blue */
+  --accent-soft: #e8f2ff;
+  --accent-glow: rgba(0, 113, 227, 0.15);
+  --accent2: #bf4800; /* Apple Orange */
+  --accent2-soft: #fff1e8;
+  --danger: #ff3b30;
+  --danger-soft: #fff2f1;
+  --warn: #ff9500;
+  --warn-soft: #fff9e6;
+  --info: #55bef0;
+  --info-soft: #f0faff;
+  --grad: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.08);
+  --shadow-md: 0 10px 30px rgba(0,0,0,0.12);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
+  --theme-swatch: #0071e3;
+}
+
+[data-theme="notion"] {
+  --bg: #ffffff;
+  --surface: #f7f6f3; /* Notion Sidebar Grey */
+  --surface2: #efeee9;
+  --surface3: #e1e1e0;
+  --border: #e9e9e7;
+  --text: #37352f; /* Notion Default Text */
+  --text-muted: #787774;
+  --text-light: #acaba9;
+  --accent: #2383e2; /* Notion Blue */
+  --accent-soft: #ebf5fe;
+  --accent-glow: rgba(35, 131, 226, 0.12);
+  --accent2: #d44029; /* Notion Red */
+  --accent2-soft: #fbeae9;
+  --danger: #eb5757;
+  --danger-soft: #fdf2f2;
+  --warn: #dfab01;
+  --warn-soft: #fff9e6;
+  --info: #0b6e99;
+  --info-soft: #e7f3f8;
+  --grad: linear-gradient(180deg, #ffffff 0%, #f7f6f3 100%);
+  --shadow-xs: 0 1px 2px rgba(15, 15, 15, 0.1);
+  --shadow-sm: 0 4px 6px rgba(15, 15, 15, 0.15);
+  --shadow-md: 0 8px 12px rgba(15, 15, 15, 0.2);
+  --shadow-lg: 0 20px 40px rgba(15, 15, 15, 0.25);
+  --theme-swatch: #f7f6f3;
+}
+
+[data-theme="Obsidian"] {
+  --bg: #1e1e1e;
+  --surface: #262626;
+  --surface2: #2f2f2f;
+  --surface3: #363636;
+  --border: #3e3e3e;
+  --text: #dcddde;
+  --text-muted: #a3a3a3;
+  --text-light: #5c5c5c;
+  --accent: #7c66dc; /* Obsidian Purple */
+  --accent-soft: #2d2b3b;
+  --accent-glow: rgba(124, 102, 220, 0.15);
+  --accent2: #4ab3f4;
+  --accent2-soft: #1a2933;
+  --danger: #e24a4a;
+  --danger-soft: #311b1b;
+  --warn: #e29e2d;
+  --warn-soft: #312816;
+  --info: #2da1e2;
+  --info-soft: #162631;
+  --grad: linear-gradient(135deg, #262626 0%, #1e1e1e 100%);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-sm: 0 4px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 16px 32px rgba(0,0,0,0.6);
+  --theme-swatch: #7c66dc;
+}
+       /* 8. Cyberpunk - High contrast neon */
+[data-theme="cyberpunk"] {
+  --bg:#050505;--surface:#0f0f1b;--surface2:#1a1a2e;--surface3:#16213e;
+  --border:#4ecca3;--text:#4ecca3;--text-muted:#45a29e;--text-light:#1f4068;
+  --accent:#e94560;--accent-soft:#2d142c;--accent-glow:rgba(233,69,96,.2);
+  --accent2:#f8b500;--accent2-soft:#302500;--danger:#ff4b2b;--danger-soft:#2b0000;
+  --warn:#f8b500;--warn-soft:#2a2000;--info:#00d2ff;--info-soft:#001a2b;
+  --grad:linear-gradient(135deg,#1a1a2e 0%,#050505 100%);--theme-swatch:#e94560;
+}
+
+/* 9. Nord - Frosty, Nordic blue palette */
+[data-theme="nord"] {
+  --bg:#2e3440;--surface:#3b4252;--surface2:#434c5e;--surface3:#4c566a;
+  --border:#4c566a;--text:#eceff4;--text-muted:#d8dee9;--text-light:#4c566a;
+  --accent:#88c0d0;--accent-soft:#3b4252;--accent-glow:rgba(136,192,208,.2);
+  --accent2:#ebcb8b;--accent2-soft:#3b4252;--danger:#bf616a;--danger-soft:#3b4252;
+  --warn:#ebcb8b;--warn-soft:#3b4252;--info:#81a1c1;--info-soft:#3b4252;
+  --grad:linear-gradient(135deg,#3b4252 0%,#2e3440 100%);--theme-swatch:#88c0d0;
+}
+
+/* 10. Sakura - Soft pink, Japanese spring vibe */
+[data-theme="sakura"] {
+  --bg:#fff5f7;--surface:#ffffff;--surface2:#ffe3e9;--surface3:#ffd1dc;
+  --border:#ffb7c5;--text:#5d2e36;--text-muted:#a67c83;--text-light:#d8b4bc;
+  --accent:#ff748c;--accent-soft:#fff0f3;--accent-glow:rgba(255,116,140,.15);
+  --accent2:#ffb347;--accent2-soft:#fff8ed;--danger:#e63946;--danger-soft:#ffebee;
+  --warn:#f4a261;--warn-soft:#fefae0;--info:#457b9d;--info-soft:#f1faee;
+  --grad:linear-gradient(135deg,#ffffff 0%,#fff5f7 100%);--theme-swatch:#ff748c;
+}
+
+/* 11. Dracula - The classic vampire dark mode */
+[data-theme="dracula"] {
+  --bg:#282a36;--surface:#44475a;--surface2:#383a59;--surface3:#6272a4;
+  --border:#44475a;--text:#f8f8f2;--text-muted:#6272a4;--text-light:#44475a;
+  --accent:#bd93f9;--accent-soft:#282a36;--accent-glow:rgba(189,147,249,.2);
+  --accent2:#ff79c6;--accent2-soft:#282a36;--danger:#ff5555;--danger-soft:#282a36;
+  --warn:#f1fa8c;--warn-soft:#282a36;--info:#8be9fd;--info-soft:#282a36;
+  --grad:linear-gradient(135deg,#44475a 0%,#282a36 100%);--theme-swatch:#bd93f9;
+}
+
+/* 12. Espresso - Dark chocolate and coffee */
+[data-theme="espresso"] {
+  --bg:#1a1412;--surface:#2d2421;--surface2:#3d302c;--surface3:#4d3c38;
+  --border:#4d3c38;--text:#efebe9;--text-muted:#a1887f;--text-light:#5d4037;
+  --accent:#d7ccc8;--accent-soft:#2d2421;--accent-glow:rgba(215,204,200,.15);
+  --accent2:#8d6e63;--accent2-soft:#1a1412;--danger:#d32f2f;--danger-soft:#1a1412;
+  --warn:#ffa000;--warn-soft:#1a1412;--info:#1976d2;--info-soft:#1a1412;
+  --grad:linear-gradient(135deg,#2d2421 0%,#1a1412 100%);--theme-swatch:#d7ccc8;
+}
+
+/* 13. Ocean - Deep sea blues */
+[data-theme="ocean"] {
+  --bg:#001219;--surface:#001e2b;--surface2:#005f73;--surface3:#0a9396;
+  --border:#0a9396;--text:#e9d8a6;--text-muted:#94d2bd;--text-light:#005f73;
+  --accent:#ee9b00;--accent-soft:#001219;--accent-glow:rgba(238,155,0,.2);
+  --accent2:#ca6702;--accent2-soft:#001219;--danger:#ae2012;--danger-soft:#001219;
+  --warn:#e9d8a6;--warn-soft:#001219;--info:#94d2bd;--info-soft:#001219;
+  --grad:linear-gradient(135deg,#001e2b 0%,#001219 100%);--theme-swatch:#ee9b00;
+}
+
+/* 14. Lavender - Calm purple light mode */
+[data-theme="lavender"] {
+  --bg:#f3f0f7;--surface:#ffffff;--surface2:#e6e0f0;--surface3:#dcd3e9;
+  --border:#d0c4e1;--text:#3a2e52;--text-muted:#7e729a;--text-light:#b4acc8;
+  --accent:#9d81cd;--accent-soft:#f0ebf7;--accent-glow:rgba(157,129,205,.15);
+  --accent2:#ff8da1;--accent2-soft:#fff0f2;--danger:#ff5e78;--danger-soft:#fff0f2;
+  --warn:#ffb347;--warn-soft:#fff7ec;--info:#7eb6ff;--info-soft:#f0f6ff;
+  --grad:linear-gradient(135deg,#ffffff 0%,#f3f0f7 100%);--theme-swatch:#9d81cd;
+}
+
+/* 15. Retro - 80s arcade vibe */
+[data-theme="retro"] {
+  --bg:#24142c;--surface:#2d1b33;--surface2:#3d2445;--surface3:#542e5d;
+  --border:#ff00ff;--text:#00ffff;--text-muted:#bc00ff;--text-light:#542e5d;
+  --accent:#ffff00;--accent-soft:#24142c;--accent-glow:rgba(255,255,0,.3);
+  --accent2:#ff00ff;--accent2-soft:#24142c;--danger:#ff0033;--danger-soft:#24142c;
+  --warn:#ffff00;--warn-soft:#24142c;--info:#00ffff;--info-soft:#24142c;
+  --grad:linear-gradient(135deg,#2d1b33 0%,#24142c 100%);--theme-swatch:#ffff00;
+}
+
+/* 16. Slate - Professional monochrome */
+[data-theme="slate"] {
+  --bg:#0f172a;--surface:#1e293b;--surface2:#334155;--surface3:#475569;
+  --border:#334155;--text:#f8fafc;--text-muted:#94a3b8;--text-light:#475569;
+  --accent:#38bdf8;--accent-soft:#0f172a;--accent-glow:rgba(56,189,248,.15);
+  --accent2:#f472b6;--accent2-soft:#0f172a;--danger:#ef4444;--danger-soft:#0f172a;
+  --warn:#f59e0b;--warn-soft:#0f172a;--info:#0ea5e9;--info-soft:#0f172a;
+  --grad:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);--theme-swatch:#38bdf8;
+}
+
+/* 17. Gold - Elegant luxury dark */
+[data-theme="gold"] {
+  --bg:#111111;--surface:#1a1a1a;--surface2:#262626;--surface3:#333333;
+  --border:#c5a059;--text:#e5e5e5;--text-muted:#a68a56;--text-light:#404040;
+  --accent:#d4af37;--accent-soft:#1a1a1a;--accent-glow:rgba(212,175,55,.15);
+  --accent2:#ffffff;--accent2-soft:#111111;--danger:#ff4444;--danger-soft:#111111;
+  --warn:#d4af37;--warn-soft:#111111;--info:#4444ff;--info-soft:#111111;
+  --grad:linear-gradient(135deg,#1a1a1a 0%,#111111 100%);--theme-swatch:#d4af37;
+}     
+
             /* ═══════════════════════════════════════════════════════════
                RESET + BASE
             ═══════════════════════════════════════════════════════════ */
@@ -1773,6 +1956,54 @@
                 </button>
               </div>
             </div>
+
+            <div
+              id="chartMetrics"
+              style="
+                display: flex;
+                gap: 8px;
+                margin-bottom: 16px;
+                flex-wrap: wrap;
+              "
+            >
+              <button
+                class="quiz-filter-btn active"
+                onclick="Chart.setMetric('overall', this)"
+              >
+                Overall
+              </button>
+              <button
+                class="quiz-filter-btn"
+                onclick="Chart.setMetric('grammar', this)"
+              >
+                Grammar
+              </button>
+              <button
+                class="quiz-filter-btn"
+                onclick="Chart.setMetric('vocabulary', this)"
+              >
+                Vocabulary
+              </button>
+              <button
+                class="quiz-filter-btn"
+                onclick="Chart.setMetric('fluency', this)"
+              >
+                Fluency
+              </button>
+              <button
+                class="quiz-filter-btn"
+                onclick="Chart.setMetric('pronunciation', this)"
+              >
+                Pronunciation
+              </button>
+              <button
+                class="quiz-filter-btn"
+                onclick="Chart.setMetric('coherence', this)"
+              >
+                Coherence
+              </button>
+            </div>
+
             <div class="chart-area" id="chartArea"></div>
             <div class="chart-x-line"></div>
           </div>
@@ -1889,6 +2120,392 @@
             </div>
           </div>
 
+          <div class="card" style="padding: 0; overflow: hidden">
+            <div
+              style="
+                padding: 20px;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+              "
+            >
+              <div>
+                <div
+                  class="card-title"
+                  style="
+                    margin-bottom: 4px;
+                    font-size: 14px;
+                    text-transform: none;
+                    color: var(--text);
+                    font-weight: 700;
+                  "
+                >
+                  Proficiency Evaluation Matrix
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted)">
+                  Automatically calculated across all four language skills
+                </div>
+              </div>
+            </div>
+            <div style="overflow-x: auto; padding-bottom: 4px">
+              <table
+                style="
+                  width: 100%;
+                  min-width: 700px;
+                  border-collapse: collapse;
+                  text-align: center;
+                "
+              >
+                <thead
+                  style="
+                    background: var(--surface2);
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.8px;
+                    color: var(--text-muted);
+                  "
+                >
+                  <tr>
+                    <th
+                      style="
+                        padding: 14px 16px;
+                        text-align: left;
+                        border-right: 1px solid var(--border);
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Skill Area
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Pronunciation
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Vocabulary
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Fluency
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Coherence
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Grammar
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 16px;
+                        border-left: 1px solid var(--border);
+                        border-bottom: 1px solid var(--border);
+                        background: color-mix(
+                          in srgb,
+                          var(--accent) 8%,
+                          transparent
+                        );
+                        color: var(--text);
+                      "
+                    >
+                      Overall
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="matrixBody"
+                  style="font-size: 14px; divide-y: 1px solid var(--border)"
+                ></tbody>
+              </table>
+            </div>
+            <div
+              style="
+                padding: 12px 16px;
+                background: var(--surface2);
+                border-top: 1px solid var(--border);
+                font-size: 11px;
+                color: var(--text-muted);
+              "
+            >
+              Note: 'Pronunciation' and 'Fluency' are marked as N/A for Writing
+              and Reading tasks.
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="card">
+              <div class="card-title">Skill Trends</div>
+              <div id="progSkills">
+                <div class="skill-row">
+                  <div class="skill-hdr">
+                    <span>Grammar</span
+                    ><span class="skill-score" id="ps-grammar">—</span>
+                  </div>
+                  <div class="skill-track">
+                    <div
+                      class="skill-fill"
+                      id="pf-grammar"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+                <div class="skill-row">
+                  <div class="skill-hdr">
+                    <span>Vocabulary</span
+                    ><span class="skill-score" id="ps-vocab">—</span>
+                  </div>
+                  <div class="skill-track">
+                    <div
+                      class="skill-fill"
+                      id="pf-vocab"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+                <div class="skill-row">
+                  <div class="skill-hdr">
+                    <span>Fluency</span
+                    ><span class="skill-score" id="ps-fluency">—</span>
+                  </div>
+                  <div class="skill-track">
+                    <div
+                      class="skill-fill"
+                      id="pf-fluency"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+                <div class="skill-row">
+                  <div class="skill-hdr">
+                    <span>Pronunciation</span
+                    ><span class="skill-score" id="ps-pron">—</span>
+                  </div>
+                  <div class="skill-track">
+                    <div
+                      class="skill-fill"
+                      id="pf-pron"
+                      style="width: 0%"
+                    ></div>
+                  </div>
+                </div>
+                <div class="skill-row">
+                  <div class="skill-hdr">
+                    <span>Coherence</span
+                    ><span class="skill-score" id="ps-coh">—</span>
+                  </div>
+                  <div class="skill-track">
+                    <div class="skill-fill" id="pf-coh" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Activity Calendar (28 days)</div>
+              <div class="heatmap-grid" id="heatmap"></div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 6px;
+                  margin-top: 10px;
+                  font-size: 11px;
+                  color: var(--text-muted);
+                "
+              >
+                <div
+                  style="
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 2px;
+                    background: var(--surface2);
+                    border: 1px solid var(--border);
+                  "
+                ></div>
+                None
+                <div
+                  style="
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 2px;
+                    background: var(--accent-soft);
+                  "
+                ></div>
+                Low
+                <div
+                  style="
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 2px;
+                    background: var(--accent);
+                  "
+                ></div>
+                Active
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="padding: 0; overflow: hidden">
+            <div
+              style="
+                padding: 20px;
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+              "
+            >
+              <div>
+                <div
+                  class="card-title"
+                  style="
+                    margin-bottom: 4px;
+                    font-size: 14px;
+                    text-transform: none;
+                    color: var(--text);
+                    font-weight: 700;
+                  "
+                >
+                  Proficiency Evaluation Matrix
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted)">
+                  Automatically calculated across all four language skills
+                </div>
+              </div>
+            </div>
+            <div style="overflow-x: auto; padding-bottom: 4px">
+              <table
+                style="
+                  width: 100%;
+                  min-width: 700px;
+                  border-collapse: collapse;
+                  text-align: center;
+                "
+              >
+                <thead
+                  style="
+                    background: var(--surface2);
+                    font-size: 11px;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.8px;
+                    color: var(--text-muted);
+                  "
+                >
+                  <tr>
+                    <th
+                      style="
+                        padding: 14px 16px;
+                        text-align: left;
+                        border-right: 1px solid var(--border);
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Skill Area
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Pronunciation
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Vocabulary
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Fluency
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Coherence
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 8px;
+                        border-bottom: 1px solid var(--border);
+                      "
+                    >
+                      Grammar
+                    </th>
+                    <th
+                      style="
+                        padding: 14px 16px;
+                        border-left: 1px solid var(--border);
+                        border-bottom: 1px solid var(--border);
+                        background: color-mix(
+                          in srgb,
+                          var(--accent) 8%,
+                          transparent
+                        );
+                        color: var(--text);
+                      "
+                    >
+                      Overall
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="matrixBody"
+                  style="font-size: 14px; divide-y: 1px solid var(--border)"
+                ></tbody>
+              </table>
+            </div>
+            <div
+              style="
+                padding: 12px 16px;
+                background: var(--surface2);
+                border-top: 1px solid var(--border);
+                font-size: 11px;
+                color: var(--text-muted);
+              "
+            >
+              Note: 'Pronunciation' and 'Fluency' are marked as N/A for Writing
+              and Reading tasks.
+            </div>
+          </div>
+
           <div class="card">
             <div class="card-title">Data Management</div>
             <div style="display: flex; gap: 9px; flex-wrap: wrap">
@@ -1975,62 +2592,102 @@
 
           <!-- Theme selector -->
           <div class="card">
-            <div class="card-title">Choose Your Theme</div>
-            <div class="theme-grid">
-              <div
-                class="theme-swatch-card"
-                id="ts-parchment"
-                onclick="UI.setTheme('parchment')"
-              >
-                <div
-                  class="ts-preview"
-                  style="
-                    background: linear-gradient(135deg, #d4e8da, #faf8f4);
-                    border: 1px solid #d0c9b8;
-                  "
-                ></div>
-                <div class="ts-name">☀️ Parchment</div>
-                <div class="ts-desc">
-                  Warm cream — best for daytime study sessions
-                </div>
-              </div>
-              <div
-                class="theme-swatch-card"
-                id="ts-midnight"
-                onclick="UI.setTheme('midnight')"
-              >
-                <div
-                  class="ts-preview"
-                  style="
-                    background: linear-gradient(135deg, #1a2550, #171b26);
-                    border: 1px solid #2a3050;
-                  "
-                ></div>
-                <div class="ts-name">🌙 Midnight Scholar</div>
-                <div class="ts-desc">
-                  Deep navy — focused night study, easy on eyes
-                </div>
-              </div>
-              <div
-                class="theme-swatch-card"
-                id="ts-forest"
-                onclick="UI.setTheme('forest')"
-              >
-                <div
-                  class="ts-preview"
-                  style="
-                    background: linear-gradient(135deg, #0e3020, #112218);
-                    border: 1px solid #1e4228;
-                  "
-                ></div>
-                <div class="ts-name">🌿 Forest Focus</div>
-                <div class="ts-desc">
-                  Rich green — calm, distraction-free concentration
-                </div>
-              </div>
-            </div>
-          </div>
+  <div class="card-title">Choose Your Theme</div>
+  <div class="theme-grid">
+    <div class="theme-swatch-card" id="ts-parchment" onclick="UI.setTheme('parchment')">
+      <div class="ts-preview" style="background: linear-gradient(135deg, #d4e8da, #faf8f4); border: 1px solid #d0c9b8;"></div>
+      <div class="ts-name">☀️ Parchment</div>
+      <div class="ts-desc">Warm cream — best for daytime study sessions</div>
+    </div>
 
+    <div class="theme-swatch-card" id="ts-midnight" onclick="UI.setTheme('midnight')">
+      <div class="ts-preview" style="background: linear-gradient(135deg, #1a2550, #171b26); border: 1px solid #2a3050;"></div>
+      <div class="ts-name">🌙 Midnight Scholar</div>
+      <div class="ts-desc">Deep navy — focused night study, easy on eyes</div>
+    </div>
+
+    <div class="theme-swatch-card" id="ts-forest" onclick="UI.setTheme('forest')">
+      <div class="ts-preview" style="background: linear-gradient(135deg, #0e3020, #112218); border: 1px solid #1e4228;"></div>
+      <div class="ts-name">🌿 Forest Focus</div>
+      <div class="ts-desc">Rich green — calm, distraction-free concentration</div>
+    </div>
+
+    <div class="theme-swatch-card" id="ts-obsidian" onclick="UI.setTheme('obsidian')">
+      <div class="ts-preview" style="background: linear-gradient(135deg, #262626, #1e1e1e); border: 1px solid #3e3e3e;"></div>
+      <div class="ts-name">💎 Obsidian</div>
+      <div class="ts-desc">Deep charcoal — a clean, utilitarian dark mode</div>
+    </div>
+
+    <div class="theme-swatch-card" id="ts-notion" onclick="UI.setTheme('notion')">
+      <div class="ts-preview" style="background: linear-gradient(180deg, #ffffff, #f7f6f3); border: 1px solid #e9e9e7;"></div>
+      <div class="ts-name">🗒️ Notion White</div>
+      <div class="ts-desc">Minimalist gray — clean, airy, and organized</div>
+    </div>
+
+    <div class="theme-swatch-card" id="ts-apple" onclick="UI.setTheme('apple')">
+      <div class="ts-preview" style="background: linear-gradient(135deg, #ffffff, #f5f5f7); border: 1px solid #d2d2d7;"></div>
+      <div class="ts-name">🍎 MacOS Light</div>
+      <div class="ts-desc">San Francisco — sleek, high-end system aesthetic</div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">Advanced Theme Gallery</div>
+  <div class="theme-grid">
+    <div class="theme-swatch-card" onclick="UI.setTheme('cyberpunk')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#1a1a2e,#050505); border: 1px solid #4ecca3;"></div>
+      <div class="ts-name">⚡ Cyberpunk</div>
+      <div class="ts-desc">Neon green and red — High energy</div>
+    </div>
+    <div class="theme-swatch-card" onclick="UI.setTheme('nord')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#3b4252,#2e3440); border: 1px solid #4c566a;"></div>
+      <div class="ts-name">❄️ Nord</div>
+      <div class="ts-desc">Frosty blues — Arctic elegance</div>
+    </div>
+    <div class="theme-swatch-card" onclick="UI.setTheme('sakura')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#ffffff,#fff5f7); border: 1px solid #ffb7c5;"></div>
+      <div class="ts-name">🌸 Sakura</div>
+      <div class="ts-desc">Soft pinks — Calm and floral</div>
+    </div>
+
+    <div class="theme-swatch-card" onclick="UI.setTheme('dracula')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#44475a,#282a36); border: 1px solid #6272a4;"></div>
+      <div class="ts-name">🧛 Dracula</div>
+      <div class="ts-desc">Purple tint — The dev classic</div>
+    </div>
+    <div class="theme-swatch-card" onclick="UI.setTheme('espresso')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#2d2421,#1a1412); border: 1px solid #4d3c38;"></div>
+      <div class="ts-name">☕ Espresso</div>
+      <div class="ts-desc">Warm browns — Cozy library vibe</div>
+    </div>
+    <div class="theme-swatch-card" onclick="UI.setTheme('ocean')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#001e2b,#001219); border: 1px solid #0a9396;"></div>
+      <div class="ts-name">🌊 Ocean</div>
+      <div class="ts-desc">Deep sea — Mysterious and dark</div>
+    </div>
+
+    <div class="theme-swatch-card" onclick="UI.setTheme('lavender')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#ffffff,#f3f0f7); border: 1px solid #d0c4e1;"></div>
+      <div class="ts-name">🪻 Lavender</div>
+      <div class="ts-desc">Light purple — Stress-reducing</div>
+    </div>
+    <div class="theme-swatch-card" onclick="UI.setTheme('retro')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#2d1b33,#24142c); border: 1px solid #ff00ff;"></div>
+      <div class="ts-name">🕹️ Retro</div>
+      <div class="ts-desc">80s aesthetic — Bold neon purple</div>
+    </div>
+    <div class="theme-swatch-card" onclick="UI.setTheme('slate')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#1e293b,#0f172a); border: 1px solid #334155;"></div>
+      <div class="ts-name">🌚 Slate</div>
+      <div class="ts-desc">Modern dark — Sleek professional</div>
+    </div>
+    <div class="theme-swatch-card" onclick="UI.setTheme('gold')">
+      <div class="ts-preview" style="background: linear-gradient(135deg,#1a1a1a,#111111); border: 1px solid #c5a059;"></div>
+      <div class="ts-name">🏆 Gold Luxury</div>
+      <div class="ts-desc">Black and Gold — Premium focus</div>
+    </div>
+  </div>
+</div>
           <!-- API Keys -->
           <div class="card" style="max-width: 560px">
             <div class="card-title">API Keys</div>
@@ -2899,7 +3556,7 @@
      JAVASCRIPT MODULES -->
     <script>
       "use strict";
-     
+
       /* ───────────────────────────────────────────────────────────
          DB — localStorage "database" with structured daily progress
       ─────────────────────────────────────────────────────────── */
@@ -2929,7 +3586,8 @@
         },
         getPrefs() {
           return JSON.parse(
-            localStorage.getItem(this.K.PREFS) || '{"strict":true,"minSent":10}',
+            localStorage.getItem(this.K.PREFS) ||
+              '{"strict":true,"minSent":10}',
           );
         },
         savePrefs(prefs) {
@@ -2937,7 +3595,8 @@
         },
         getStreak() {
           return JSON.parse(
-            localStorage.getItem(this.K.STREAK) || '{"current":0,"longest":0,"lastDate":""}',
+            localStorage.getItem(this.K.STREAK) ||
+              '{"current":0,"longest":0,"lastDate":""}',
           );
         },
         getWeaknesses() {
@@ -2960,23 +3619,38 @@
             sentences: result.sentences,
             wpm: result.wpm,
             duration: result.duration,
-            words: result.text ? result.text.split(/\s+/).filter(Boolean).length : 0,
+            words: result.text
+              ? result.text.split(/\s+/).filter(Boolean).length
+              : 0,
             topicCat: document.getElementById("topicCat")?.textContent || "",
-            topicText: document.getElementById("topicPrompt")?.textContent?.slice(0, 80) || "",
+            topicText:
+              document
+                .getElementById("topicPrompt")
+                ?.textContent?.slice(0, 80) || "",
             corrections: result.grammar?.corrections?.map((c) => c.wrong) || [],
             fillerCount: result.coherence?.fillerCount || 0,
             grammarErrors: result.grammar?.errorCount || 0,
             weakAreas: this._detectWeakAreas(result.scores),
           };
           sessions.unshift(record);
-          localStorage.setItem(this.K.SESSIONS, JSON.stringify(sessions.slice(0, 100)));
+          localStorage.setItem(
+            this.K.SESSIONS,
+            JSON.stringify(sessions.slice(0, 100)),
+          );
 
-          const tw = parseInt(localStorage.getItem(this.K.WORDS) || "0") + record.words;
+          const tw =
+            parseInt(localStorage.getItem(this.K.WORDS) || "0") + record.words;
           localStorage.setItem(this.K.WORDS, String(tw));
 
           const today = new Date().toISOString().slice(0, 10);
           const daily = this.getDailyLog();
-          if (!daily[today]) daily[today] = { sessions: 0, totalScore: 0, totalWords: 0, topScores: [] };
+          if (!daily[today])
+            daily[today] = {
+              sessions: 0,
+              totalScore: 0,
+              totalWords: 0,
+              topScores: [],
+            };
           daily[today].sessions++;
           daily[today].totalScore += result.overall;
           daily[today].totalWords += record.words;
@@ -3001,54 +3675,105 @@
 
         _updateStreak(todayStr) {
           const s = this.getStreak();
-          const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-          if (s.lastDate === todayStr) {
-          } else if (s.lastDate === yesterday) {
-            s.current += 1;
-          } else if (s.lastDate === "" || s.lastDate < yesterday) {
-            s.current = 1;
+          const yesterday = new Date(Date.now() - 86400000)
+            .toISOString()
+            .slice(0, 10);
+
+          let newCurrent = s.current || 0;
+
+          if (s.lastDate === yesterday) {
+            newCurrent += 1;
+          } else if (s.lastDate !== todayStr && s.lastDate < yesterday) {
+            newCurrent = 1;
           }
-          s.longest = Math.max(s.longest, s.current);
-          s.lastDate = todayStr;
-          localStorage.setItem(this.K.STREAK, JSON.stringify(s));
-          document.getElementById("streakNum").textContent = s.current;
+
+          // STRICT RULE: Compare and keep the highest streak value.
+          const mergedStreak = {
+            current: Math.max(s.current || 0, newCurrent),
+            longest: Math.max(
+              s.longest || 0,
+              Math.max(s.current || 0, newCurrent),
+            ),
+            lastDate: todayStr,
+          };
+
+          localStorage.setItem(this.K.STREAK, JSON.stringify(mergedStreak));
+
+          const el = document.getElementById("streakNum");
+          if (el) el.textContent = mergedStreak.current;
         },
 
         _updateWeaknesses(record) {
           const w = this.getWeaknesses();
           record.weakAreas.forEach((area) => {
-            if (!w[area]) w[area] = { count: 0, sessions: 0, firstSeen: record.ts, lastSeen: record.ts };
+            if (!w[area])
+              w[area] = {
+                count: 0,
+                sessions: 0,
+                firstSeen: record.ts,
+                lastSeen: record.ts,
+              };
             w[area].count++;
             w[area].sessions++;
             w[area].lastSeen = record.ts;
           });
           if (record.fillerCount > 5) {
-            if (!w.fillers) w.fillers = { count: 0, sessions: 0, firstSeen: record.ts, lastSeen: record.ts };
+            if (!w.fillers)
+              w.fillers = {
+                count: 0,
+                sessions: 0,
+                firstSeen: record.ts,
+                lastSeen: record.ts,
+              };
             w.fillers.count += record.fillerCount;
             w.fillers.sessions++;
             w.fillers.lastSeen = record.ts;
           }
           localStorage.setItem(this.K.WEAKNESSES, JSON.stringify(w));
           const badge = document.getElementById("weakBadge");
-          if (badge) badge.style.display = Object.keys(w).length > 0 ? "" : "none";
+          if (badge)
+            badge.style.display = Object.keys(w).length > 0 ? "" : "none";
         },
 
         getAvgScores() {
           const sessions = this.getSessions().slice(0, 20);
           if (!sessions.length) return null;
-          const keys = ["grammar", "vocabulary", "fluency", "pronunciation", "coherence"];
+          const keys = [
+            "grammar",
+            "vocabulary",
+            "fluency",
+            "pronunciation",
+            "coherence",
+          ];
           const avgs = {};
           keys.forEach((k) => {
-            const vals = sessions.map((s) => s.scores?.[k]).filter((v) => v != null);
-            avgs[k] = vals.length ? Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10 : 0;
+            const vals = sessions
+              .map((s) => s.scores?.[k])
+              .filter((v) => v != null);
+            avgs[k] = vals.length
+              ? Math.round(
+                  (vals.reduce((a, b) => a + b, 0) / vals.length) * 10,
+                ) / 10
+              : 0;
           });
-          avgs.overall = Math.round((sessions.reduce((a, s) => a + (s.overall || 0), 0) / sessions.length) * 10) / 10;
+          avgs.overall =
+            Math.round(
+              (sessions.reduce((a, s) => a + (s.overall || 0), 0) /
+                sessions.length) *
+                10,
+            ) / 10;
           return avgs;
         },
 
         saveQuizScore(score, total, type) {
           const q = this.getQuizScores();
-          q.unshift({ ts: Date.now(), score, total, type, pct: Math.round((score / total) * 100) });
+          q.unshift({
+            ts: Date.now(),
+            score,
+            total,
+            type,
+            pct: Math.round((score / total) * 100),
+          });
           localStorage.setItem(this.K.QUIZ, JSON.stringify(q.slice(0, 50)));
         },
 
@@ -3068,7 +3793,9 @@
               readingProg: this.getReadingProgress(),
               totalWords: parseInt(localStorage.getItem(this.K.WORDS) || "0"),
             };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const blob = new Blob([JSON.stringify(data, null, 2)], {
+              type: "application/json",
+            });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
@@ -3077,9 +3804,10 @@
             a.click();
             document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            if (typeof UI !== 'undefined') UI.toast("Progress exported successfully!", "ok");
+            if (typeof UI !== "undefined")
+              UI.toast("Progress exported successfully!", "ok");
           } catch (e) {
-            if (typeof UI !== 'undefined') UI.toast("Export failed", "err");
+            if (typeof UI !== "undefined") UI.toast("Export failed", "err");
           }
         },
 
@@ -3095,36 +3823,67 @@
             try {
               const data = JSON.parse(ev.target.result);
               if (!data.sessions) throw new Error("Invalid file");
-              
+
               const existing = this.getSessions();
               const existTs = new Set(existing.map((s) => s.ts));
-              const newSess = (data.sessions || []).filter((s) => !existTs.has(s.ts));
-              const merged = [...existing, ...newSess].sort((a, b) => b.ts - a.ts).slice(0, 200);
+              const newSess = (data.sessions || []).filter(
+                (s) => !existTs.has(s.ts),
+              );
+              const merged = [...existing, ...newSess]
+                .sort((a, b) => b.ts - a.ts)
+                .slice(0, 200);
               localStorage.setItem(this.K.SESSIONS, JSON.stringify(merged));
-              
+
               const existingDrafts = this.getWritingDrafts();
               const existDraftTs = new Set(existingDrafts.map((d) => d.ts));
-              const newDrafts = (data.writing || []).filter((d) => !existDraftTs.has(d.ts));
-              const mergedDrafts = [...existingDrafts, ...newDrafts].sort((a, b) => b.ts - a.ts).slice(0, 50);
+              const newDrafts = (data.writing || []).filter(
+                (d) => !existDraftTs.has(d.ts),
+              );
+              const mergedDrafts = [...existingDrafts, ...newDrafts]
+                .sort((a, b) => b.ts - a.ts)
+                .slice(0, 50);
               this._safeSet("eq_writing_drafts", mergedDrafts);
 
-              if (data.daily) localStorage.setItem(this.K.DAILY, JSON.stringify(data.daily));
-              if (data.streak) localStorage.setItem(this.K.STREAK, JSON.stringify(data.streak));
-              if (data.weaknesses) localStorage.setItem(this.K.WEAKNESSES, JSON.stringify(data.weaknesses));
+              if (data.daily)
+                localStorage.setItem(this.K.DAILY, JSON.stringify(data.daily));
+              if (data.streak)
+                localStorage.setItem(
+                  this.K.STREAK,
+                  JSON.stringify(data.streak),
+                );
+              if (data.weaknesses)
+                localStorage.setItem(
+                  this.K.WEAKNESSES,
+                  JSON.stringify(data.weaknesses),
+                );
               if (data.prefs) this.savePrefs(data.prefs);
-              if (data.readingProg) this._safeSet("eq_reading_prog", data.readingProg);
-              if (data.quizScores) localStorage.setItem(this.K.QUIZ, JSON.stringify(data.quizScores));
-              
-              const currentWords = parseInt(localStorage.getItem(this.K.WORDS) || "0");
-              const importedWords = data.totalWords || 0;
-              localStorage.setItem(this.K.WORDS, String(Math.max(currentWords, importedWords)));
+              if (data.readingProg)
+                this._safeSet("eq_reading_prog", data.readingProg);
+              if (data.quizScores)
+                localStorage.setItem(
+                  this.K.QUIZ,
+                  JSON.stringify(data.quizScores),
+                );
 
-              if (typeof UI !== 'undefined') {
-                UI.toast(`Imported successfully! ${newSess.length} new sessions merged.`, "ok");
+              const currentWords = parseInt(
+                localStorage.getItem(this.K.WORDS) || "0",
+              );
+              const importedWords = data.totalWords || 0;
+              localStorage.setItem(
+                this.K.WORDS,
+                String(Math.max(currentWords, importedWords)),
+              );
+
+              if (typeof UI !== "undefined") {
+                UI.toast(
+                  `Imported successfully! ${newSess.length} new sessions merged.`,
+                  "ok",
+                );
                 if (UI.refreshAll) UI.refreshAll();
               }
             } catch (err) {
-              if (typeof UI !== 'undefined') UI.toast("Import failed: invalid JSON file", "err");
+              if (typeof UI !== "undefined")
+                UI.toast("Import failed: invalid JSON file", "err");
             }
           };
           reader.readAsText(file);
@@ -3132,21 +3891,29 @@
         },
 
         clearAll() {
-          if (!confirm("Delete ALL your progress data? This cannot be undone.")) return;
+          if (!confirm("Delete ALL your progress data? This cannot be undone."))
+            return;
           Object.keys(localStorage).forEach((k) => {
-             if (k.startsWith("eq_") || k.startsWith("dg_") || k.startsWith("ss_") || k.startsWith("wa_")) {
-                 localStorage.removeItem(k);
-             }
+            if (
+              k.startsWith("eq_") ||
+              k.startsWith("dg_") ||
+              k.startsWith("ss_") ||
+              k.startsWith("wa_")
+            ) {
+              localStorage.removeItem(k);
+            }
           });
           this.init();
-          if (typeof UI !== 'undefined') {
-             UI.toast("All data cleared", "wrn");
-             if (UI.refreshAll) UI.refreshAll();
+          if (typeof UI !== "undefined") {
+            UI.toast("All data cleared", "wrn");
+            if (UI.refreshAll) UI.refreshAll();
           }
         },
 
-        getWritingDrafts() { return this._safeGet("eq_writing_drafts", []); },
-        
+        getWritingDrafts() {
+          return this._safeGet("eq_writing_drafts", []);
+        },
+
         saveWritingDraft(text, mode, score) {
           const drafts = this.getWritingDrafts();
           drafts.unshift({
@@ -3159,22 +3926,26 @@
           });
           this._safeSet("eq_writing_drafts", drafts.slice(0, 30));
         },
-        
-        getReadingProgress() { return this._safeGet("eq_reading_prog", {}); },
-        
+
+        getReadingProgress() {
+          return this._safeGet("eq_reading_prog", {});
+        },
+
         markArticleRead(id) {
           const p = this.getReadingProgress();
           p[id] = { read: true, ts: Date.now() };
           this._safeSet("eq_reading_prog", p);
         },
-        
+
         _safeGet(key, fallback) {
           try {
             const v = localStorage.getItem(key);
             return v !== null ? JSON.parse(v) : fallback;
-          } catch (e) { return fallback; }
+          } catch (e) {
+            return fallback;
+          }
         },
-        
+
         _safeSet(key, val) {
           try {
             localStorage.setItem(key, JSON.stringify(val));
@@ -3182,11 +3953,17 @@
           } catch (e) {
             if (e.name === "QuotaExceededError") {
               const s = this.getSessions();
-              if (s.length > 40) localStorage.setItem(this.K.SESSIONS, JSON.stringify(s.slice(0, 40)));
+              if (s.length > 40)
+                localStorage.setItem(
+                  this.K.SESSIONS,
+                  JSON.stringify(s.slice(0, 40)),
+                );
               try {
                 localStorage.setItem(key, JSON.stringify(val));
                 return true;
-              } catch { return false; }
+              } catch {
+                return false;
+              }
             }
             return false;
           }
@@ -3199,11 +3976,12 @@
           let size = 0;
           try {
             for (const k in localStorage) {
-               if (localStorage.hasOwnProperty(k)) size += localStorage[k].length + k.length;
+              if (localStorage.hasOwnProperty(k))
+                size += localStorage[k].length + k.length;
             }
           } catch {}
           return `${s.length} sessions · ${tw.toLocaleString()} words spoken · ${daily} active days · ~${Math.round(size / 1024)}KB stored`;
-        }
+        },
       };
 
       /* ───────────────────────────────────────────────────────────
@@ -4945,26 +5723,43 @@
       })();
 
       /* ───────────────────────────────────────────────────────────
-         STEP 10 — PROGRESS CHART
+         STEP 10 — PROGRESS CHART & MATRIX
       ─────────────────────────────────────────────────────────── */
       const Chart = (() => {
-        function render(range, btn) {
+        let currentRange = "week";
+        let currentMetric = "overall";
+
+        // Filters for the chart
+        function setMetric(metric, btn) {
+          currentMetric = metric;
           document
-            .querySelectorAll(".chart-tab")
-            .forEach((t) => t.classList.remove("active"));
+            .querySelectorAll("#chartMetrics .quiz-filter-btn")
+            .forEach((b) => b.classList.remove("active"));
           if (btn) btn.classList.add("active");
+          render(currentRange, null);
+        }
+
+        // Renders the bar chart
+        function render(range, btn) {
+          if (range) currentRange = range;
+          if (btn) {
+            document
+              .querySelectorAll(".chart-tabs .chart-tab")
+              .forEach((t) => t.classList.remove("active"));
+            btn.classList.add("active");
+          }
+
           const sessions = DB.getSessions();
           let data;
           const now = Date.now();
-          if (range === "week")
+          if (currentRange === "week")
             data = sessions.filter((s) => s.ts > now - 7 * 864e5).slice(0, 7);
-          else if (range === "month")
+          else if (currentRange === "month")
             data = sessions.filter((s) => s.ts > now - 30 * 864e5).slice(0, 14);
           else data = sessions.slice(0, 20);
 
           const el = document.getElementById("chartArea");
           if (!data.length) {
-            // placeholder bars
             const placeholder = [
               { l: "Mon", v: 6.0 },
               { l: "Tue", v: 6.8 },
@@ -4982,21 +5777,32 @@
               .join("");
             return;
           }
+
           data.reverse();
-          const maxV = Math.max(...data.map((s) => s.overall || 0), 1);
+
           el.innerHTML = data
             .map((s) => {
-              const h = Math.round((s.overall / maxV) * 150);
+              const val =
+                currentMetric === "overall"
+                  ? s.overall || 0
+                  : s.scores && s.scores[currentMetric]
+                    ? s.scores[currentMetric]
+                    : 0;
+
+              const h = Math.round((val / 10) * 150);
               const date = new Date(s.ts);
-              const lbl =
-                range === "all"
-                  ? `${date.getMonth() + 1}/${date.getDate()}`
-                  : `${date.getMonth() + 1}/${date.getDate()}`;
-              return `<div class="bar-grp"><div class="bar-val">${(s.overall || 0).toFixed(1)}</div><div class="bar-col" style="height:${Math.max(4, h)}px" title="${s.overall}/10 · ${lbl}"></div><div class="bar-lbl">${lbl}</div></div>`;
+              const lbl = `${date.getMonth() + 1}/${date.getDate()}`;
+
+              return `<div class="bar-grp">
+              <div class="bar-val">${val.toFixed(1)}</div>
+              <div class="bar-col" style="height:${Math.max(4, h)}px" title="${val.toFixed(1)}/10 · ${lbl}"></div>
+              <div class="bar-lbl">${lbl}</div>
+            </div>`;
             })
             .join("");
         }
 
+        // Renders the GitHub-style calendar
         function renderHeatmap() {
           const daily = DB.getDailyLog();
           const el = document.getElementById("heatmap");
@@ -5025,9 +5831,107 @@
             .join("");
         }
 
-        return { render, renderHeatmap };
-      })();
+        // Renders the Evaluation Grid
+        function renderMatrix() {
+          const tbody = document.getElementById("matrixBody");
+          if (!tbody) return;
 
+          const spk = DB.getAvgScores() || {};
+          const drafts = DB.getWritingDrafts() || [];
+          const avgWrt = drafts.length
+            ? drafts.reduce((a, b) => a + (b.score || 0), 0) / drafts.length
+            : 0;
+
+          const quizzes = DB.getQuizScores() || [];
+          const avgRead = quizzes.length
+            ? quizzes.reduce((a, b) => a + b.pct, 0) / quizzes.length / 10
+            : 0;
+
+          const format = (v) =>
+            v > 0
+              ? `<span style="font-weight:600; color:var(--text)">${v.toFixed(1)}</span>`
+              : `<span style="color:var(--text-light)">-</span>`;
+          const na = `<span style="color:var(--text-light); font-size:11px; font-style:italic; background:var(--bg); border:1px solid var(--border); padding:2px 8px; border-radius:4px;">N/A</span>`;
+
+          const rows = [
+            {
+              icon: "hearing",
+              name: "Listening",
+              color: "var(--info)",
+              bg: "color-mix(in srgb, var(--info) 15%, transparent)",
+              p_na: true,
+              v_na: true,
+              f_na: true,
+              c_na: true,
+              g_na: true,
+              o: avgRead * 0.9,
+            },
+            {
+              icon: "visibility",
+              name: "Reading",
+              color: "var(--accent)",
+              bg: "color-mix(in srgb, var(--accent) 15%, transparent)",
+              p_na: true,
+              v: avgRead,
+              f_na: true,
+              c_na: true,
+              g: avgRead,
+              o: avgRead,
+            },
+            {
+              icon: "edit",
+              name: "Writing",
+              color: "var(--accent2)",
+              bg: "color-mix(in srgb, var(--accent2) 15%, transparent)",
+              p_na: true,
+              v: avgWrt,
+              f_na: true,
+              c: avgWrt,
+              g: avgWrt,
+              o: avgWrt,
+            },
+            {
+              icon: "mic",
+              name: "Speaking",
+              color: "var(--warn)",
+              bg: "color-mix(in srgb, var(--warn) 15%, transparent)",
+              p: spk.pronunciation,
+              v: spk.vocabulary,
+              f: spk.fluency,
+              c: spk.coherence,
+              g: spk.grammar,
+              o: spk.overall,
+            },
+          ];
+
+          tbody.innerHTML = rows
+            .map(
+              (r) => `
+              <tr style="border-bottom: 1px solid var(--border); transition: background var(--t);" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+                  <td style="padding: 16px; text-align: left; border-right: 1px solid var(--border); background: var(--surface);">
+                      <div style="display:flex; align-items:center; gap:10px;">
+                          <div style="width:32px; height:32px; border-radius:6px; background:${r.bg}; color:${r.color}; display:flex; align-items:center; justify-content:center; font-size:18px;">${r.icon === "hearing" ? "🎧" : r.icon === "visibility" ? "📖" : r.icon === "edit" ? "✍️" : "🎙️"}</div>
+                          <span style="font-weight:600; color:var(--text); font-size:14.5px;">${r.name}</span>
+                      </div>
+                  </td>
+                  <td style="padding: 16px 8px;">${r.p_na ? na : format(r.p)}</td>
+                  <td style="padding: 16px 8px;">${r.v_na ? na : format(r.v)}</td>
+                  <td style="padding: 16px 8px;">${r.f_na ? na : format(r.f)}</td>
+                  <td style="padding: 16px 8px;">${r.c_na ? na : format(r.c)}</td>
+                  <td style="padding: 16px 8px;">${r.g_na ? na : format(r.g)}</td>
+                  <td style="padding: 16px; border-left: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 3%, transparent);">
+                      <div style="display:inline-block; padding:4px 12px; background:color-mix(in srgb, var(--accent) 15%, transparent); border:1px solid color-mix(in srgb, var(--accent) 30%, transparent); color:var(--accent); font-weight:bold; border-radius:6px; font-family:var(--fd); font-size:15px;">
+                          ${r.o > 0 ? r.o.toFixed(1) : "-"}
+                      </div>
+                  </td>
+              </tr>
+          `,
+            )
+            .join("");
+        }
+
+        return { render, renderHeatmap, setMetric, renderMatrix };
+      })();
       /* ───────────────────────────────────────────────────────────
          STEP 11 — WEAKNESS DETECTION & LESSONS
       ─────────────────────────────────────────────────────────── */
@@ -5617,6 +6521,7 @@
         },
 
         _updateProgressPage() {
+          if (Chart && Chart.renderMatrix) Chart.renderMatrix();
           const sessions = DB.getSessions();
           const streak = DB.getStreak();
           const tw = parseInt(localStorage.getItem(DB.K.WORDS) || "0");
@@ -7273,7 +8178,6 @@
         return { render };
       })();
 
-
       /* ═══════════════════════════════════════════════════════
          LIVE CONTENT FETCHER — Free APIs, no key required
       ═══════════════════════════════════════════════════════ */
@@ -7548,7 +8452,9 @@
         }
       }
       function syncImportData() {
-        const code = (document.getElementById("syncImportCode").value || "").trim();
+        const code = (
+          document.getElementById("syncImportCode").value || ""
+        ).trim();
         const status = document.getElementById("syncImportStatus");
         if (!code) {
           status.textContent = "Paste a sync code first.";
@@ -7560,37 +8466,62 @@
             status.textContent = "Invalid sync code.";
             return;
           }
-          
+
           const existing = DB.getSessions();
           const existTs = new Set(existing.map((s) => s.ts));
-          const newSess = (data.sessions || []).filter((s) => !existTs.has(s.ts));
-          const merged = [...existing, ...newSess].sort((a, b) => b.ts - a.ts).slice(0, 200);
+          const newSess = (data.sessions || []).filter(
+            (s) => !existTs.has(s.ts),
+          );
+          const merged = [...existing, ...newSess]
+            .sort((a, b) => b.ts - a.ts)
+            .slice(0, 200);
           localStorage.setItem(DB.K.SESSIONS, JSON.stringify(merged));
-          
+
           const existingDrafts = DB.getWritingDrafts();
           const existDraftTs = new Set(existingDrafts.map((d) => d.ts));
-          const newDrafts = (data.writing || []).filter((d) => !existDraftTs.has(d.ts));
-          const mergedDrafts = [...existingDrafts, ...newDrafts].sort((a, b) => b.ts - a.ts).slice(0, 50);
+          const newDrafts = (data.writing || []).filter(
+            (d) => !existDraftTs.has(d.ts),
+          );
+          const mergedDrafts = [...existingDrafts, ...newDrafts]
+            .sort((a, b) => b.ts - a.ts)
+            .slice(0, 50);
           DB._safeSet("eq_writing_drafts", mergedDrafts);
 
           if (data.prefs) DB.savePrefs(data.prefs);
-          if (data.readingProg) DB._safeSet("eq_reading_prog", data.readingProg);
-          if (data.daily) localStorage.setItem(DB.K.DAILY, JSON.stringify(data.daily));
-          if (data.streak) localStorage.setItem(DB.K.STREAK, JSON.stringify(data.streak));
-          if (data.weaknesses) localStorage.setItem(DB.K.WEAKNESSES, JSON.stringify(data.weaknesses));
-          if (data.quizScores) localStorage.setItem(DB.K.QUIZ, JSON.stringify(data.quizScores));
-          
-          const currentWords = parseInt(localStorage.getItem(DB.K.WORDS) || "0");
-          const importedWords = data.totalWords || 0;
-          localStorage.setItem(DB.K.WORDS, String(Math.max(currentWords, importedWords)));
+          if (data.readingProg)
+            DB._safeSet("eq_reading_prog", data.readingProg);
+          if (data.daily)
+            localStorage.setItem(DB.K.DAILY, JSON.stringify(data.daily));
+          if (data.streak)
+            localStorage.setItem(DB.K.STREAK, JSON.stringify(data.streak));
+          if (data.weaknesses)
+            localStorage.setItem(
+              DB.K.WEAKNESSES,
+              JSON.stringify(data.weaknesses),
+            );
+          if (data.quizScores)
+            localStorage.setItem(DB.K.QUIZ, JSON.stringify(data.quizScores));
 
-          const message = newSess.length === 0 
-            ? "✅ Devices are already fully synced!" 
-            : `✅ Sync Complete! ${newSess.length} new sessions merged.`;
-            
+          const currentWords = parseInt(
+            localStorage.getItem(DB.K.WORDS) || "0",
+          );
+          const importedWords = data.totalWords || 0;
+          localStorage.setItem(
+            DB.K.WORDS,
+            String(Math.max(currentWords, importedWords)),
+          );
+
+          const message =
+            newSess.length === 0
+              ? "✅ Devices are already fully synced!"
+              : `✅ Sync Complete! ${newSess.length} new sessions merged.`;
+
           status.innerHTML = `<span style="color:var(--accent)">${message}</span>`;
           if (typeof UI !== "undefined" && UI.refreshAll) UI.refreshAll();
-          setTimeout(() => document.getElementById("syncModal").classList.add("hidden"), 2000);
+          setTimeout(
+            () => document.getElementById("syncModal").classList.add("hidden"),
+            2000,
+          );
         } catch (e) {
           status.textContent = "Failed: Invalid or corrupt sync code.";
         }
