@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en" data-theme="parchment">
   <head>
+    
     <meta charset="UTF-8" />
     <meta
       name="viewport"
@@ -20,6 +21,7 @@
       href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    
     <style>
             /* ═══════════════════════════════════════════════════════════
                THREE STUDENT THEMES
@@ -1119,6 +1121,7 @@
               #toast{bottom:68px!important}
             } {% endcomment %}
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
   </head>
   <body>
     <!-- ═══════════ LOGIN OVERLAY ═══════════ -->
@@ -1361,7 +1364,18 @@
         >
           ☰
         </button>
-        <div class="logo"><span class="beacon"></span>Eloquent</div>
+        <div class="logo" style="display: flex; align-items: center; gap: 8px;">
+  <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 10C27.9086 10 10 27.9086 10 50C10 61.5034 14.8517 71.8758 22.5 79.1242V95C22.5 96.6569 24.3431 97.5404 25.6 96.5L38.4 85.8C42.1 86.6 46 87 50 87C72.0914 87 90 69.0914 90 50C90 27.9086 72.0914 10 50 10Z" fill="var(--accent)" fill-opacity="0.15" stroke="var(--accent)" stroke-width="6" stroke-linejoin="round"/>
+    <rect x="35" y="35" width="30" height="6" rx="3" fill="var(--accent)"/>
+    <rect x="35" y="47" width="22" height="6" rx="3" fill="var(--accent)"/>
+    <rect x="35" y="59" width="30" height="6" rx="3" fill="var(--accent)"/>
+    <circle cx="75" cy="25" r="5" fill="var(--accent2)">
+      <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
+    </circle>
+  </svg>
+  Eloquent
+</div>
       </div>
       <div class="topbar-right">
         <button
@@ -3165,6 +3179,7 @@
             >
               ✍️ Free Write
             </button>
+            <button class="wmode-btn" onclick="Writing.setMode('task1', this)">📊 Task 1</button>
             <button class="wmode-btn" onclick="Writing.setMode('prompt', this)">
               💡 Prompted
             </button>
@@ -3609,9 +3624,11 @@
           return JSON.parse(localStorage.getItem(this.K.QUIZ) || "[]");
         },
 
-        saveSession(result) {
+        async saveSession(result) {
           const sessions = this.getSessions();
-          const record = {
+          
+          // 1. Lightweight Metadata for LocalStorage (Charts, Streaks, UI)
+          const recordMeta = {
             id: Date.now(),
             ts: result.timestamp,
             overall: result.overall,
@@ -3619,48 +3636,43 @@
             sentences: result.sentences,
             wpm: result.wpm,
             duration: result.duration,
-            words: result.text
-              ? result.text.split(/\s+/).filter(Boolean).length
-              : 0,
+            words: result.text ? result.text.split(/\s+/).filter(Boolean).length : 0,
             topicCat: document.getElementById("topicCat")?.textContent || "",
-            topicText:
-              document
-                .getElementById("topicPrompt")
-                ?.textContent?.slice(0, 80) || "",
-            corrections: result.grammar?.corrections?.map((c) => c.wrong) || [],
-            fillerCount: result.coherence?.fillerCount || 0,
             grammarErrors: result.grammar?.errorCount || 0,
             weakAreas: this._detectWeakAreas(result.scores),
           };
-          sessions.unshift(record);
-          localStorage.setItem(
-            this.K.SESSIONS,
-            JSON.stringify(sessions.slice(0, 100)),
-          );
+          
+          sessions.unshift(recordMeta);
+          localStorage.setItem(this.K.SESSIONS, JSON.stringify(sessions.slice(0, 200)));
 
-          const tw =
-            parseInt(localStorage.getItem(this.K.WORDS) || "0") + record.words;
+          // 2. Heavy Payload for IndexedDB (Full transcripts, corrections)
+          if (window.localforage) {
+            const fullRecord = { ...recordMeta, text: result.text, corrections: result.grammar?.corrections || [] };
+            try {
+               await localforage.setItem(`session_${recordMeta.id}`, fullRecord);
+            } catch(e) {
+               console.warn("IndexedDB save failed", e);
+            }
+          }
+
+          // 3. Update word counts and streaks (Keep synchronous)
+          const tw = parseInt(localStorage.getItem(this.K.WORDS) || "0") + recordMeta.words;
           localStorage.setItem(this.K.WORDS, String(tw));
 
           const today = new Date().toISOString().slice(0, 10);
           const daily = this.getDailyLog();
-          if (!daily[today])
-            daily[today] = {
-              sessions: 0,
-              totalScore: 0,
-              totalWords: 0,
-              topScores: [],
-            };
+          if (!daily[today]) daily[today] = { sessions: 0, totalScore: 0, totalWords: 0, topScores: [] };
+          
           daily[today].sessions++;
           daily[today].totalScore += result.overall;
-          daily[today].totalWords += record.words;
+          daily[today].totalWords += recordMeta.words;
           daily[today].topScores.push(result.overall);
           localStorage.setItem(this.K.DAILY, JSON.stringify(daily));
 
           this._updateStreak(today);
-          this._updateWeaknesses(record);
+          this._updateWeaknesses(recordMeta);
 
-          return record;
+          return recordMeta;
         },
 
         _detectWeakAreas(scores) {
@@ -4308,14 +4320,28 @@
             return;
           }
           chunks = [];
-          const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-            ? "audio/webm;codecs=opus"
-            : MediaRecorder.isTypeSupported("audio/ogg;codecs=opus")
-              ? "audio/ogg;codecs=opus"
-              : "audio/webm";
-          mr = new MediaRecorder(stream, { mimeType: mime });
+          const mimeOptions = [
+            "audio/webm;codecs=opus",
+            "audio/ogg;codecs=opus",
+            "audio/mp4", // iOS Safari fallback
+            "audio/aac", // iOS Safari fallback 2
+            "audio/webm"
+          ];
+          let mime = "";
+          for (const m of mimeOptions) {
+            if (MediaRecorder.isTypeSupported(m)) {
+              mime = m;
+              break;
+            }
+          }
+          mr = new MediaRecorder(stream, { mimeType: mime || undefined });
+          const dgSocket = DeepgramSTT.connect();
+          
           mr.ondataavailable = (e) => {
-            if (e.data.size > 0) chunks.push(e.data);
+            if (e.data.size > 0) {
+              chunks.push(e.data);
+              if (dgSocket) DeepgramSTT.send(e.data); // Stream directly to API
+            }
           };
           mr.onstop = () => {
             blob = new Blob(chunks, { type: mime });
@@ -4351,9 +4377,16 @@
         }
 
         async function _onStop(b) {
-          const t = await DeepgramSTT.transcribe(b);
-          if (t) Session.append(t);
-          _uiIdle();
+          DeepgramSTT.close(); // Close the websocket
+          
+          const key = localStorage.getItem("dg_key");
+          if (!key) {
+             const demoText = await DeepgramSTT.transcribeDemo();
+             Session.append(demoText);
+          }
+          
+          // Wait slightly for final websocket chunks to arrive
+          setTimeout(() => { _uiIdle(); }, 1000); 
         }
 
         function _uiRecording(on) {
@@ -4400,62 +4433,57 @@
       /* ───────────────────────────────────────────────────────────
          STEP 4 — DEEPGRAM STT
       ─────────────────────────────────────────────────────────── */
-      const DeepgramSTT = (() => {
-        const URL_BASE =
-          "https://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&filler_words=true";
-        const DEMOS = [
-          "I believe social media has fundamentally changed the way we communicate. On one hand, it allows people to connect across geographical boundaries and share informations instantly. However, I am agree that it also spreads misinformation very fast. Research suggests that people are more better informed about global events than ever before, yet the quality of that information is often questionable. We need stronger regulations to address these very big concerns.",
-          "When I think about technology and its impact on society, I feel um genuinely conflicted. The innovations of the past decade have been nothing short of remarkable. Artificial intelligence, renewable energy, and medical breakthroughs have all emerged from technological progress. Nevertheless, there are significant concerns about privacy, job displacement, and the digital divide. Personally I think the benefits outweigh the risks if we approach development responsibly and ethically. In conclusion, a balanced approach is essential.",
-          "Climate change represents perhaps the most pressing challenge of our time. The scientific consensus is clear that human activities are responsible for rising global temperatures. We see the consequences in melting ice caps, more frequent extreme weather events, and rising sea levels. Governments must take decisive action by investing in renewable energy and updating climate policies. As individuals, we also bear responsibility to reduce our carbon footprint. In summary, collective action at every level is urgently needed.",
-        ];
-        let dIdx = 0;
-        async function transcribe(blob) {
+     const DeepgramSTT = (() => {
+        let socket = null;
+        let keepAlive = null;
+
+        function connect() {
           const key = localStorage.getItem("dg_key");
-          if (!key) {
-            await _wait(1600);
-            UI.toast("Demo transcript — add Deepgram key in Settings", "wrn");
-            return DEMOS[dIdx++ % DEMOS.length];
-          }
-          try {
-            const res = await _retry(() =>
-              fetch(URL_BASE, {
-                method: "POST",
-                headers: {
-                  Authorization: `Token ${key}`,
-                  "Content-Type": blob.type || "audio/webm",
-                },
-                body: blob,
-              }),
-            );
-            if (!res.ok) throw new Error(`Deepgram ${res.status}`);
-            const data = await res.json();
-            return (
-              data?.results?.channels?.[0]?.alternatives?.[0]?.transcript || ""
-            );
-          } catch (e) {
-            UI.toast(`STT error: ${e.message.slice(0, 50)}`, "err");
-            return null;
-          }
-        }
-        async function _retry(fn, n = 3) {
-          for (let i = 0; i < n; i++) {
-            try {
-              const r = await fn();
-              if (r.status === 429) {
-                await _wait(2000 * (i + 1));
-                continue;
+          if (!key) return null;
+
+          socket = new WebSocket("wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&filler_words=true&interim_results=true");
+          
+          socket.onopen = () => {
+            keepAlive = setInterval(() => {
+              if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: "KeepAlive" }));
+            }, 10000);
+          };
+
+          socket.onmessage = (message) => {
+            const data = JSON.parse(message.data);
+            if (data.channel && data.channel.alternatives[0]) {
+              const transcript = data.channel.alternatives[0].transcript;
+              if (transcript && data.is_final) {
+                 Session.append(transcript); // Append finalized chunks to your UI
               }
-              return r;
-            } catch (e) {
-              if (i === n - 1) throw e;
-              await _wait(1000 * (i + 1));
             }
+          };
+
+          socket.onclose = () => clearInterval(keepAlive);
+          return socket;
+        }
+
+        function send(chunk) {
+          if (socket && socket.readyState === WebSocket.OPEN && chunk.size > 0) {
+            socket.send(chunk);
           }
         }
-        function _wait(ms) {
-          return new Promise((r) => setTimeout(r, ms));
+
+        function close() {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ type: "CloseStream" }));
+          }
         }
-        return { transcribe };
+
+        // Fallback for Demo Mode (No Key)
+        async function transcribeDemo() {
+          const DEMOS = ["I believe social media has fundamentally changed the way we communicate. On one hand..."];
+          await new Promise(r => setTimeout(r, 1500));
+          UI.toast("Demo transcript — add Deepgram key in Settings", "wrn");
+          return DEMOS[0];
+        }
+
+        return { connect, send, close, transcribeDemo };
       })();
 
       /* ───────────────────────────────────────────────────────────
@@ -5006,18 +5034,25 @@
             pronunciation: p.pronScore,
             coherence: c.score,
           };
-          const W = {
-            grammar: 0.25,
-            vocabulary: 0.2,
-            fluency: 0.2,
-            pronunciation: 0.2,
-            coherence: 0.15,
+         const bandScores = {
+            grammar: Math.min(9, Math.max(1, g.score * 0.9)),
+            vocabulary: Math.min(9, Math.max(1, v.score * 0.9)),
+            fluency: Math.min(9, Math.max(1, p.fluScore * 0.9)),
+            pronunciation: Math.min(9, Math.max(1, p.pronScore * 0.9)),
+            coherence: Math.min(9, Math.max(1, c.score * 0.9))
           };
-          const overall =
-            Math.round(
-              Object.entries(W).reduce((s, [k, w]) => s + scores[k] * w, 0) *
-                10,
-            ) / 10;
+          const W = { grammar: 0.25, vocabulary: 0.2, fluency: 0.2, pronunciation: 0.2, coherence: 0.15 };
+          const rawAverage = Object.entries(W).reduce((s, [k, w]) => s + bandScores[k] * w, 0);
+          
+          // IELTS rounding rule: round to nearest 0.5
+          const overall = Math.round(rawAverage * 2) / 2;
+          
+          // Update scores object to reflect bands for the UI
+          scores.grammar = Math.round(bandScores.grammar * 2) / 2;
+          scores.vocabulary = Math.round(bandScores.vocabulary * 2) / 2;
+          scores.fluency = Math.round(bandScores.fluency * 2) / 2;
+          scores.pronunciation = Math.round(bandScores.pronunciation * 2) / 2;
+          scores.coherence = Math.round(bandScores.coherence * 2) / 2;
           const strictV = [];
           const prefs = DB.getPrefs();
           if (prefs.strict) {
@@ -6870,63 +6905,31 @@
       ═══════════════════════════════════════════════════════ */
       const Writing = (() => {
         const PROMPTS = {
+         const PROMPTS = {
+          task1: [
+            {
+              cat: "Academic Task 1",
+              diff: "B2-C1",
+              p: "Summarise the information by selecting and reporting the main features of the graph below, and make comparisons where relevant. \n\n[Imagine a Bar Chart showing: Renewable Energy Production in Europe (2010-2020). Solar increased from 10% to 35%, Wind from 5% to 25%, while Coal decreased from 50% to 15%]."
+            },
+            {
+              cat: "Academic Task 1",
+              diff: "B2",
+              p: "The diagram below shows the process of water purification for a city. Summarise the information by selecting and reporting the main features. \n\n[Imagine a Diagram: Reservoir -> Pumping Station -> Filtration (Sand/Gravel) -> Chlorination -> City Supply]."
+            }
+          ],
           prompt: [
-            {
-              cat: "Opinion",
-              diff: "B2",
-              p: "Should university education be free for everyone? Argue both sides and reach a conclusion.",
-            },
-            {
-              cat: "Description",
-              diff: "B1",
-              p: "Describe a place that holds special meaning to you. Why is it important to you?",
-            },
-            {
-              cat: "Narrative",
-              diff: "B1-B2",
-              p: "Write about a time when you made a difficult decision. What happened and what did you learn?",
-            },
-            {
-              cat: "Discussion",
-              diff: "C1",
-              p: "Some people believe that social media does more harm than good. To what extent do you agree?",
-            },
-            {
-              cat: "Report",
-              diff: "B2",
-              p: "Write a short report on the advantages and disadvantages of working from home.",
-            },
-            {
-              cat: "Argument",
-              diff: "B2",
-              p: "Is it better to live in a city or the countryside? Give your opinion with reasons and examples.",
-            },
+            { cat: "Opinion", diff: "B2", p: "Should university education be free for everyone? Argue both sides and reach a conclusion." },
+            { cat: "Description", diff: "B1", p: "Describe a place that holds special meaning to you. Why is it important to you?" },
           ],
           essay: [
-            {
-              cat: "IELTS Task 2",
-              diff: "B2-C1",
-              p: "Technology has made people's lives easier. However, some argue it has also made people lazier. Discuss both views and give your own opinion.",
-            },
-            {
-              cat: "Academic Essay",
-              diff: "C1",
-              p: "To what extent has globalisation been beneficial for developing countries? Support your argument with evidence.",
-            },
+            { cat: "IELTS Task 2", diff: "B2-C1", p: "Technology has made people's lives easier. However, some argue it has also made people lazier. Discuss both views and give your own opinion." }
           ],
           email: [
-            {
-              cat: "Formal Complaint",
-              diff: "B1",
-              p: "Write a formal email to a hotel manager complaining about your recent stay. Be polite but clear about the issues.",
-            },
-            {
-              cat: "Covering Letter",
-              diff: "B2",
-              p: "Write a covering letter for a job as an English teacher. Highlight your relevant skills and experience.",
-            },
+            { cat: "Formal Complaint", diff: "B1", p: "Write a formal email to a hotel manager complaining about your recent stay. Be polite but clear about the issues." }
           ],
           freewrite: [],
+        
         };
         let mode = "freewrite",
           promptIdx = 0,
