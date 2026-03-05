@@ -4377,16 +4377,20 @@
         }
 
         async function _onStop(b) {
-          DeepgramSTT.close(); // Close the websocket
-          
           const key = localStorage.getItem("dg_key");
           if (!key) {
              const demoText = await DeepgramSTT.transcribeDemo();
              Session.append(demoText);
+             _uiIdle();
+          } else {
+             // Send the signal to Deepgram that audio is finished
+             DeepgramSTT.close(); 
+             
+             // Wait 1.5 seconds to let Deepgram send the final transcript back over the socket
+             setTimeout(() => { 
+                _uiIdle(); 
+             }, 1500); 
           }
-          
-          // Wait slightly for final websocket chunks to arrive
-          setTimeout(() => { _uiIdle(); }, 1000); 
         }
 
         function _uiRecording(on) {
@@ -4441,7 +4445,10 @@
           const key = localStorage.getItem("dg_key");
           if (!key) return null;
 
-          socket = new WebSocket("wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&filler_words=true&interim_results=true");
+          socket = new WebSocket(
+            "wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&filler_words=true", 
+            ["token", key]
+          );
           
           socket.onopen = () => {
             keepAlive = setInterval(() => {
@@ -6905,7 +6912,6 @@
       ═══════════════════════════════════════════════════════ */
       const Writing = (() => {
         const PROMPTS = {
-         const PROMPTS = {
           task1: [
             {
               cat: "Academic Task 1",
