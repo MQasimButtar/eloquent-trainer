@@ -7414,41 +7414,32 @@ const ClaudeAI = {
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   if (words < 15) {
-    UI.toast("Write at least 15 words for AI analysis", "wrn");
+    UI.toast("Write at least 15 words first", "wrn");
     return;
   }
 
   const btn = document.getElementById("writingAnalyzeBtn");
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spin"></span>Claude AI Analyzing...';
-  }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Analyzing with Claude...';
 
   try {
-    // 1. Ensure user is signed in to Puter
-    if (!puter.auth.isSignedIn()) {
-      await puter.auth.signIn();
-    }
+    // The Prompt
+    const prompt = `Act as an expert IELTS examiner. Analyze the text: "${text}".
+    Return ONLY a raw JSON object with this structure:
+    {"grammar": {"score": 8, "errorCount": 0, "corrections": [{"wrong": "example", "suggestions": ["fix"], "message": "Why"}]}, "vocabulary": {"score": 8, "uniqueRatio": 50, "advancedCount": 2, "suggestions": [{"word": "bad", "synonyms": ["detrimental"]}]}, "structure": {"score": 8, "feedback": "Feedback here"}, "overall": 8.0}`;
 
-    // 2. Prepare the Prompt
-    const prompt = `Act as an expert IELTS examiner. Analyze the text below and return ONLY a valid JSON object. 
-    Strict structure: 
-    {
-      "grammar": {"score": 8, "errorCount": 0, "corrections": [{"wrong": "example", "suggestions": ["fix"], "message": "error explanation"}]},
-      "vocabulary": {"score": 8, "uniqueRatio": 60, "advancedCount": 2, "suggestions": [{"word": "bad", "synonyms": ["detrimental"]}]},
-      "structure": {"score": 8, "feedback": "Feedback here"},
-      "overall": 8.0
-    }
-    Text: "${text}"`;
-
-    // 3. Call Claude via Puter
+    // 1. Call Claude via Puter.js
+    // We use claude-3-5-sonnet as it's the most stable for JSON tasks
     const response = await puter.ai.chat(prompt, { model: 'claude-3-5-sonnet' });
     
-    // 4. Extract and Parse JSON (Handles potential markdown)
-    const jsonStr = typeof response === 'string' ? response : response.message.content[0].text;
-    const aiResult = JSON.parse(jsonStr.replace(/```json|```/g, ""));
+    // 2. Extract text (response.message.content[0].text is the standard Puter format)
+    const rawText = response.message.content[0].text;
     
-    // --- UI UPDATES (Same as your original) ---
+    // 3. Clean and Parse JSON
+    const jsonStr = rawText.replace(/```json|```/g, "").trim();
+    const aiResult = JSON.parse(jsonStr);
+
+    // 4. Update UI (Your original rendering code)
     const paragraphs = text.split(/\n+/).filter(Boolean).length || 1;
     DB.saveWritingDraft(text, mode, aiResult.overall);
     document.getElementById("writingFeedback").style.display = "block";
@@ -7462,32 +7453,29 @@ const ClaudeAI = {
     const fl = document.getElementById("writingFbList");
     fl.innerHTML = "";
 
+    // Append Grammar
     fl.appendChild(_fbItem("📐 Grammar", aiResult.grammar.errorCount > 0 ? "badge-err" : "badge-ok", 
       aiResult.grammar.errorCount > 0 ? aiResult.grammar.errorCount + " issues" : "No errors",
       aiResult.grammar.corrections?.map(c => `<div class="corr"><span class="cw">${_esc(c.wrong)}</span><span class="ca">→</span><span class="cr">${_esc(c.suggestions[0] || "?")}</span></div><div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">${_esc(c.message)}</div>`).join("") || '<p style="color:var(--accent)">✓ Excellent grammar!</p>'));
 
+    // Append Vocab
     fl.appendChild(_fbItem("📖 Vocabulary", "badge-warn", (aiResult.vocabulary.suggestions?.length || 0) + " upgrades",
       `<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Advanced words used: <strong>${aiResult.vocabulary.advancedCount}</strong></div>` +
       (aiResult.vocabulary.suggestions?.map(s => `<div class="corr"><span class="cw">${_esc(s.word)}</span><span class="ca">→</span>${s.synonyms.slice(0, 3).map(sy => `<span class="cr">${_esc(sy)}</span>`).join('<span class="ca">/</span>')}</div>`).join("") || '<p style="color:var(--accent)">Impressive vocabulary range!</p>')));
 
+    // Append Structure
     fl.appendChild(_fbItem("📝 Structure & Task", aiResult.structure.score >= 7 ? "badge-ok" : "badge-warn", paragraphs + " paragraphs",
-      `<p style="font-size:13.5px; line-height: 1.6; color:var(--text)">${_esc(aiResult.structure.feedback)}</p>
-       <ul style="font-size:13px;line-height:2.2;list-style:none;padding:0; margin-top: 10px;">
-        <li>${paragraphs >= 3 ? "✅" : "⚠️"} 3+ paragraphs (found ${paragraphs})</li>
-        <li>${words >= 150 ? "✅" : "⚠️"} Word count: ${words} ${words < 150 ? "(aim for 150+)" : ""}</li>
-      </ul>`));
+      `<p style="font-size:13.5px; line-height: 1.6; color:var(--text)">${_esc(aiResult.structure.feedback)}</p>`));
 
     document.getElementById("writingFeedback").scrollIntoView({ behavior: "smooth", block: "start" });
-    UI.toast("AI Evaluation Complete: " + aiResult.overall.toFixed(1) + "/10", "ok");
+    UI.toast("AI Evaluation Complete!", "ok");
 
   } catch (e) {
-    console.error("AI Analysis Failed:", e);
-    UI.toast("AI Error: " + (e.message || "Check console"), "err");
+    console.error("AI Analysis Error:", e);
+    UI.toast("AI Error: Check console", "err");
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = "🔍 Analyze Writing";
-    }
+    btn.disabled = false;
+    btn.innerHTML = "🔍 Analyze Writing";
   }
 }
 
