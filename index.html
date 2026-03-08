@@ -7430,7 +7430,7 @@ const ClaudeAI = {
 
     // 1. Call Claude via Puter.js
     // We use claude-3-5-sonnet as it's the most stable for JSON tasks
-    const response = await puter.ai.chat(prompt, { model: 'claude-3-5-sonnet' });
+    const response = await puter.ai.chat(prompt, { model: 'claude-sonnet-4-6' });
     
     // 2. Extract text (response.message.content[0].text is the standard Puter format)
     const rawText = response.message.content[0].text;
