@@ -1242,9 +1242,9 @@
             <label>WordsAPI RapidAPI Key</label
             ><input type="password" id="sWA" placeholder="••••••••" />
           </div>
-          <div class="field" style="margin-bottom: 18px; margin-top: 14px;">
+<div class="field" style="margin-bottom: 18px; margin-top: 14px;">
             <label style="color: var(--accent);">Groq API Key (Powers AI IELTS Features)</label>
-            <input type="password" id="stGroq" placeholder="gsk_••••••••••••••" />
+            <input type="password" id="sGroq" placeholder="gsk_••••••••••••••" />
           </div>
         </div>
         <button
@@ -4399,44 +4399,242 @@
       const UI = {
         navigate(page) {
           document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
-          document.getElementById("page-" + page)?.classList.add("active");
+          document.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
+          
+          const target = document.getElementById("page-" + page);
+          if (target) target.classList.add("active");
+          
+          document.querySelectorAll(".nav-item").forEach((n) => {
+            if ((n.getAttribute("onclick") || "").includes(`'${page}'`)) n.classList.add("active");
+          });
+          
+          document.getElementById("mainContent").scrollTop = 0;
+          this.closeSidebar();
+
+          // Initialize specific page features when navigated to
           if (page === "quiz" && !document.getElementById("qQuestion").textContent.includes("?")) Quiz.generateWithAI();
           if (page === "reading" && !document.getElementById("readingGrid").innerHTML) Reading.init();
           if (page === "listening") Listening.init();
-          if (page === "settings") {
-            document.getElementById("stGroq").placeholder = localStorage.getItem("groq_key") ? "gsk_••••" : "";
-            const t = localStorage.getItem("eq_theme") || "parchment";
-            document.querySelectorAll('[id^="ts-"]').forEach((el) => el.classList.remove("selected"));
-            document.getElementById("ts-" + t)?.classList.add("selected");
+          if (page === "settings") this._loadSettingsKeys();
+          if (page === "weaknesses") Weaknesses.render();
+          if (page === "lessons") buildLessons();
+          if (page === "dashboard") {
+            this._updateDashboard();
+            Tips.render();
           }
-          if (page === "dashboard") this._updateDashboard();
+          if (page === "progress") {
+            Chart.render("week");
+            Chart.renderHeatmap();
+            this._updateProgressPage();
+            this._updateDbStats();
+          }
+          if (page === "guide") {
+            const pu = document.getElementById("pwaUrl");
+            if (pu) pu.textContent = window.location.href;
+          }
+
+          localStorage.setItem("eq_last_page", page);
+          document.querySelectorAll(".bn-item").forEach((b) => b.classList.remove("active"));
+          const bnBtn = document.getElementById("bn-" + page);
+          if (bnBtn) bnBtn.classList.add("active");
         },
-        saveKeys() {
-          const g = document.getElementById("stGroq").value.trim();
-          const dg = document.getElementById("stDG").value.trim();
-          if (g) localStorage.setItem("groq_key", g);
+
+        toggleSidebar() {
+          document.getElementById("sidebar").classList.toggle("open");
+          document.getElementById("sidebarBackdrop").classList.toggle("active");
+        },
+        closeSidebar() {
+          document.getElementById("sidebar").classList.remove("open");
+          document.getElementById("sidebarBackdrop").classList.remove("active");
+        },
+
+        saveSetup() {
+          const dg = document.getElementById("sDG")?.value.trim();
+          const ss = document.getElementById("sSS")?.value.trim();
+          const wa = document.getElementById("sWA")?.value.trim();
+          const groq = document.getElementById("sGroq")?.value.trim();
+
           if (dg) localStorage.setItem("dg_key", dg);
+          if (ss) localStorage.setItem("ss_key", ss);
+          if (wa) localStorage.setItem("wa_key", wa);
+          if (groq) localStorage.setItem("groq_key", groq);
+          
+          localStorage.setItem("eq_setup_done", "1");
+          document.getElementById("setupOverlay").classList.add("hidden");
+          this.toast("Keys saved — ready!", "ok");
+        },
+
+        skipSetup() {
+          localStorage.setItem("eq_setup_done", "1");
+          document.getElementById("setupOverlay").classList.add("hidden");
+          this.toast("Demo mode — add keys in Settings", "wrn");
+        },
+
+        saveKeys() {
+          const dg = document.getElementById("stDG")?.value.trim();
+          const ss = document.getElementById("stSS")?.value.trim();
+          const wa = document.getElementById("stWA")?.value.trim();
+          const groq = document.getElementById("stGroq")?.value.trim();
+
+          if (dg) localStorage.setItem("dg_key", dg);
+          if (ss) localStorage.setItem("ss_key", ss);
+          if (wa) localStorage.setItem("wa_key", wa);
+          if (groq) localStorage.setItem("groq_key", groq);
+          
           this.toast("API keys saved!", "ok");
         },
-        toast(msg, type = "ok") {
-          const t = document.getElementById("toast");
-          t.textContent = msg; t.className = `show ${type}`;
-          setTimeout(() => (t.className = ""), 3200);
+
+        savePrefs() {
+          const strict = document.getElementById("prefStrict").checked;
+          const minSent = parseInt(document.getElementById("prefMin").value);
+          DB.savePrefs({ strict, minSent });
+          Session.minSent = minSent;
+          document.getElementById("sentMin").textContent = minSent;
+          document.getElementById("sentTargetLbl").textContent = `Target: ${minSent}`;
+          document.getElementById("strictTag").style.display = strict ? "" : "none";
+          this.toast("Preferences saved!", "ok");
         },
-        setTheme(t) { 
-          document.documentElement.setAttribute("data-theme", t); 
+
+        async testAPIs() {
+          const el = document.getElementById("apiStatus");
+          el.style.display = "block";
+          el.innerHTML = '<span class="spin"></span>Testing…';
+          const rows = [];
+          
+          try {
+            const r = await fetch("https://api.languagetool.org/v2/check", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: "language=en-US&text=test",
+            });
+            rows.push(`📐 LanguageTool: ${r.ok ? "✅ Connected" : "❌ Error"}`);
+          } catch (e) { rows.push("📐 LanguageTool: ❌ Network error"); }
+
+          rows.push(`🎙️ Deepgram: ${localStorage.getItem("dg_key") ? "🔑 Key saved" : "⚠️ No key"}`);
+          rows.push(`🔊 SpeechSuper: ${localStorage.getItem("ss_key") ? "🔑 Key saved" : "⚠️ No key"}`);
+          rows.push(`🧠 Groq AI: ${localStorage.getItem("groq_key") ? "🔑 Key saved" : "⚠️ No key"}`);
+          
+          el.innerHTML = rows.join("<br>");
+        },
+
+        _loadSettingsKeys() {
+          const mask = (v) => v ? v.slice(0, 4) + "•".repeat(Math.max(0, v.length - 4)) : "";
+          document.getElementById("stDG").placeholder = mask(localStorage.getItem("dg_key")) || "dg_•••";
+          document.getElementById("stSS").placeholder = mask(localStorage.getItem("ss_key")) || "ss_•••";
+          document.getElementById("stWA").placeholder = mask(localStorage.getItem("wa_key")) || "•••";
+          document.getElementById("stGroq").placeholder = mask(localStorage.getItem("groq_key")) || "gsk_•••";
+          
+          const p = DB.getPrefs();
+          document.getElementById("prefStrict").checked = p.strict !== false;
+          document.getElementById("prefMin").value = p.minSent || 10;
+        },
+
+        _updateDashboard() {
+          const sessions = DB.getSessions();
+          const streak = DB.getStreak();
+          const tw = parseInt(localStorage.getItem(DB.K.WORDS) || "0");
+
+          const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+          setTxt("dSessions", sessions.length);
+          setTxt("dStreak", streak.current);
+          setTxt("dStreakDelta", `days (best: ${streak.longest})`);
+          setTxt("dWords", tw > 999 ? `${(tw / 1000).toFixed(1)}k` : tw);
+          setTxt("streakNum", streak.current);
+
+          const avgs = DB.getAvgScores();
+          if (avgs) {
+            setTxt("dAvg", avgs.overall.toFixed(1) + "/9.0");
+            setTxt("dAvgDelta", `avg last 20 sessions`);
+            const skills = { grammar: "sk-grammar", vocabulary: "sk-vocab", fluency: "sk-fluency", pronunciation: "sk-pron", coherence: "sk-coh" };
+            const fills = { grammar: "sf-grammar", vocabulary: "sf-vocab", fluency: "sf-fluency", pronunciation: "sf-pron", coherence: "sf-coh" };
+            for (const [k, id] of Object.entries(skills)) {
+              setTxt(id, `${(avgs[k] || 0).toFixed(1)} / 9.0`);
+              const fillEl = document.getElementById(fills[k]);
+              if (fillEl) fillEl.style.width = `${((avgs[k] || 0) / 9) * 100}%`;
+            }
+          }
+
+          const rl = document.getElementById("recentList");
+          if (rl && sessions.length) {
+            const icons = ["🗣️", "📰", "🎭", "💬", "📖"];
+            rl.innerHTML = sessions.slice(0, 4).map((s, i) => `
+              <div class="recent-sess" onclick="UI.navigate('progress')">
+                <div class="s-ico">${icons[i % icons.length]}</div>
+                <div class="s-inf">
+                  <div class="s-topic">${_esc(s.topicCat || "Speaking Session")}</div>
+                  <div class="s-meta">${s.sentences} sentences · ${s.wpm || "—"} WPM</div>
+                </div>
+                <div class="s-scr">${(s.overall || 0).toFixed(1)}</div>
+              </div>`).join("");
+          }
+        },
+
+        _updateProgressPage() {
+          if (Chart && Chart.renderMatrix) Chart.renderMatrix();
+          const sessions = DB.getSessions();
+          const streak = DB.getStreak();
+          const totalSecs = sessions.reduce((a, s) => a + (s.duration || 0), 0);
+          const totalMins = Math.round(totalSecs / 60);
+          document.getElementById("pSessions").textContent = sessions.length;
+          document.getElementById("pTime").textContent = totalMins > 60 ? `${(totalMins / 60).toFixed(1)}h` : `${totalMins}m`;
+          document.getElementById("pStreak").textContent = streak.longest + "🔥";
+          if (sessions.length) {
+            const best = Math.max(...sessions.map((s) => s.overall || 0));
+            document.getElementById("pBest").textContent = best.toFixed(1);
+          }
+          const avgs = DB.getAvgScores();
+          if (avgs) {
+            const m = { grammar: "ps-grammar", vocabulary: "ps-vocab", fluency: "ps-fluency", pronunciation: "ps-pron", coherence: "ps-coh" };
+            const f = { grammar: "pf-grammar", vocabulary: "pf-vocab", fluency: "pf-fluency", pronunciation: "pf-pron", coherence: "pf-coh" };
+            for (const [k, id] of Object.entries(m)) {
+              document.getElementById(id).textContent = `${(avgs[k] || 0).toFixed(1)}/9.0`;
+              document.getElementById(f[k]).style.width = `${((avgs[k] || 0) / 9) * 100}%`;
+            }
+          }
+        },
+
+        _updateDbStats() {
+          const el = document.getElementById("dbStats");
+          if (el) el.textContent = DB.getDBStats();
+        },
+
+        refreshAll() {
+          this._updateDashboard();
+          const sessions = DB.getSessions();
+          const xp = sessions.length * 40 + Math.round((DB.getAvgScores()?.overall || 0) * 10);
+          const levels = [{ l: "A2", max: 200 }, { l: "B1", max: 500 }, { l: "B2", max: 1000 }, { l: "C1", max: 2000 }, { l: "C2", max: 9999 }];
+          let level = levels[0], pct = 0;
+          for (const lv of levels) {
+            if (xp < lv.max) {
+              level = lv;
+              pct = Math.round(((xp - (levels[levels.indexOf(lv) - 1]?.max || 0)) / (lv.max - (levels[levels.indexOf(lv) - 1]?.max || 0))) * 100);
+              break;
+            }
+          }
+          document.getElementById("sideLevel").textContent = level.l;
+          document.getElementById("sideXP").textContent = `${xp} / ${level.max} XP`;
+          document.getElementById("xpFill").style.width = `${Math.min(100, pct)}%`;
+          
+          const w = DB.getWeaknesses();
+          const badge = document.getElementById("weakBadge");
+          if (badge) badge.style.display = Object.keys(w).length ? "" : "none";
+        },
+
+        setTheme(t) {
+          document.documentElement.setAttribute("data-theme", t);
           localStorage.setItem("eq_theme", t);
           document.querySelectorAll('[id^="ts-"]').forEach((el) => el.classList.remove("selected"));
           document.getElementById("ts-" + t)?.classList.add("selected");
+          this.toast(`Theme: ${t.charAt(0).toUpperCase() + t.slice(1)}`, "ok");
         },
-        _updateDashboard() {
-          const sessions = DB.getSessions();
-          if(sessions.length) {
-             const best = Math.max(...sessions.map(s => s.overall || 0));
-             document.getElementById("dAvg").textContent = best.toFixed(1) + "/9.0";
-          }
-        },
-        refreshAll() { this._updateDashboard(); }
+
+        toast(msg, type = "ok") {
+          const t = document.getElementById("toast");
+          t.textContent = msg; t.className = `show ${type}`;
+          clearTimeout(this._tt);
+          this._tt = setTimeout(() => (t.className = ""), 3200);
+        }
       };
 
       const Auth = { check() { document.getElementById("loginOverlay").classList.add("hidden"); } };
