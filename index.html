@@ -4669,16 +4669,19 @@ const ClaudeAI = {
         };
       })();
 
-      /* ───────────────────────────────────────────────────────────
-         STEP 4 — DEEPGRAM STT
+    /* ───────────────────────────────────────────────────────────
+         STEP 4 — DEEPGRAM STT (FIXED: Queueing System)
       ─────────────────────────────────────────────────────────── */
       const DeepgramSTT = (() => {
         let socket = null;
         let keepAlive = null;
+        let audioQueue = []; // 🟢 NEW: Queue to hold audio while socket opens
 
         function connect() {
           const key = localStorage.getItem("dg_key");
           if (!key) return null;
+          
+          audioQueue = []; // Reset queue on new connection
 
           socket = new WebSocket(
             "wss://api.deepgram.com/v1/listen?model=nova-2&smart_format=true&punctuate=true&filler_words=true",
@@ -4686,6 +4689,11 @@ const ClaudeAI = {
           );
 
           socket.onopen = () => {
+            // 🟢 NEW: Send all queued audio chunks now that socket is open!
+            while (audioQueue.length > 0) {
+              socket.send(audioQueue.shift());
+            }
+
             keepAlive = setInterval(() => {
               if (socket.readyState === WebSocket.OPEN)
                 socket.send(JSON.stringify({ type: "KeepAlive" }));
@@ -4707,12 +4715,13 @@ const ClaudeAI = {
         }
 
         function send(chunk) {
-          if (
-            socket &&
-            socket.readyState === WebSocket.OPEN &&
-            chunk.size > 0
-          ) {
-            socket.send(chunk);
+          if (socket && chunk.size > 0) {
+            if (socket.readyState === WebSocket.OPEN) {
+              socket.send(chunk);
+            } else if (socket.readyState === WebSocket.CONNECTING) {
+              // 🟢 NEW: If socket is still connecting, save the audio for later
+              audioQueue.push(chunk); 
+            }
           }
         }
 
@@ -9082,6 +9091,7 @@ const ClaudeAI = {
         box-sizing: border-box;
       "
       class="hidden"
+      onclick="if(event.target === this) this.classList.add('hidden')"
     >
       <div
         style="
@@ -9224,21 +9234,22 @@ const ClaudeAI = {
           ℹ️ <strong>Privacy:</strong> No servers involved. Data stays on your
           devices. The sync code is a compressed snapshot of all your progress.
         </div>
-        <button
-          id="closeSyncModal"
-          style="
-            position: absolute;
-            top: 12px;
-            right: 14px;
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text-muted);
-          "
-        >
-          ×
-        </button>
+       <button
+  id="closeSyncModal"
+  onclick="document.getElementById('syncModal').classList.add('hidden')"
+  style="
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-muted);
+  "
+>
+  ×
+</button>
       </div>
     </div>
   </body>
