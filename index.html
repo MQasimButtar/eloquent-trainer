@@ -3205,7 +3205,7 @@
             );
             if (r.ok) {
               const data = await r.json();
-              if (data.extract && data.extract.length > 500) {
+              if (data.extract && data.extract.length > 300) {
                 const sentences = data.extract.split(". ");
                 const paras = [];
                 for (let i = 0; i < sentences.length; i += 4) {
